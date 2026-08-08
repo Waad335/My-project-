@@ -7,5 +7,5 @@
  * Security policies defined in supabase/schema.sql. NEVER put the
  * service_role key here or anywhere in this repo.
  */
-window.ATHAR_SUPABASE_URL = '';
-window.ATHAR_SUPABASE_ANON_KEY = '';
+window.ATHAR_SUPABASE_URL = 'https://ubxlqeewmfhxancnywzs.supabase.co';
+window.ATHAR_SUPABASE_ANON_KEY = 'sb_publishable_Soyfl2LsAEK-4paWAOYuLA_DYIS9bPA';
