@@ -1,0 +1,134 @@
+/* ==========================================================================
+   ATHAR | أثر — Reset & Base
+   ========================================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body, h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img, svg { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input, textarea, select { font: inherit; color: inherit; }
+table { border-collapse: collapse; }
+
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.75;
+  font-weight: 400;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--white);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--cream-2); }
+::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--cream-2);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--olive-2);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.section { padding-block: var(--space-7); }
+.section--tight { padding-block: var(--space-6); }
+.section--soft { background: var(--cream-2); }
+.section--olive {
+  background: var(--grad-olive);
+  color: rgba(255,255,255,0.92);
+}
+.section--olive h2,
+.section--olive h3 { color: var(--white); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-latin);
+  font-style: italic;
+  letter-spacing: 0.14em;
+  font-size: 0.95rem;
+  color: var(--gold-dark);
+  margin-bottom: var(--space-2);
+}
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: var(--gold);
+  display: inline-block;
+}
+
+.section-head {
+  text-align: center;
+  max-width: 640px;
+  margin-inline: auto;
+  margin-bottom: var(--space-5);
+}
+.section-head h2 {
+  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+  margin-bottom: var(--space-2);
+}
+.section-head p {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+.section--olive .section-head p { color: rgba(255,255,255,0.75); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  right: var(--space-2);
+  top: -60px;
+  background: var(--olive);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  z-index: 999;
+  transition: top var(--dur-fast) var(--ease-luxury);
+}
+.skip-link:focus { top: var(--space-2); }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}

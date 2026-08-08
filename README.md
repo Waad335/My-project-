@@ -1,12 +1,45 @@
-# Beginner Guide to Processing
+# أثر ATHAR — Luxury E-commerce Website
 
-## 1. What is Processing?
-Processing is a simple programming tool for beginners.
+موقع تعريفي/تجاري فاخر لعلامة **أثر | ATHAR**، مبني بالكامل بـ HTML/CSS/JavaScript (بدون أي أدوات بناء)، بتصميم عربي (RTL) فاخر وهادئ يعتمد على الأخضر الزيتوني، الأبيض، والذهبي الدافئ.
 
-## 2. How to start?
-- Install Processing
-- Open the editor
-- Write your first sketch
+> **ملاحظة:** الشعار الرسمي وصور المنتجات الحقيقية لم تكن متاحة كملفات في بيئة التطوير هذه، لذا تم تصميم شعار ورسومات خط (line-art) أصلية بنفس هوية العلامة كبديل مؤقت. استبدليها بسهولة بصورك الحقيقية — راجعي قسم "تخصيص الصور" أدناه.
 
-## 3. First example:
-Draw a circle on the screen.
+## البنية
+
+```
+├── index.html          الصفحة الرئيسية (Hero, الفئات, المنتجات المميزة, من نحن, لماذا أثر, آراء العملاء, انستقرام, نشرة بريدية)
+├── products.html        كل المنتجات مع فلاتر حسب الفئة
+├── about.html            قصة العلامة الكاملة
+├── collections.html      شبكة التشكيلات الأربع
+├── contact.html          نموذج تواصل + معلومات + خريطة
+├── css/
+│   ├── variables.css     الألوان، الخطوط، المسافات (Design Tokens)
+│   ├── base.css          Reset + عناصر أساسية
+│   ├── components.css     مكوّنات قابلة لإعادة الاستخدام (أزرار، بطاقات، هيدر، فوتر...)
+│   ├── sections.css       أقسام الصفحات (Hero, About, Contact...)
+│   ├── animations.css     حركات الظهور والانتقالات
+│   └── responsive.css     تجاوب كامل مع الجوال والتابلت
+├── js/
+│   ├── main.js            الهيدر، القائمة الجوّال، السكرول، الفلاتر، نموذج التواصل
+│   ├── animations.js      حركات الظهور عند التمرير (IntersectionObserver)
+│   └── cart.js            السلة والمفضلة (localStorage) + إشعارات Toast
+├── robots.txt / sitemap.xml   لتحسين محركات البحث (SEO)
+```
+
+## التشغيل محلياً
+
+الموقع ثابت (Static) بالكامل، يكفي فتح `index.html` مباشرة في المتصفح، أو تشغيل خادم محلي بسيط:
+
+```bash
+python3 -m http.server 8000
+# ثم افتحي http://localhost:8000
+```
+
+## تخصيص الصور والشعار
+
+- الشعار الحالي (`#icon-logo-mark` داخل كل صفحة) هو ختمٌ رمزي دائري بلون ذهبي — استبدليه بشعاركم الرسمي بوضعه كملف SVG/PNG في `assets/img/logo.svg` وتحديث عنصر `.brand-mark` في كل صفحة.
+- رسومات المنتجات والفئات حالياً عبارة عن خطوط تصميمية (line-art) مصنوعة بـ SVG. لاستبدالها بصور حقيقية: استبدلي عنصر `<svg><use href="#icon-..."></use></svg>` داخل `.product-media` / `.cat-media` بوسم `<img src="assets/img/...jpg" alt="...">`.
+
+## المكدس التقني
+
+HTML5 · CSS3 (Custom Properties, Grid, Flexbox) · Vanilla JavaScript (ES5+) — بدون أي مكتبات أو أطر خارجية، لأداء وسرعة تحميل عاليين.
