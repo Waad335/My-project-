@@ -27,7 +27,7 @@
     box-shadow: -18px 0 50px rgba(0,0,0,0.14);
     transform: translateX(110%);
     transition: transform var(--dur-med) var(--ease-luxury);
-    z-index: 490;
+    z-index: 895;
   }
   html[dir="rtl"] .main-nav { transform: translateX(-110%); }
   .main-nav.is-open,

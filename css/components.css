@@ -57,7 +57,7 @@
   position: fixed;
   inset-inline: 0;
   top: 0;
-  z-index: 500;
+  z-index: 890;
   height: var(--header-h);
   display: flex;
   align-items: center;
