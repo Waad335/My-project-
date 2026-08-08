@@ -1,15 +1,14 @@
 /**
- * ATHAR | أثر — Cart, favorites, and toast notifications.
- * Client-side only (localStorage) — a display/demo layer for the storefront UI.
+ * ATHAR | أثر — Shopping cart + toast notifications.
+ * Cart state lives in localStorage (persists across visits) and is snapshotted
+ * into the `orders` / `order_items` tables in Supabase at checkout time.
+ * See js/wishlist-ui.js for the (Supabase-backed) wishlist/favorites feature.
  */
 (function () {
   'use strict';
 
   var CART_KEY = 'athar_cart_v1';
-  var FAV_KEY = 'athar_favs_v1';
   var CURRENCY = 'ر.س';
-
-  var rowIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 3h6M10 3v3.2c0 .4-.15.78-.42 1.06L6.9 10c-.6.62-.9 1.45-.9 2.32V19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6.68c0-.87-.3-1.7-.9-2.32l-2.68-2.74A1.5 1.5 0 0 1 14 6.2V3"/></svg>';
 
   function readStore(key) {
     try { return JSON.parse(localStorage.getItem(key)) || []; }
@@ -22,14 +21,26 @@
   var Cart = {
     items: readStore(CART_KEY),
     save: function () { writeStore(CART_KEY, this.items); },
-    add: function (item) {
+    add: function (item, qty) {
+      qty = qty || 1;
       var existing = this.items.find(function (i) { return i.id === item.id; });
-      if (existing) existing.qty += 1;
-      else this.items.push(Object.assign({ qty: 1 }, item));
+      if (existing) existing.qty += qty;
+      else this.items.push(Object.assign({ qty: qty }, item));
+      this.save();
+    },
+    setQty: function (id, qty) {
+      var item = this.items.find(function (i) { return i.id === id; });
+      if (!item) return;
+      if (qty <= 0) { this.remove(id); return; }
+      item.qty = qty;
       this.save();
     },
     remove: function (id) {
       this.items = this.items.filter(function (i) { return i.id !== id; });
+      this.save();
+    },
+    clear: function () {
+      this.items = [];
       this.save();
     },
     count: function () {
@@ -40,71 +51,42 @@
     }
   };
 
-  var Favs = {
-    ids: readStore(FAV_KEY),
-    save: function () { writeStore(FAV_KEY, this.ids); },
-    toggle: function (id) {
-      var idx = this.ids.indexOf(id);
-      if (idx > -1) { this.ids.splice(idx, 1); this.save(); return false; }
-      this.ids.push(id); this.save(); return true;
-    },
-    has: function (id) { return this.ids.indexOf(id) > -1; }
-  };
-
   document.addEventListener('DOMContentLoaded', function () {
-    hydrateFavButtons();
     updateBadges();
     bindAddToCart();
-    bindFavToggle();
     bindDrawer();
     renderDrawer();
   });
-
-  function hydrateFavButtons() {
-    document.querySelectorAll('[data-fav-toggle]').forEach(function (btn) {
-      if (Favs.has(btn.dataset.id)) btn.classList.add('is-active');
-    });
-  }
 
   function updateBadges() {
     document.querySelectorAll('[data-cart-count]').forEach(function (el) {
       el.textContent = Cart.count();
     });
-    document.querySelectorAll('[data-fav-count]').forEach(function (el) {
-      el.textContent = Favs.ids.length;
-    });
   }
 
   function bindAddToCart() {
-    document.querySelectorAll('[data-add-cart]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var card = btn.closest('[data-product]') || document;
-        Cart.add({
-          id: btn.dataset.id,
-          name: btn.dataset.name || (card.querySelector('.product-name') || {}).textContent || 'منتج أثر',
-          price: parseFloat(btn.dataset.price || '0')
-        });
-        updateBadges();
-        renderDrawer();
-        showToast('تمت إضافة المنتج إلى سلتك بنجاح');
-        btn.animate(
-          [{ transform: 'scale(1)' }, { transform: 'scale(0.85)' }, { transform: 'scale(1)' }],
-          { duration: 380, easing: 'ease-out' }
-        );
-      });
-    });
-  }
+    // Delegated so it also works for product cards rendered dynamically after load.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-add-cart]');
+      if (!btn || btn.disabled) return;
+      e.preventDefault();
+      var qtyInput = document.querySelector('[data-qty-input]');
+      var qty = (qtyInput && btn.dataset.useQtyInput) ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 
-  function bindFavToggle() {
-    document.querySelectorAll('[data-fav-toggle]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var active = Favs.toggle(btn.dataset.id);
-        btn.classList.toggle('is-active', active);
-        updateBadges();
-        showToast(active ? 'أُضيف إلى المفضلة' : 'أُزيل من المفضلة');
-      });
+      Cart.add({
+        id: btn.dataset.id,
+        name: btn.dataset.name || 'منتج أثر',
+        price: parseFloat(btn.dataset.price || '0'),
+        image: btn.dataset.image || ''
+      }, qty);
+
+      updateBadges();
+      renderDrawer();
+      showToast('تمت إضافة المنتج إلى سلتك بنجاح');
+      btn.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(0.85)' }, { transform: 'scale(1)' }],
+        { duration: 380, easing: 'ease-out' }
+      );
     });
   }
 
@@ -134,11 +116,14 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') close();
     });
+
+    window.AtharCartDrawer = { open: open, close: close };
   }
 
   function renderDrawer() {
     var body = document.querySelector('[data-cart-body]');
     var totalEl = document.querySelector('[data-cart-total]');
+    var checkoutLink = document.querySelector('[data-checkout-link]');
     if (!body) return;
 
     if (!Cart.items.length) {
@@ -147,14 +132,21 @@
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 7H6"/></svg>' +
         '<p>سلتك فارغة حالياً</p>' +
         '</div>';
+      if (checkoutLink) checkoutLink.classList.add('is-disabled-link');
     } else {
       body.innerHTML = Cart.items.map(function (i) {
+        var img = i.image || 'assets/img/products/handles-placeholder.svg';
         return (
           '<div class="cart-row">' +
-          '<div class="cart-row-media">' + rowIcon + '</div>' +
+          '<div class="cart-row-media"><img src="' + img + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>' +
           '<div class="cart-row-info">' +
           '<h4>' + i.name + '</h4>' +
-          '<span>الكمية: ' + i.qty + ' &times; ' + i.price + ' ' + CURRENCY + '</span>' +
+          '<div class="qty-stepper" style="display:flex;align-items:center;gap:10px;margin-top:6px">' +
+          '<button type="button" class="qty-btn" data-qty-dec="' + i.id + '" aria-label="تقليل الكمية">−</button>' +
+          '<span>' + i.qty + '</span>' +
+          '<button type="button" class="qty-btn" data-qty-inc="' + i.id + '" aria-label="زيادة الكمية">+</button>' +
+          '<span style="margin-inline-start:auto;color:var(--ink-soft);font-size:.85rem">' + (i.qty * i.price).toLocaleString('ar') + ' ' + CURRENCY + '</span>' +
+          '</div>' +
           '<div class="cart-row-remove" data-remove="' + i.id + '">إزالة</div>' +
           '</div>' +
           '</div>'
@@ -168,9 +160,28 @@
           renderDrawer();
         });
       });
+      body.querySelectorAll('[data-qty-inc]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var item = Cart.items.find(function (i) { return i.id === el.dataset.qtyInc; });
+          if (item) Cart.setQty(item.id, item.qty + 1);
+          updateBadges();
+          renderDrawer();
+        });
+      });
+      body.querySelectorAll('[data-qty-dec]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var item = Cart.items.find(function (i) { return i.id === el.dataset.qtyDec; });
+          if (item) Cart.setQty(item.id, item.qty - 1);
+          updateBadges();
+          renderDrawer();
+        });
+      });
+      if (checkoutLink) checkoutLink.classList.remove('is-disabled-link');
     }
 
     if (totalEl) totalEl.textContent = Cart.total().toLocaleString('ar') + ' ' + CURRENCY;
+
+    document.dispatchEvent(new CustomEvent('athar:cart-updated'));
   }
 
   var toastTimer;
@@ -184,5 +195,6 @@
   }
 
   window.AtharCart = Cart;
-  window.AtharFavs = Favs;
+  window.AtharToast = showToast;
+  window.AtharRenderCartDrawer = renderDrawer;
 })();

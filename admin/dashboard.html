@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | أثر ATHAR</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23264A43'/%3E%3Cpath fill='%23B89A5E' d='M50 28c10 0 18 8 18 18 0 8-5 14.6-12.5 17.3 4.5-1.1 8-5.2 8-10.3 0-5.7-4.6-10.3-10.3-10.3-4.6 0-8.4 3.2-9.8 7.4-1.1 3 0 6.4 2 8.6-6.8-1.6-11.4-7.7-11.4-14.9 0-10 8-18 18-18z'/%3E%3C/svg%3E" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/variables.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="ai-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></g></symbol>
+  <symbol id="ai-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></g></symbol>
+  <symbol id="ai-tag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M20 12.5L12.5 20 3 10.5V3h7.5z"/><circle cx="7.5" cy="7.5" r="1.3"/></g></symbol>
+  <symbol id="ai-stack" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></g></symbol>
+  <symbol id="ai-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M3 12h2.4M18.6 12H21M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></g></symbol>
+  <symbol id="ai-logout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></g></symbol>
+  <symbol id="ai-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="ai-edit" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></symbol>
+  <symbol id="ai-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></g></symbol>
+  <symbol id="ai-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="ai-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="ai-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></g></symbol>
+</svg>
+
+<div class="admin-shell" id="adminShell">
+  <aside class="admin-sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 100 100" style="width:38px;height:38px">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#B89A5E" stroke-width="1.5"/>
+        <path fill="#B89A5E" stroke="none" d="M50 30c9 0 16 7 16 16 0 7-4.5 12.8-11 15.2 4-1 7-4.6 7-9.2 0-5-4-9-9-9-4 0-7.2 2.8-8.6 6.5-1 2.6-.4 5.6 1.6 7.6-6-1.4-10-6.8-10-13.1 0-8.8 7.1-16 16-16z"/>
+      </svg>
+      <span class="brand-word"><span class="brand-word-ar">أثر</span><span class="brand-word-en">Admin</span></span>
+    </div>
+
+    <button class="mobile-nav-toggle-admin icon-btn" id="adminNavToggle" style="color:#fff" aria-label="القائمة"><svg viewBox="0 0 24 24" style="width:22px;height:22px"><use href="#ai-menu"></use></svg></button>
+
+    <ul class="admin-nav" id="adminNav">
+      <li><a href="#products" data-panel="products" class="is-active"><svg><use href="#ai-box"></use></svg> المنتجات</a></li>
+      <li><a href="#orders" data-panel="orders"><svg><use href="#ai-orders"></use></svg> الطلبات</a></li>
+      <li><a href="#categories" data-panel="categories"><svg><use href="#ai-tag"></use></svg> الفئات</a></li>
+      <li><a href="#inventory" data-panel="inventory"><svg><use href="#ai-stack"></use></svg> المخزون</a></li>
+      <li><a href="#settings" data-panel="settings"><svg><use href="#ai-gear"></use></svg> إعدادات المتجر</a></li>
+      <li><a href="../index.html" target="_blank"><svg viewBox="0 0 24 24" style="stroke-width:1.6"><path fill="none" stroke="currentColor" d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg> عرض المتجر</a></li>
+    </ul>
+
+    <div class="admin-sidebar-foot">
+      <div class="admin-user-email" id="adminUserEmail"></div>
+      <button id="signOutBtn"><svg><use href="#ai-logout"></use></svg> تسجيل الخروج</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- ================= PRODUCTS ================= -->
+    <section class="admin-panel is-active" id="panel-products">
+      <div class="admin-topbar">
+        <h1>المنتجات</h1>
+        <button class="btn btn-gold" id="addProductBtn"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><use href="#ai-plus"></use></svg> إضافة منتج</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div class="toolbar-search" style="min-width:220px">
+            <svg viewBox="0 0 24 24"><use href="#ai-search"></use></svg>
+            <input type="search" id="productSearch" placeholder="ابحثي بالاسم أو SKU...">
+          </div>
+          <select id="productCategoryFilter" class="status-select"><option value="">كل الفئات</option></select>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th></th><th>المنتج</th><th>SKU</th><th>الفئة</th><th>السعر</th><th>المخزون</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="productsTableBody"><tr class="empty-row"><td colspan="8">جارِ التحميل...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ORDERS ================= -->
+    <section class="admin-panel" id="panel-orders">
+      <div class="admin-topbar"><h1>الطلبات</h1></div>
+      <div class="stat-cards" id="orderStatCards"></div>
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <span style="font-weight:600;color:var(--olive-2)">كل الطلبات</span>
+          <select id="orderStatusFilter" class="status-select">
+            <option value="">كل الحالات</option>
+            <option value="pending">قيد الانتظار</option>
+            <option value="confirmed">مؤكد</option>
+            <option value="preparing">قيد التجهيز</option>
+            <option value="shipped">تم الشحن</option>
+            <option value="delivered">تم التوصيل</option>
+            <option value="cancelled">ملغي</option>
+          </select>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>رقم الطلب</th><th>العميلة</th><th>الجوال</th><th>الإجمالي</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+            <tbody id="ordersTableBody"><tr class="empty-row"><td colspan="7">جارِ التحميل...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATEGORIES ================= -->
+    <section class="admin-panel" id="panel-categories">
+      <div class="admin-topbar">
+        <h1>الفئات</h1>
+        <button class="btn btn-gold" id="addCategoryBtn"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><use href="#ai-plus"></use></svg> إضافة فئة</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>الاسم (عربي)</th><th>Name (English)</th><th>Slug</th><th>عدد المنتجات</th><th></th></tr></thead>
+            <tbody id="categoriesTableBody"><tr class="empty-row"><td colspan="5">جارِ التحميل...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= INVENTORY ================= -->
+    <section class="admin-panel" id="panel-inventory">
+      <div class="admin-topbar"><h1>المخزون</h1></div>
+      <div class="admin-card">
+        <div class="admin-card-head"><span style="font-weight:600;color:var(--olive-2)">مستويات المخزون — عدّلي الكمية واحفظي مباشرة</span></div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th></th><th>المنتج</th><th>SKU</th><th>الكمية الحالية</th><th>تحديث</th></tr></thead>
+            <tbody id="inventoryTableBody"><tr class="empty-row"><td colspan="5">جارِ التحميل...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+    <section class="admin-panel" id="panel-settings">
+      <div class="admin-topbar"><h1>إعدادات المتجر</h1></div>
+      <div class="admin-card" style="padding:var(--space-4);max-width:640px">
+        <form id="settingsForm">
+          <div class="field"><label for="stStoreName">اسم المتجر</label><input type="text" id="stStoreName"></div>
+          <div class="field-row">
+            <div class="field"><label for="stEmail">البريد الإلكتروني</label><input type="email" id="stEmail"></div>
+            <div class="field"><label for="stPhone">رقم الهاتف</label><input type="text" id="stPhone"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="stWhatsapp">رقم واتساب</label><input type="text" id="stWhatsapp"></div>
+            <div class="field"><label for="stAddress">العنوان</label><input type="text" id="stAddress"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="stShipping">رسوم الشحن (ر.س)</label><input type="number" id="stShipping" min="0" step="0.5"></div>
+            <div class="field"><label for="stFreeShipping">الشحن مجاني فوق (ر.س)</label><input type="number" id="stFreeShipping" min="0" step="1"></div>
+          </div>
+          <div id="settingsSaved" style="display:none;color:#3f7a5c;font-size:.88rem;margin-bottom:12px">تم حفظ الإعدادات بنجاح.</div>
+          <button type="submit" class="btn btn-olive">حفظ الإعدادات</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ================= PRODUCT MODAL ================= -->
+<div class="admin-modal-scrim" id="productModalScrim">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3 id="productModalTitle">إضافة منتج</h3>
+      <button class="icon-btn" id="closeProductModal" aria-label="إغلاق"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><use href="#ai-close"></use></svg></button>
+    </div>
+    <form id="productForm">
+      <input type="hidden" id="pfId">
+      <div class="field-row">
+        <div class="field"><label for="pfNameAr">اسم المنتج (عربي)</label><input type="text" id="pfNameAr" required></div>
+        <div class="field"><label for="pfNameEn">اسم المنتج (إنجليزي)</label><input type="text" id="pfNameEn"></div>
+      </div>
+      <div class="field"><label for="pfDescAr">الوصف</label><textarea id="pfDescAr"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label for="pfSku">SKU</label><input type="text" id="pfSku" required></div>
+        <div class="field"><label for="pfCategory">الفئة</label><select id="pfCategory" required></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="pfPrice">السعر (ر.س)</label><input type="number" id="pfPrice" min="0" step="0.5" required></div>
+        <div class="field"><label for="pfDiscount">سعر الخصم (اختياري)</label><input type="number" id="pfDiscount" min="0" step="0.5"></div>
+      </div>
+      <div class="field"><label for="pfStock">الكمية في المخزون</label><input type="number" id="pfStock" min="0" step="1" required></div>
+
+      <div class="checkbox-row">
+        <label><input type="checkbox" id="pfFeatured"> منتج مميز</label>
+        <label><input type="checkbox" id="pfNew"> وصل حديثاً</label>
+        <label><input type="checkbox" id="pfBestseller"> الأكثر مبيعاً</label>
+        <label><input type="checkbox" id="pfAvailable" checked> متوفر للبيع</label>
+      </div>
+
+      <label style="display:block;font-size:.9rem;font-weight:600;color:var(--olive-2);margin-bottom:8px">صور المنتج</label>
+      <div class="image-preview-grid" id="imagePreviewGrid"></div>
+      <div class="image-upload-zone" id="imageUploadZone">
+        <input type="file" id="imageInput" accept="image/*" multiple style="display:none">
+        اضغطي لاختيار صورة أو أكثر (يفضّل مربعة الشكل)
+      </div>
+
+      <div id="productFormError" style="display:none;background:#fbeceb;color:#a35b4a;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:12px;font-size:.86rem"></div>
+
+      <button type="submit" class="btn btn-gold btn-block" id="saveProductBtn">حفظ المنتج</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= CATEGORY MODAL ================= -->
+<div class="admin-modal-scrim" id="categoryModalScrim">
+  <div class="admin-modal" style="max-width:420px">
+    <div class="admin-modal-head">
+      <h3>إضافة فئة</h3>
+      <button class="icon-btn" id="closeCategoryModal" aria-label="إغلاق"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><use href="#ai-close"></use></svg></button>
+    </div>
+    <form id="categoryForm">
+      <div class="field"><label for="cfNameAr">الاسم (عربي)</label><input type="text" id="cfNameAr" required></div>
+      <div class="field"><label for="cfNameEn">Name (English)</label><input type="text" id="cfNameEn" required></div>
+      <div class="field"><label for="cfSlug">Slug (رابط، حروف إنجليزية وشرطات فقط)</label><input type="text" id="cfSlug" required pattern="[a-z0-9-]+"></div>
+      <button type="submit" class="btn btn-gold btn-block">حفظ الفئة</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= ORDER DETAILS MODAL ================= -->
+<div class="admin-modal-scrim" id="orderModalScrim">
+  <div class="admin-modal" id="orderModalContent"></div>
+</div>
+
+<div class="toast" style="position:fixed"><svg viewBox="0 0 24 24" style="width:18px;height:18px" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12l5 5L20 6"/></svg><span></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/supabase-client.js"></script>
+<script>window.ATHAR_ASSET_BASE = '../';</script>
+<script src="../js/products-api.js"></script>
+<script src="../js/render-products.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

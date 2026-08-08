@@ -157,14 +157,19 @@
 <aside class="cart-drawer" aria-label="سلة المشتريات">
   <div class="cart-drawer-head"><h3>سلة المشتريات</h3><button class="icon-btn" data-cart-close aria-label="إغلاق السلة"><svg viewBox="0 0 24 24"><use href="#icon-close"></use></svg></button></div>
   <div class="cart-drawer-body" data-cart-body></div>
-  <div class="cart-drawer-foot"><div style="display:flex;justify-content:space-between;margin-bottom:14px;font-weight:700;color:var(--olive-2)"><span>الإجمالي</span><span data-cart-total>0 ر.س</span></div><a href="contact.html" class="btn btn-gold btn-block">إتمام الطلب</a></div>
+  <div class="cart-drawer-foot"><div style="display:flex;justify-content:space-between;margin-bottom:14px;font-weight:700;color:var(--olive-2)"><span>المجموع الفرعي</span><span data-cart-total>0 ر.س</span></div><a href="checkout.html" class="btn btn-gold btn-block" data-checkout-link style="margin-bottom:10px">إتمام الطلب</a><button type="button" class="btn btn-ghost btn-block" data-cart-close>متابعة التسوق</button></div>
 </aside>
 
 <button class="back-to-top" aria-label="العودة للأعلى"><svg viewBox="0 0 24 24"><use href="#icon-up"></use></svg></button>
 <div class="toast"><svg viewBox="0 0 24 24"><use href="#icon-check"></use></svg><span></span></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/products-api.js"></script>
 <script src="js/main.js"></script>
 <script src="js/animations.js"></script>
 <script src="js/cart.js"></script>
+<script src="js/wishlist-ui.js"></script>
 </body>
 </html>
