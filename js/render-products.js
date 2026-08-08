@@ -8,12 +8,27 @@
 
   var CURRENCY = 'ر.س';
   // Pages nested in a subfolder (e.g. admin/) set window.ATHAR_ASSET_BASE = '../'
-  // before this script loads so the fallback path still resolves correctly.
-  var FALLBACK_IMG = (window.ATHAR_ASSET_BASE || '') + 'assets/img/products/handles-placeholder.svg';
+  // before this script loads so local asset paths still resolve correctly.
+  var ASSET_BASE = window.ATHAR_ASSET_BASE || '';
+  var FALLBACK_IMG = ASSET_BASE + 'assets/img/products/handles-placeholder.svg';
+
+  /**
+   * Product image_urls are either full Storage URLs (uploaded via the admin —
+   * always start with http) or root-relative seed paths like
+   * "assets/img/products/x.svg" (portable across root-level pages AND
+   * subpath deployments, e.g. GitHub Pages project sites). The latter only
+   * resolve correctly from a page at the site root, so pages nested in a
+   * subfolder need ASSET_BASE prefixed back on.
+   */
+  function resolveImageUrl(url) {
+    if (!url) return FALLBACK_IMG;
+    if (/^(https?:)?\/\//.test(url) || url.indexOf('data:') === 0) return url;
+    return ASSET_BASE + url;
+  }
 
   function firstImage(product) {
     var imgs = (product.product_images || []).slice().sort(function (a, b) { return a.sort_order - b.sort_order; });
-    return imgs.length ? imgs[0].image_url : FALLBACK_IMG;
+    return imgs.length ? resolveImageUrl(imgs[0].image_url) : FALLBACK_IMG;
   }
 
   function money(n) {
@@ -79,6 +94,7 @@
   window.AtharUI = {
     money: money,
     firstImage: firstImage,
+    resolveImageUrl: resolveImageUrl,
     outOfStock: outOfStock,
     productCardHTML: productCardHTML,
     productGridSkeleton: productGridSkeleton,

@@ -213,14 +213,16 @@
 <div class="admin-modal-scrim" id="categoryModalScrim">
   <div class="admin-modal" style="max-width:420px">
     <div class="admin-modal-head">
-      <h3>إضافة فئة</h3>
+      <h3 id="categoryModalTitle">إضافة فئة</h3>
       <button class="icon-btn" id="closeCategoryModal" aria-label="إغلاق"><svg viewBox="0 0 24 24" style="width:18px;height:18px"><use href="#ai-close"></use></svg></button>
     </div>
     <form id="categoryForm">
+      <input type="hidden" id="cfId">
       <div class="field"><label for="cfNameAr">الاسم (عربي)</label><input type="text" id="cfNameAr" required></div>
       <div class="field"><label for="cfNameEn">Name (English)</label><input type="text" id="cfNameEn" required></div>
-      <div class="field"><label for="cfSlug">Slug (رابط، حروف إنجليزية وشرطات فقط)</label><input type="text" id="cfSlug" required pattern="[a-z0-9-]+"></div>
-      <button type="submit" class="btn btn-gold btn-block">حفظ الفئة</button>
+      <div class="field"><label for="cfSlug">Slug (رابط، حروف إنجليزية وشرطات فقط)</label><input type="text" id="cfSlug" required pattern="[a-z0-9\-]+"></div>
+      <div id="categoryFormError" style="display:none;background:#fbeceb;color:#a35b4a;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:12px;font-size:.86rem"></div>
+      <button type="submit" class="btn btn-gold btn-block" id="saveCategoryBtn">حفظ الفئة</button>
     </form>
   </div>
 </div>

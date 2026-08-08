@@ -9,6 +9,7 @@
 
   var db, categoriesCache = [];
   var currentProductImages = []; // [{image_url, path}] for the product currently being edited
+  var originalProductImageUrls = []; // snapshot at modal-open time, to detect removals on save
 
   document.addEventListener('DOMContentLoaded', async function () {
     var user = await window.AtharAdminGuard.requireAdmin();
@@ -95,11 +96,20 @@
         '<td>' + c.name_en + '</td>' +
         '<td style="color:var(--ink-soft)">' + c.slug + '</td>' +
         '<td>' + count + '</td>' +
-        '<td><button class="icon-action-btn danger" data-del-category="' + c.id + '" aria-label="حذف"><svg viewBox="0 0 24 24"><use href="#ai-trash"></use></svg></button></td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="icon-action-btn" data-edit-category="' + c.id + '" aria-label="تعديل"><svg viewBox="0 0 24 24"><use href="#ai-edit"></use></svg></button>' +
+          '<button class="icon-action-btn danger" data-del-category="' + c.id + '" aria-label="حذف"><svg viewBox="0 0 24 24"><use href="#ai-trash"></use></svg></button>' +
+        '</td>' +
         '</tr>'
       );
     }).join('');
 
+    body.querySelectorAll('[data-edit-category]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var category = categoriesCache.find(function (c) { return c.id === btn.dataset.editCategory; });
+        openCategoryModal(category);
+      });
+    });
     body.querySelectorAll('[data-del-category]').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         if (!confirm('حذف هذه الفئة؟ لا يمكن حذف فئة تحتوي منتجات.')) return;
@@ -113,33 +123,58 @@
 
   function bindCategoriesPanel() {
     var scrim = document.getElementById('categoryModalScrim');
-    document.getElementById('addCategoryBtn').addEventListener('click', function () {
-      document.getElementById('categoryForm').reset();
-      scrim.classList.add('is-open');
-    });
+    document.getElementById('addCategoryBtn').addEventListener('click', function () { openCategoryModal(null); });
     document.getElementById('closeCategoryModal').addEventListener('click', function () { scrim.classList.remove('is-open'); });
     scrim.addEventListener('click', function (e) { if (e.target === scrim) scrim.classList.remove('is-open'); });
 
     document.getElementById('cfNameAr').addEventListener('input', autoSlugSuggest);
+    document.getElementById('cfSlug').addEventListener('input', function () { this.dataset.touched = 'true'; });
 
     document.getElementById('categoryForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      var errorBox = document.getElementById('categoryFormError');
+      var saveBtn = document.getElementById('saveCategoryBtn');
+      errorBox.style.display = 'none';
+      saveBtn.disabled = true;
+
+      var id = document.getElementById('cfId').value;
       var payload = {
         name_ar: document.getElementById('cfNameAr').value.trim(),
         name_en: document.getElementById('cfNameEn').value.trim(),
         slug: document.getElementById('cfSlug').value.trim().toLowerCase()
       };
-      var res = await db.from('categories').insert(payload);
-      if (res.error) { alert('تعذّر الحفظ: ' + res.error.message); return; }
+      var res = id
+        ? await db.from('categories').update(payload).eq('id', id)
+        : await db.from('categories').insert(payload);
+
+      saveBtn.disabled = false;
+      if (res.error) {
+        errorBox.textContent = 'تعذّر الحفظ: ' + res.error.message;
+        errorBox.style.display = '';
+        return;
+      }
       scrim.classList.remove('is-open');
-      showToast('تمت إضافة الفئة');
+      showToast(id ? 'تم تحديث الفئة' : 'تمت إضافة الفئة');
       await loadCategories();
     });
   }
 
+  function openCategoryModal(category) {
+    var form = document.getElementById('categoryForm');
+    form.reset();
+    document.getElementById('categoryFormError').style.display = 'none';
+    document.getElementById('cfSlug').dataset.touched = category ? 'true' : '';
+    document.getElementById('categoryModalTitle').textContent = category ? 'تعديل الفئة' : 'إضافة فئة';
+    document.getElementById('cfId').value = category ? category.id : '';
+    document.getElementById('cfNameAr').value = category ? category.name_ar : '';
+    document.getElementById('cfNameEn').value = category ? category.name_en : '';
+    document.getElementById('cfSlug').value = category ? category.slug : '';
+    document.getElementById('categoryModalScrim').classList.add('is-open');
+  }
+
   function autoSlugSuggest() {
     var slugField = document.getElementById('cfSlug');
-    if (slugField.dataset.touched) return;
+    if (slugField.dataset.touched === 'true') return;
     var en = document.getElementById('cfNameEn').value || document.getElementById('cfNameAr').value;
     slugField.value = en.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
@@ -244,6 +279,7 @@
     form.reset();
     document.getElementById('productFormError').style.display = 'none';
     currentProductImages = product ? (product.product_images || []).slice().sort(function (a, b) { return a.sort_order - b.sort_order; }) : [];
+    originalProductImageUrls = currentProductImages.map(function (img) { return img.image_url; });
     renderImagePreviews();
 
     document.getElementById('productModalTitle').textContent = product ? 'تعديل المنتج' : 'إضافة منتج';
@@ -271,7 +307,8 @@
   function renderImagePreviews() {
     var grid = document.getElementById('imagePreviewGrid');
     grid.innerHTML = currentProductImages.map(function (img, i) {
-      return '<div class="image-preview-item"><img src="' + img.image_url + '" alt=""><span class="remove-img" data-remove-img="' + i + '">✕</span></div>';
+      var src = window.AtharUI ? window.AtharUI.resolveImageUrl(img.image_url) : img.image_url;
+      return '<div class="image-preview-item"><img src="' + src + '" alt=""><span class="remove-img" data-remove-img="' + i + '">✕</span></div>';
     }).join('');
     grid.querySelectorAll('[data-remove-img]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -389,6 +426,15 @@
         return { product_id: productId, image_url: img.image_url, sort_order: i };
       });
       await db.from('product_images').insert(rows);
+    }
+
+    // Clean up storage for any images that were removed from the preview grid
+    // (not just re-pointed) — otherwise deleted images pile up in the bucket forever.
+    var keptUrls = currentProductImages.map(function (img) { return img.image_url; });
+    var removedUrls = originalProductImageUrls.filter(function (url) { return keptUrls.indexOf(url) === -1; });
+    if (removedUrls.length) {
+      var removedPaths = removedUrls.map(storagePathFromUrl).filter(Boolean);
+      if (removedPaths.length) await db.storage.from('product-images').remove(removedPaths);
     }
 
     saveBtn.disabled = false; saveBtn.textContent = 'حفظ المنتج';
