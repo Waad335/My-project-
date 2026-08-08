@@ -23,10 +23,11 @@
       </svg>
       <span class="brand-word"><span class="brand-word-ar">أثر</span><span class="brand-word-en">ATHAR</span></span>
     </div>
-    <h1>لوحة تحكم الإدارة</h1>
-    <p class="sub">لأصحاب المتجر المخوّلين فقط</p>
+    <h1 id="authTitle">لوحة تحكم الإدارة</h1>
+    <p class="sub" id="authSub">لأصحاب المتجر المخوّلين فقط</p>
 
     <div class="auth-error" id="authError"></div>
+    <div class="auth-error" id="authNotice" style="display:none;background:rgba(63,122,92,.12);color:#3f7a5c"></div>
 
     <form id="loginForm">
       <div class="field">
@@ -35,12 +36,27 @@
       </div>
       <div class="field">
         <label for="password">كلمة المرور</label>
-        <input type="password" id="password" required autocomplete="current-password">
+        <input type="password" id="password" required autocomplete="current-password" minlength="6">
       </div>
       <button type="submit" class="btn btn-olive btn-block" id="loginBtn">تسجيل الدخول</button>
     </form>
 
-    <p style="text-align:center;margin-top:var(--space-3);font-size:.82rem;color:var(--ink-soft)">
+    <form id="signupForm" style="display:none">
+      <div class="field">
+        <label for="suEmail">البريد الإلكتروني</label>
+        <input type="email" id="suEmail" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="suPassword">كلمة المرور (6 أحرف على الأقل)</label>
+        <input type="password" id="suPassword" required autocomplete="new-password" minlength="6">
+      </div>
+      <button type="submit" class="btn btn-gold btn-block" id="signupBtn">إنشاء الحساب</button>
+    </form>
+
+    <p style="text-align:center;margin-top:var(--space-3);font-size:.85rem">
+      <a href="#" id="toggleAuthMode" style="color:var(--gold-dark)"></a>
+    </p>
+    <p style="text-align:center;margin-top:var(--space-2);font-size:.82rem;color:var(--ink-soft)">
       <a href="../index.html" style="color:var(--gold-dark)">← العودة إلى المتجر</a>
     </p>
   </div>
@@ -98,6 +114,72 @@
       }
 
       window.location.href = 'dashboard.html';
+    });
+
+    // ---- sign in / create account toggle ----
+    var mode = 'login';
+    var loginForm = document.getElementById('loginForm');
+    var signupForm = document.getElementById('signupForm');
+    var toggleLink = document.getElementById('toggleAuthMode');
+    var title = document.getElementById('authTitle');
+    var sub = document.getElementById('authSub');
+
+    function renderMode() {
+      var isLogin = mode === 'login';
+      loginForm.style.display = isLogin ? '' : 'none';
+      signupForm.style.display = isLogin ? 'none' : '';
+      title.textContent = isLogin ? 'لوحة تحكم الإدارة' : 'إنشاء حساب جديد';
+      sub.textContent = isLogin ? 'لأصحاب المتجر المخوّلين فقط' : 'بعد الإنشاء تحتاجين لترقية الحساب إلى مدير عبر SQL Editor';
+      toggleLink.textContent = isLogin ? 'ليس لديكِ حساب؟ أنشئي حساباً' : 'لديكِ حساب بالفعل؟ سجّلي الدخول';
+      document.getElementById('authError').style.display = 'none';
+      document.getElementById('authNotice').style.display = 'none';
+    }
+    renderMode();
+
+    toggleLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      mode = mode === 'login' ? 'signup' : 'login';
+      renderMode();
+    });
+
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var errorBox = document.getElementById('authError');
+      var noticeBox = document.getElementById('authNotice');
+      var btn = document.getElementById('signupBtn');
+      errorBox.style.display = 'none';
+      noticeBox.style.display = 'none';
+
+      if (!window.AtharDB || !window.AtharDB.isConfigured) {
+        errorBox.textContent = 'المتجر غير متصل بقاعدة البيانات بعد. راجعي supabase/README.md.';
+        errorBox.style.display = '';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'جارٍ الإنشاء...';
+
+      var email = document.getElementById('suEmail').value.trim();
+      var password = document.getElementById('suPassword').value;
+      var res = await window.AtharDB.auth.signUp(email, password);
+
+      btn.disabled = false;
+      btn.textContent = 'إنشاء الحساب';
+
+      if (res.error) {
+        errorBox.textContent = 'تعذّر إنشاء الحساب: ' + res.error.message;
+        errorBox.style.display = '';
+        return;
+      }
+
+      signupForm.reset();
+      mode = 'login';
+      renderMode();
+      document.getElementById('email').value = email;
+      noticeBox.innerHTML = 'تم إنشاء الحساب بنجاح. الحساب الآن "عميل" عادي — لترقيته إلى مدير، ' +
+        'شغّلي هذا الأمر في Supabase SQL Editor:<br><code style="direction:ltr;display:inline-block;margin-top:6px;font-size:.8rem">update public.profiles set role = \'admin\' where email = \'' +
+        email.replace(/'/g, "\\'") + '\';</code><br>ثم سجّلي الدخول من هنا.';
+      noticeBox.style.display = '';
     });
   });
 })();
