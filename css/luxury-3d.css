@@ -1,0 +1,227 @@
+/* ==========================================================================
+   ATHAR | أثر — Luxury 3D Experience Layer
+   Pure CSS 3D (perspective / rotateX / rotateY / translateZ) + a matching
+   js/luxury-3d.js. Everything here is additive: it targets the *existing*
+   classes and never overrides them.
+
+   Two techniques, chosen per element to avoid fighting existing rules:
+   - Hero text/CTA + buttons + decorative shapes: the standalone `translate`
+     CSS property (independent from `transform`) for pointer-parallax/
+     magnetic offsets, since these elements already carry either a
+     `transform`-driven entrance `animation` (hero) or `transform`-based
+     hover states (buttons) that would otherwise silently win the cascade
+     over a plain inline `transform`.
+   - Cards (product/category/collection/PDP gallery): JS-computed inline
+     `transform` (perspective/rotateX/rotateY/translateZ) — safe here since
+     these only have a `:hover` transition on `transform`, no competing
+     `animation`, so the inline style cleanly overrides while tracking and
+     cleanly falls back the instant JS clears it.
+
+   Tiers: full effect on desktop (min-width: 1081px), reduced intensity on
+   tablet (641–1080px), lightweight/no continuous tracking on mobile
+   (<=640px) and whenever prefers-reduced-motion is set.
+   ========================================================================== */
+
+/* ---- 1. Perspective contexts (parents only — no layout impact) ---------- */
+.hero,
+.product-grid,
+.cat-grid,
+.collection-grid,
+.pdp-wrap > div:first-child {
+  perspective: 1400px;
+}
+
+/* ---- Hero parallax layers -------------------------------------------------
+   js/luxury-3d.js sets each layer's own inline `translate` directly (no
+   shared custom property needed here); this just establishes the resting
+   state and a smooth return when the pointer leaves the hero. */
+.hero-emblem, .hero-eyebrow, .hero h1, .hero p.hero-sub, .hero-cta {
+  transition: translate 0.4s var(--ease-luxury);
+}
+
+/* Card tilt uses JS-computed `transform` (perspective/rotateX/rotateY/
+   translateZ), applied as an inline style only while actively tracked —
+   these elements have no competing CSS `animation`, only a `:hover`
+   transition, so inline `transform` cleanly overrides it while tracking
+   and cleanly falls back to the CSS rule the instant JS clears it.
+   The reactive shadow rides on the same custom properties, layered
+   alongside the card's existing box-shadow (never touched otherwise). */
+.product-card,
+.cat-card,
+.collection-card,
+.pdp-gallery-main {
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-luxury), box-shadow 0.35s var(--ease-luxury);
+}
+.product-card, .cat-card, .collection-card {
+  box-shadow:
+    var(--shx3d, 0px) var(--shy3d, 10px) var(--shb3d, 30px) rgba(26, 51, 46, var(--sho3d, 0.08)),
+    var(--shadow-sm);
+}
+.product-card.is-tilting,
+.cat-card.is-tilting,
+.collection-card.is-tilting,
+.pdp-gallery-main.is-tilting {
+  transition: transform 0.08s linear, box-shadow 0.08s linear;
+  will-change: transform;
+}
+
+/* Cursor-follow glare/highlight — pure CSS radial gradient, confined by the
+   card's own overflow:hidden so it can never escape or clip anything. */
+.product-card::after,
+.cat-card::after,
+.collection-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+  background: radial-gradient(
+    260px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.35),
+    transparent 60%
+  );
+  transition: opacity 0.35s ease;
+}
+.product-card { position: relative; }
+.product-card.is-tilting::after,
+.cat-card.is-tilting::after,
+.collection-card.is-tilting::after { opacity: 1; }
+
+/* Product image reads as "pulled toward the viewer" via a safe scale (no
+   translateZ on a child — avoids any overflow-clipping edge cases) plus a
+   soft brightness lift, layered on top of the existing hover zoom rule. */
+.product-card.is-tilting .product-media img,
+.product-card.is-tilting .product-media svg {
+  scale: 1.045;
+  filter: brightness(1.03);
+}
+.product-media img { transition: scale 0.4s var(--ease-luxury), filter 0.4s var(--ease-luxury); }
+
+/* ---- 4. Category / collection card light-sweep on hover ----------------- */
+.cat-card::before,
+.collection-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.16) 50%, transparent 60%);
+  background-size: 220% 220%;
+  background-position: 120% 0%;
+  transition: background-position 0.7s var(--ease-luxury);
+}
+.cat-card:hover::before,
+.collection-card:hover::before { background-position: -20% 100%; }
+
+/* ---- Magnetic buttons ---------------------------------------------------- */
+.btn, .icon-btn, .add-cart-btn, .fav-btn {
+  translate: var(--mx3d, 0px) var(--my3d, 0px);
+}
+.btn:active { filter: brightness(0.96); }
+
+/* ---- 3D lighting: soft ambient sheen on gold buttons ---------------------
+   .btn already sets position:relative + overflow:hidden (pill-clipped),
+   so the sweep below just rides on top of that. */
+.btn-gold::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 45%, transparent 60%);
+  background-size: 260% 260%;
+  background-position: 140% 0%;
+  transition: background-position 0.6s var(--ease-luxury);
+  pointer-events: none;
+}
+.btn-gold:hover::after { background-position: -40% 100%; }
+
+/* ---- Decorative floating ambient shapes (pure CSS, no images/JS needed) - */
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  border: 1px solid rgba(184,154,94,0.18);
+  top: 14%;
+  inset-inline-start: 6%;
+  z-index: 0;
+  pointer-events: none;
+  animation: luxury-float-slow 12s ease-in-out infinite;
+  translate: var(--px3d-bg, 0px) calc(var(--py3d-bg, 0px) + var(--scroll3d, 0px));
+}
+@keyframes luxury-float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-22px) rotate(4deg); }
+}
+
+/* ---- Product detail page: subtle ambient depth behind the gallery ------- */
+.pdp-gallery-main { position: relative; }
+.pdp-wrap > div:first-child { position: relative; }
+.pdp-wrap > div:first-child::before {
+  content: "";
+  position: absolute;
+  /* Fixed pixel inset (not a %) so it can never scale into a large overflow
+     on wide single-column layouts — always a small, safe margin. */
+  inset: -20px;
+  z-index: -1;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(60% 60% at 50% 40%, rgba(184,154,94,0.16), transparent 70%);
+  translate: var(--px3d-pdp, 0px) var(--py3d-pdp, 0px);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Responsive tiers
+   ========================================================================== */
+
+/* Tablet — medium intensity: shrink the perspective distance so the same
+   rotate values read as a gentler tilt, and drop the glare sweep (still a
+   fine-pointer effect, just calmer). */
+@media (max-width: 1080px) {
+  .hero, .product-grid, .cat-grid, .collection-grid, .pdp-wrap > div:first-child {
+    perspective: 1000px;
+  }
+  .product-card::after, .cat-card::after, .collection-card::after { display: none; }
+}
+
+/* Mobile — lightweight: no continuous pointer tracking (js/luxury-3d.js
+   itself skips binding on coarse pointers), keep only cheap, static touch
+   feedback via :active plus the CSS-only idle float. */
+@media (max-width: 640px) {
+  .hero, .product-grid, .cat-grid, .collection-grid, .pdp-wrap > div:first-child {
+    perspective: none;
+  }
+  .product-card, .cat-card, .collection-card, .pdp-gallery-main {
+    transition: transform 0.25s ease;
+  }
+  .product-card:active, .cat-card:active, .collection-card:active {
+    transform: scale(0.98) rotate(1deg);
+  }
+  .hero::after { width: 180px; height: 180px; }
+  .btn, .icon-btn, .add-cart-btn, .fav-btn { translate: 0px 0px; }
+}
+
+/* ---- Respect prefers-reduced-motion: hard-disable every effect above ---- */
+@media (prefers-reduced-motion: reduce) {
+  .hero, .product-grid, .cat-grid, .collection-grid, .pdp-wrap > div:first-child {
+    perspective: none;
+  }
+  .hero-emblem, .hero-eyebrow, .hero h1, .hero p.hero-sub, .hero-cta,
+  .btn, .icon-btn, .add-cart-btn, .fav-btn {
+    translate: 0px 0px !important;
+  }
+  .product-card, .cat-card, .collection-card, .pdp-gallery-main {
+    transform: none !important;
+  }
+  .hero::after {
+    animation: none;
+    translate: 0px 0px !important;
+  }
+  .product-card::after, .cat-card::after, .collection-card::after,
+  .cat-card::before, .collection-card::before,
+  .pdp-wrap > div:first-child::before { display: none; }
+}
+
+/* Reduce ambient decoration on small screens regardless of motion pref, to
+   keep the layout clean and avoid any risk of overlap with text/buttons. */
+@media (max-width: 640px) {
+  .pdp-wrap > div:first-child::before { display: none; }
+}
