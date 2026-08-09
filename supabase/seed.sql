@@ -40,7 +40,8 @@ insert into public.categories (slug, name_ar, name_en, sort_order) values
   ('musk',        'مسك',            'Musk',          2),
   ('perfumes',    'عطور',           'Perfume Oils',  3),
   ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
-  ('blusher',     'بلاشر',          'Blush',         5)
+  ('blusher',     'بلاشر',          'Blush',         5),
+  ('candles',     'شموع',           'Candles',       6)
 on conflict (slug) do update set name_ar = excluded.name_ar, name_en = excluded.name_en, sort_order = excluded.sort_order;
 
 -- ---- Body Care (العناية بالجسم) ----------------------------------------------
@@ -118,9 +119,33 @@ values
    140.00, null, '5ml', (select id from public.categories where slug='blusher'), 20, true, true, false, true)
 on conflict (sku) do nothing;
 
+-- ---- Candles (شموع) ---------------------------------------------------------------
+insert into public.products
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+values
+  ('ATH-CND-001', 'candle-lemon', 'شمعة ليمون', 'ATHAR Lemon',
+   'مزيج طبيعي راقٍ برائحة الليمون المنعشة، لإنعاش حواسك وأجواء منزلك.', 'A refined natural blend with a refreshing lemon scent to awaken your senses.',
+   150.00, null, null, (select id from public.categories where slug='candles'), 15, true, true, false, true),
+  ('ATH-CND-002', 'candle-coffee', 'شمعة قهوة', 'ATHAR Coffee',
+   'شمعة معطرة بعبق القهوة الغنية والكاكاو، لإيقاظ حواسك.', 'A candle scented with rich coffee and cacao notes to awaken the senses.',
+   150.00, null, null, (select id from public.categories where slug='candles'), 15, false, false, false, true),
+  ('ATH-CND-003', 'candle-sea', 'الشمعة البحرية', 'Sea Candle',
+   'شمعة حرفية يدوية الصنع بزيوت عطرية بحرية فاخرة، تمنح السكينة والهدوء.', 'A handcrafted candle with luxurious sea-inspired notes that bring calm and serenity.',
+   250.00, null, null, (select id from public.categories where slug='candles'), 10, true, false, false, true),
+  ('ATH-CND-004', 'candle-fruits', 'شمعة الفواكه', 'ATHAR Fruits',
+   'شمعة تحمل عبق الفواكه المنعشة بمزيج غني ومميز.', 'A candle carrying a fresh, rich blend of fruity notes.',
+   250.00, null, null, (select id from public.categories where slug='candles'), 10, false, true, false, true),
+  ('ATH-CND-005', 'candle-strawberry', 'سحر الفراولة', 'Strawberry Magic',
+   'رائحة غنية وتصميم فريد، تجربة تأخذك بعيداً مع سحر الفراولة.', 'A rich scent and a unique design — an experience that takes you away with the magic of strawberry.',
+   225.00, null, null, (select id from public.categories where slug='candles'), 12, false, false, false, true),
+  ('ATH-CND-006', 'candle-satin', 'ساتان - فانيليا وجوز الهند', 'SATIN — Vanilla & Coconut',
+   'شمعة فانيليا وجوز الهند متعددة الاستخدامات، لترطيب وتعطير الجسم والجو.', 'A multi-use vanilla and coconut candle for moisturizing and scenting the body and your space.',
+   100.00, null, null, (select id from public.categories where slug='candles'), 18, true, false, true, true)
+on conflict (sku) do nothing;
+
 -- ---- product_images: real ATHAR product photos, one per product ---------------
 -- Files live at assets/img/products/<slug>.jpg (added directly to the repo).
--- Re-running this block replaces any previously-seeded image for these 15
+-- Re-running this block replaces any previously-seeded image for these 21
 -- products (e.g. the old shared category placeholders) with the real photo,
 -- without touching images you've since uploaded yourself for other products.
 delete from public.product_images
@@ -130,7 +155,8 @@ where sort_order = 0
     'musk-marshmallow', 'musk-cheesecake', 'musk-fruit-mix', 'musk-blueberry', 'musk-tahara',
     'red-candy', 'blue-velvet',
     'kiayali-vanilla', 'kiayali-marshmallow', 'yara-candy-20ml', 'melon',
-    'baby-bloom-blush'
+    'baby-bloom-blush',
+    'candle-lemon', 'candle-coffee', 'candle-sea', 'candle-fruits', 'candle-strawberry', 'candle-satin'
   ));
 
 insert into public.product_images (product_id, image_url, sort_order)
@@ -141,6 +167,14 @@ where p.slug in (
   'musk-marshmallow', 'musk-cheesecake', 'musk-fruit-mix', 'musk-blueberry', 'musk-tahara',
   'red-candy', 'blue-velvet',
   'kiayali-vanilla', 'kiayali-marshmallow', 'yara-candy-20ml', 'melon',
-  'baby-bloom-blush'
+  'baby-bloom-blush',
+  'candle-lemon', 'candle-coffee', 'candle-sea', 'candle-fruits', 'candle-strawberry', 'candle-satin'
 )
 and not exists (select 1 from public.product_images pi where pi.product_id = p.id and pi.sort_order = 0);
+
+-- SATIN has a second angle (texture/open-jar shot) as an extra gallery image.
+insert into public.product_images (product_id, image_url, sort_order)
+select p.id, 'assets/img/products/candle-satin-2.jpg', 1
+from public.products p
+where p.slug = 'candle-satin'
+and not exists (select 1 from public.product_images pi where pi.product_id = p.id and pi.sort_order = 1);
