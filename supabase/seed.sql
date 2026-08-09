@@ -1,7 +1,7 @@
 -- =============================================================================
 -- ATHAR | أثر — Seed Data
 -- Run AFTER schema.sql. Inserts the real ATHAR catalog (Alexandria, Egypt —
--- musk, perfume oils, body care, lotion & oils, blush). Prices are in EGP.
+-- musk, perfume oils, lotion & oils, blush, candles, body mukhammaria). Prices are in EGP.
 --
 -- Safe to re-run. If you previously ran an older version of this file (the
 -- old placeholder jewelry/accessories catalog — مسكات / Body Splash / سلاسل
@@ -66,19 +66,6 @@ set category_id = (select id from public.categories where slug = 'mukhammaria'),
     price = 85.00
 where sku in ('ATH-LO-001', 'ATH-LO-002', 'ATH-LO-003', 'ATH-LO-004');
 
--- ---- Remove العناية بالجسم (Body Care) — merge ALL of its products into
--- لوشن وزيوت, matched by category rather than SKU so this covers every
--- product actually assigned to Body Care regardless of SKU. Prices, names,
--- images and SKUs are unchanged; only the category assignment moves. The
--- category row itself is dropped once nothing references it anymore.
-update public.products
-set category_id = (select id from public.categories where slug = 'lotion-oils')
-where category_id = (select id from public.categories where slug = 'body-care');
-
-delete from public.categories
-where slug = 'body-care'
-  and not exists (select 1 from public.products p where p.category_id = categories.id);
-
 -- ---- Set every product currently in مسك (Musk) to 80 EGP, matched by
 -- category rather than SKU so it covers all musk products regardless of SKU.
 update public.products
@@ -90,9 +77,9 @@ update public.products
 set price = 60.00
 where sku in ('ATH-PRF-001', 'ATH-PRF-002');
 
--- ---- ex-"Body Care" products, now filed under لوشن وزيوت (Lotion & Oils) -------
--- SKU prefix (ATH-BC-) kept as-is (unchanged identifiers/slugs/images/prices),
--- only the category changed — the العناية بالجسم category was removed.
+-- ---- Body lotion / dry oil products, filed under لوشن وزيوت (Lotion & Oils) ---
+-- SKU prefix (ATH-BC-) kept as-is for backward compatibility (unchanged
+-- identifiers/slugs/images/prices) — only ever assigned to لوشن وزيوت here.
 insert into public.products
   (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
