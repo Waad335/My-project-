@@ -6,6 +6,18 @@
 
   var revealObserver = null;
   var revealSupported = true;
+  // Maps a [data-reveal-group] child -> its group element, for oversized
+  // groups observed per-child (see observeReveal). Elements observed
+  // directly (the common case) never appear in this map.
+  var groupProxyMap = new WeakMap();
+  // A [data-reveal-group] taller than this many viewport-heights would need
+  // most of itself scrolled past before a 15%-of-whole-box threshold could
+  // ever fire — e.g. a large product grid. Past this size, observe its
+  // children individually instead so it reveals as soon as the first
+  // visible row does, rather than needing the entire group nearly scrolled
+  // through. Small groups (four feature cards, six categories, etc.) never
+  // approach this and keep the original single-target behavior untouched.
+  var LARGE_GROUP_VIEWPORTS = 2;
 
   document.addEventListener('DOMContentLoaded', function () {
     initReveal();
@@ -13,15 +25,21 @@
     initTilt();
   });
 
+  function revealGroup(group) {
+    if (group.classList.contains('in-view')) return;
+    group.classList.add('in-view');
+  }
+
   function getRevealObserver() {
     if (revealObserver || !revealSupported) return revealObserver;
     if (!('IntersectionObserver' in window)) { revealSupported = false; return null; }
     revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          revealObserver.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        var group = groupProxyMap.get(entry.target);
+        if (group) revealGroup(group);
+        else entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
     return revealObserver;
@@ -57,7 +75,18 @@
       targets.forEach(function (el) { el.classList.add('in-view'); });
       return;
     }
-    targets.forEach(function (el) { observer.observe(el); });
+    targets.forEach(function (el) {
+      if (el.hasAttribute('data-reveal-group') && el.children.length &&
+          el.offsetHeight > window.innerHeight * LARGE_GROUP_VIEWPORTS) {
+        observer.unobserve(el); // in case it was already registered directly while still empty
+        Array.prototype.forEach.call(el.children, function (child) {
+          groupProxyMap.set(child, el);
+          observer.observe(child);
+        });
+      } else {
+        observer.observe(el);
+      }
+    });
   }
 
   window.AtharObserveReveal = observeReveal;

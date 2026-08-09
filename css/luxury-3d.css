@@ -45,13 +45,18 @@
    transition, so inline `transform` cleanly overrides it while tracking
    and cleanly falls back to the CSS rule the instant JS clears it.
    The reactive shadow rides on the same custom properties, layered
-   alongside the card's existing box-shadow (never touched otherwise). */
+   alongside the card's existing box-shadow (never touched otherwise).
+   `opacity` is included here too (unused by anything in this file) purely
+   so this rule doesn't clobber the equal-specificity, later-losing
+   [data-reveal-group] > * opacity transition from css/animations.css —
+   same easing/duration as that rule, so the scroll-reveal fade keeps
+   working exactly as designed; the tilt/shadow timings are unchanged. */
 .product-card,
 .cat-card,
 .collection-card,
 .pdp-gallery-main {
   transform-style: preserve-3d;
-  transition: transform 0.5s var(--ease-luxury), box-shadow 0.35s var(--ease-luxury);
+  transition: transform 0.5s var(--ease-luxury), box-shadow 0.35s var(--ease-luxury), opacity 0.7s var(--ease-luxury);
 }
 .product-card, .cat-card, .collection-card {
   box-shadow:

@@ -124,6 +124,7 @@
       ? products.map(window.AtharUI.productCardHTML).join('')
       : window.AtharUI.emptyState('لا توجد منتجات مطابقة لبحثك.');
 
+    if (window.AtharObserveReveal) window.AtharObserveReveal(grid);
     if (window.AtharWishlist) window.AtharWishlist.refresh();
   }
 })();
