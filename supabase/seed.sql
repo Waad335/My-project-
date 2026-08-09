@@ -83,6 +83,11 @@ update public.products
 set price = 80.00
 where category_id = (select id from public.categories where slug = 'musk');
 
+-- ---- Set both Perfume Oils (بلو فيلفت / ريد كاندي) to 60 EGP.
+update public.products
+set price = 60.00
+where sku in ('ATH-PRF-001', 'ATH-PRF-002');
+
 -- ---- ex-"Body Care" products, now filed under لوشن وزيوت (Lotion & Oils) -------
 -- SKU prefix (ATH-BC-) kept as-is (unchanged identifiers/slugs/images/prices),
 -- only the category changed — the العناية بالجسم category was removed.
@@ -127,10 +132,10 @@ insert into public.products
 values
   ('ATH-PRF-001', 'red-candy', 'ريد كاندي', 'Red Candy',
    'رائحة حلوة وفاكهية بطابع جذاب ومميز.', 'A sweet, fruity scent with an attractive, distinctive character.',
-   160.00, null, '10ml', (select id from public.categories where slug='perfumes'), 20, true, true, false, true),
+   60.00, null, '10ml', (select id from public.categories where slug='perfumes'), 20, true, true, false, true),
   ('ATH-PRF-002', 'blue-velvet', 'بلو فيلفت', 'Blue Velvet',
    'رائحة أنيقة وعميقة بطابع فاخر ومميز.', 'An elegant, deep scent with a luxurious, distinctive character.',
-   160.00, null, '10ml', (select id from public.categories where slug='perfumes'), 18, false, true, false, true)
+   60.00, null, '10ml', (select id from public.categories where slug='perfumes'), 18, false, true, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Mukhammaria (مخمريات) — 20ml — moved out of لوشن وزيوت at 85 EGP each --------
