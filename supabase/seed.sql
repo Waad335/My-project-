@@ -41,7 +41,8 @@ insert into public.categories (slug, name_ar, name_en, sort_order) values
   ('perfumes',    'عطور',           'Perfume Oils',  3),
   ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
   ('blusher',     'بلاشر',          'Blush',         5),
-  ('candles',     'شموع',           'Candles',       6)
+  ('candles',     'شموع',           'Candles',       6),
+  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 7)
 on conflict (slug) do update set name_ar = excluded.name_ar, name_en = excluded.name_en, sort_order = excluded.sort_order;
 
 -- ---- Price corrections for products that already exist (the inserts below
@@ -57,6 +58,14 @@ update public.products set price = case sku
   when 'ATH-CND-005' then 100.00
 end
 where sku in ('ATH-BC-001', 'ATH-BC-002', 'ATH-BC-003', 'ATH-BLU-001', 'ATH-CND-003', 'ATH-CND-004', 'ATH-CND-005');
+
+-- ---- Move the four 20ml Kiayali/Yara/Melon products into the new
+-- مخمريات (Body Mukhammaria) category and set their price to 85 EGP.
+-- Kept as their own SKUs/slugs/names/images — only category + price change.
+update public.products
+set category_id = (select id from public.categories where slug = 'mukhammaria'),
+    price = 85.00
+where sku in ('ATH-LO-001', 'ATH-LO-002', 'ATH-LO-003', 'ATH-LO-004');
 
 -- ---- Body Care (العناية بالجسم) ----------------------------------------------
 insert into public.products
@@ -106,22 +115,24 @@ values
    160.00, null, '10ml', (select id from public.categories where slug='perfumes'), 18, false, true, false, true)
 on conflict (sku) do nothing;
 
--- ---- Lotion & Oils (لوشن وزيوت) — 20ml ------------------------------------------
+-- ---- Mukhammaria (مخمريات) — 20ml — moved out of لوشن وزيوت at 85 EGP each --------
+-- SKU prefix (ATH-LO-) kept as-is (unchanged identifiers/slugs/images), only the
+-- category and price actually changed.
 insert into public.products
   (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
   ('ATH-LO-001', 'kiayali-vanilla', 'كايالي فانيلا', 'Kiayali Vanilla',
    'رائحة فانيلا دافئة وحلوة تمنح إحساسًا ناعمًا ومريحًا.', 'A warm, sweet vanilla scent that gives a soft, comforting feel.',
-   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 16, true, false, true, true),
+   85.00, null, '20ml', (select id from public.categories where slug='mukhammaria'), 16, true, false, true, true),
   ('ATH-LO-002', 'kiayali-marshmallow', 'كايالي مارشميلو', 'Kiayali Marshmallow',
    'رائحة حلوة وناعمة بطابع كريمي وسكري.', 'A sweet, soft scent with a creamy, sugary character.',
-   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 15, false, false, false, true),
+   85.00, null, '20ml', (select id from public.categories where slug='mukhammaria'), 15, false, false, false, true),
   ('ATH-LO-003', 'yara-candy-20ml', 'يارا كاندي', 'Yara Candy',
    'رائحة حلوة وفاكهية وناعمة لمحبي الروائح السكرية.', 'A sweet, fruity, soft scent for lovers of sugary fragrances.',
-   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 14, false, true, false, true),
+   85.00, null, '20ml', (select id from public.categories where slug='mukhammaria'), 14, false, true, false, true),
   ('ATH-LO-004', 'melon', 'ميلون', 'Melon',
    'رائحة منعشة وفاكهية مستوحاة من الشمام، بطابع حلو وخفيف.', 'A refreshing, fruity scent inspired by melon, with a sweet and light character.',
-   210.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 17, false, false, false, true)
+   85.00, null, '20ml', (select id from public.categories where slug='mukhammaria'), 17, false, false, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Blush (بلاشر) — 5ml ---------------------------------------------------------

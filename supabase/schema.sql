@@ -340,7 +340,8 @@ insert into public.categories (slug, name_ar, name_en, sort_order) values
   ('perfumes',    'عطور',           'Perfume Oils',  3),
   ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
   ('blusher',     'بلاشر',          'Blush',         5),
-  ('candles',     'شموع',           'Candles',       6)
+  ('candles',     'شموع',           'Candles',       6),
+  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 7)
 on conflict (slug) do nothing;
 
 -- =============================================================================
