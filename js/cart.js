@@ -138,7 +138,7 @@
         var img = i.image || 'assets/img/products/handles-placeholder.svg';
         return (
           '<div class="cart-row">' +
-          '<div class="cart-row-media"><img src="' + img + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>' +
+          '<div class="cart-row-media"><img src="' + img + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:contain;border-radius:inherit"></div>' +
           '<div class="cart-row-info">' +
           '<h4>' + i.name + '</h4>' +
           '<div class="qty-stepper" style="display:flex;align-items:center;gap:10px;margin-top:6px">' +

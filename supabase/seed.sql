@@ -118,22 +118,29 @@ values
    140.00, null, '5ml', (select id from public.categories where slug='blusher'), 20, true, true, false, true)
 on conflict (sku) do nothing;
 
--- ---- product_images: one placeholder image per product ------------------------
--- Replace these with real product photos any time from the Admin Dashboard
--- (edit the product → upload images). Placeholder SVGs ship with the site
--- under assets/img/products/ and are mapped here by category as a starting point.
+-- ---- product_images: real ATHAR product photos, one per product ---------------
+-- Files live at assets/img/products/<slug>.jpg (added directly to the repo).
+-- Re-running this block replaces any previously-seeded image for these 15
+-- products (e.g. the old shared category placeholders) with the real photo,
+-- without touching images you've since uploaded yourself for other products.
+delete from public.product_images
+where sort_order = 0
+  and product_id in (select id from public.products where slug in (
+    'sugar-touch-body-lotion', 'dry-oil-mid-night', 'dry-oil-yara-candy',
+    'musk-marshmallow', 'musk-cheesecake', 'musk-fruit-mix', 'musk-blueberry', 'musk-tahara',
+    'red-candy', 'blue-velvet',
+    'kiayali-vanilla', 'kiayali-marshmallow', 'yara-candy-20ml', 'melon',
+    'baby-bloom-blush'
+  ));
+
 insert into public.product_images (product_id, image_url, sort_order)
-select p.id,
-  case c.slug
-    when 'body-care'    then 'assets/img/products/body-splash-placeholder.svg'
-    when 'musk'          then 'assets/img/products/handles-placeholder.svg'
-    when 'perfumes'      then 'assets/img/products/handmade-chains-placeholder.svg'
-    when 'lotion-oils'   then 'assets/img/products/body-splash-placeholder.svg'
-    when 'blusher'       then 'assets/img/products/blusher-placeholder.svg'
-  end,
-  0
+select p.id, 'assets/img/products/' || p.slug || '.jpg', 0
 from public.products p
-join public.categories c on c.id = p.category_id
-where (p.sku like 'ATH-BC-%' or p.sku like 'ATH-MSK-%' or p.sku like 'ATH-PRF-%'
-   or p.sku like 'ATH-LO-%' or p.sku like 'ATH-BLU-%')
-  and not exists (select 1 from public.product_images pi where pi.product_id = p.id);
+where p.slug in (
+  'sugar-touch-body-lotion', 'dry-oil-mid-night', 'dry-oil-yara-candy',
+  'musk-marshmallow', 'musk-cheesecake', 'musk-fruit-mix', 'musk-blueberry', 'musk-tahara',
+  'red-candy', 'blue-velvet',
+  'kiayali-vanilla', 'kiayali-marshmallow', 'yara-candy-20ml', 'melon',
+  'baby-bloom-blush'
+)
+and not exists (select 1 from public.product_images pi where pi.product_id = p.id and pi.sort_order = 0);

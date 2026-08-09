@@ -242,6 +242,7 @@
 }
 .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-6px); }
 .product-media {
+  display: block;
   position: relative;
   aspect-ratio: 1/1.05;
   background: linear-gradient(155deg, var(--cream-2), #ece4d4 120%);

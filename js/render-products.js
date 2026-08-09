@@ -56,7 +56,7 @@
         '<a href="product.html?slug=' + encodeURIComponent(product.slug) + '" class="product-media" aria-label="' + product.name_ar + '">' +
           badge(product) +
           (oos ? '<span class="product-badge" style="inset-inline-start:auto;inset-inline-end:14px;background:#8a5a4a">نفدت الكمية</span>' : '') +
-          '<img src="' + firstImage(product) + '" alt="' + product.name_ar + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">' +
+          '<img src="' + firstImage(product) + '" alt="' + product.name_ar + '" loading="lazy" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0">' +
         '</a>' +
         '<button class="fav-btn" data-fav-toggle data-id="' + product.id + '" aria-label="أضف إلى المفضلة"><svg viewBox="0 0 24 24"><use href="#icon-heart"></use></svg></button>' +
         '<div class="product-info">' +
