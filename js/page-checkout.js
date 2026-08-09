@@ -12,6 +12,11 @@
   var shippingFlat = 25;
   var freeShippingThreshold = 300;
 
+  // Delivery is Alexandria-only. The city/country fields are locked in the UI,
+  // but this re-checks the submitted values in case they were tampered with.
+  var ALEXANDRIA_RE = /^\s*(?:محافظة\s*)?(الإسكندرية|الاسكندرية|إسكندرية|اسكندرية|alexandria)\s*$/i;
+  var EGYPT_RE = /^\s*(مصر|جمهورية مصر العربية|egypt)\s*$/i;
+
   document.addEventListener('DOMContentLoaded', async function () {
     var cart = window.AtharCart;
     var emptyEl = document.getElementById('checkoutEmpty');
@@ -68,6 +73,14 @@
 
       if (!window.AtharDB || !window.AtharDB.isConfigured) {
         errorBox.textContent = 'تعذّر إتمام الطلب: المتجر غير متصل بقاعدة البيانات بعد.';
+        errorBox.style.display = '';
+        return;
+      }
+
+      var cityVal = document.getElementById('city').value.trim();
+      var countryVal = document.getElementById('country').value.trim();
+      if (!EGYPT_RE.test(countryVal) || !ALEXANDRIA_RE.test(cityVal)) {
+        errorBox.textContent = 'عذراً، التوصيل متاح حالياً داخل محافظة الإسكندرية فقط. يمكنكِ تحديد أي حي أو منطقة داخل الإسكندرية في حقل العنوان.';
         errorBox.style.display = '';
         return;
       }

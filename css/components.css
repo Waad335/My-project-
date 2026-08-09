@@ -471,6 +471,7 @@
 }
 .field textarea { resize: vertical; min-height: 140px; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.field input[readonly] { background: var(--cream, #f6f3ed); color: var(--ink-soft); cursor: not-allowed; }
 
 /* ---- Breadcrumb / Page header ---- */
 .page-hero {

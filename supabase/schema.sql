@@ -116,6 +116,26 @@ create table if not exists public.orders (
 create index if not exists idx_orders_status on public.orders(status);
 create index if not exists idx_orders_created on public.orders(created_at desc);
 
+-- Delivery is Alexandria-only. NOT VALID so it never fails on historical rows
+-- that predate this restriction — it only gates new/updated orders going forward.
+-- Wrapped in DO blocks (with duplicate_object caught) since ADD CONSTRAINT has
+-- no IF NOT EXISTS clause, keeping this file safe to re-run.
+do $$
+begin
+  alter table public.orders
+    add constraint chk_orders_country_egypt
+    check (country ~* '^\s*(مصر|جمهورية مصر العربية|egypt)\s*$') not valid;
+exception when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  alter table public.orders
+    add constraint chk_orders_city_alexandria
+    check (city ~* '^\s*(?:محافظة\s*)?(الإسكندرية|الاسكندرية|إسكندرية|اسكندرية|alexandria)\s*$') not valid;
+exception when duplicate_object then null;
+end $$;
+
 -- ---- order_items --------------------------------------------------------------
 create table if not exists public.order_items (
   id            uuid primary key default gen_random_uuid(),
