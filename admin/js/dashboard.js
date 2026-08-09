@@ -62,7 +62,7 @@
     setTimeout(function () { toast.classList.remove('is-visible'); }, 2600);
   }
 
-  function money(n) { return Number(n).toLocaleString('ar') + ' جنيه مصري'; }
+  function money(n) { return Number(n).toLocaleString('ar') + ' ج.م'; }
 
   // =========================================================== CATEGORIES ===
   async function loadCategories() {

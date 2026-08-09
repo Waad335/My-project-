@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  var CURRENCY = 'جنيه مصري';
+  var CURRENCY = 'ج.م';
   // Pages nested in a subfolder (e.g. admin/) set window.ATHAR_ASSET_BASE = '../'
   // before this script loads so local asset paths still resolve correctly.
   var ASSET_BASE = window.ATHAR_ASSET_BASE || '';

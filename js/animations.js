@@ -4,32 +4,63 @@
 (function () {
   'use strict';
 
+  var revealObserver = null;
+  var revealSupported = true;
+
   document.addEventListener('DOMContentLoaded', function () {
     initReveal();
     initCounters();
     initTilt();
   });
 
-  function initReveal() {
-    var targets = document.querySelectorAll('[data-reveal], [data-reveal-group]');
-    if (!targets.length) return;
-
-    if (!('IntersectionObserver' in window)) {
-      targets.forEach(function (el) { el.classList.add('in-view'); });
-      return;
-    }
-
-    var observer = new IntersectionObserver(function (entries) {
+  function getRevealObserver() {
+    if (revealObserver || !revealSupported) return revealObserver;
+    if (!('IntersectionObserver' in window)) { revealSupported = false; return null; }
+    revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
           entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
+          revealObserver.unobserve(entry.target);
         }
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    return revealObserver;
+  }
 
+  function initReveal() {
+    var targets = document.querySelectorAll('[data-reveal], [data-reveal-group]');
+    if (!targets.length) return;
+    observeReveal(targets);
+  }
+
+  /**
+   * Register [data-reveal]/[data-reveal-group] elements with the shared
+   * scroll-reveal IntersectionObserver. The initial DOMContentLoaded scan
+   * only sees markup present at load time, so any content injected later
+   * (e.g. product details rendered after an async Supabase fetch) must be
+   * registered explicitly via this function or it stays at opacity:0
+   * forever. Accepts a single element, a NodeList/array, or a container
+   * (whose matching descendants + itself are picked up).
+   */
+  function observeReveal(elOrList) {
+    var targets = [];
+    if (elOrList && elOrList.nodeType === 1) {
+      if (elOrList.hasAttribute('data-reveal') || elOrList.hasAttribute('data-reveal-group')) targets.push(elOrList);
+      targets = targets.concat(Array.prototype.slice.call(elOrList.querySelectorAll('[data-reveal], [data-reveal-group]')));
+    } else if (elOrList) {
+      targets = Array.prototype.slice.call(elOrList);
+    }
+    if (!targets.length) return;
+
+    var observer = getRevealObserver();
+    if (!observer) {
+      targets.forEach(function (el) { el.classList.add('in-view'); });
+      return;
+    }
     targets.forEach(function (el) { observer.observe(el); });
   }
+
+  window.AtharObserveReveal = observeReveal;
 
   function initCounters() {
     var counters = document.querySelectorAll('[data-counter]');

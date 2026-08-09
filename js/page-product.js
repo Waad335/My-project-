@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var CURRENCY = 'جنيه مصري';
+  var CURRENCY = 'ج.م';
 
   document.addEventListener('DOMContentLoaded', async function () {
     var content = document.getElementById('pdpContent');
@@ -89,6 +89,8 @@
           '</div>' +
         '</div>' +
       '</div>';
+
+    if (window.AtharObserveReveal) window.AtharObserveReveal(content);
 
     content.querySelectorAll('.pdp-thumb').forEach(function (thumb) {
       thumb.addEventListener('click', function () {

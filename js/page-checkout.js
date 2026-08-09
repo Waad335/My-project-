@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  var CURRENCY = 'جنيه مصري';
+  var CURRENCY = 'ج.م';
   // Sensible fallbacks if store_settings hasn't loaded yet (or Supabase is offline) —
   // overwritten from the live table as soon as it resolves.
   var shippingFlat = 25;
