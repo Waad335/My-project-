@@ -83,6 +83,11 @@ update public.products
 set price = 80.00
 where category_id = (select id from public.categories where slug = 'musk');
 
+-- ---- Exception: مسك الطهارة is priced at 70 EGP, not 80 like the rest of Musk.
+update public.products
+set price = 70.00
+where sku = 'ATH-MSK-005';
+
 -- ---- ex-"Body Care" products, now filed under لوشن وزيوت (Lotion & Oils) -------
 -- SKU prefix (ATH-BC-) kept as-is (unchanged identifiers/slugs/images/prices),
 -- only the category changed — the العناية بالجسم category was removed.
@@ -118,7 +123,7 @@ values
    80.00, null, '6g', (select id from public.categories where slug='musk'), 33, false, false, false, true),
   ('ATH-MSK-005', 'musk-tahara', 'مسك الطهارة', 'Musk Tahara',
    'رائحة نظيفة وناعمة ومنعشة بطابع أنيق.', 'A clean, soft, refreshing scent with an elegant character.',
-   80.00, null, '6g', (select id from public.categories where slug='musk'), 45, true, false, false, true)
+   70.00, null, '6g', (select id from public.categories where slug='musk'), 45, true, false, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Perfume Oils (عطور) — 10ml -------------------------------------------------
