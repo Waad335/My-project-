@@ -77,6 +77,12 @@ delete from public.categories
 where slug = 'body-care'
   and not exists (select 1 from public.products p where p.category_id = categories.id);
 
+-- ---- Set every product currently in مسك (Musk) to 80 EGP, matched by
+-- category rather than SKU so it covers all musk products regardless of SKU.
+update public.products
+set price = 80.00
+where category_id = (select id from public.categories where slug = 'musk');
+
 -- ---- ex-"Body Care" products, now filed under لوشن وزيوت (Lotion & Oils) -------
 -- SKU prefix (ATH-BC-) kept as-is (unchanged identifiers/slugs/images/prices),
 -- only the category changed — the العناية بالجسم category was removed.
@@ -100,19 +106,19 @@ insert into public.products
 values
   ('ATH-MSK-001', 'musk-marshmallow', 'مسك مارشميلو', 'Musk Marshmallow',
    'رائحة حلوة وناعمة مستوحاة من المارشميلو، مناسبة لمحبي الروائح السكرية الناعمة.', 'A sweet, soft scent inspired by marshmallow — perfect for lovers of gentle sugary fragrances.',
-   70.00, null, '6g', (select id from public.categories where slug='musk'), 40, true, false, true, true),
+   80.00, null, '6g', (select id from public.categories where slug='musk'), 40, true, false, true, true),
   ('ATH-MSK-002', 'musk-cheesecake', 'مسك تشيز كيك', 'Musk Cheesecake',
    'رائحة حلوة ودافئة بطابع كريمي وسكري مميز.', 'A warm, sweet scent with a distinctive creamy, sugary character.',
-   70.00, null, '6g', (select id from public.categories where slug='musk'), 38, false, true, false, true),
+   80.00, null, '6g', (select id from public.categories where slug='musk'), 38, false, true, false, true),
   ('ATH-MSK-003', 'musk-fruit-mix', 'مسك فروت ميكس', 'Musk Fruit Mix',
    'مزيج فاكهي منعش وحلو بطابع مشرق ومميز.', 'A refreshing, sweet fruity blend with a bright, distinctive character.',
-   70.00, null, '6g', (select id from public.categories where slug='musk'), 35, false, false, true, true),
+   80.00, null, '6g', (select id from public.categories where slug='musk'), 35, false, false, true, true),
   ('ATH-MSK-004', 'musk-blueberry', 'مسك بلوبيري', 'Musk Blueberry',
    'رائحة فاكهية ناعمة بطابع التوت الأزرق مع لمسة منعشة.', 'A soft fruity scent with a blueberry character and a refreshing touch.',
-   70.00, null, '6g', (select id from public.categories where slug='musk'), 33, false, false, false, true),
+   80.00, null, '6g', (select id from public.categories where slug='musk'), 33, false, false, false, true),
   ('ATH-MSK-005', 'musk-tahara', 'مسك الطهارة', 'Musk Tahara',
    'رائحة نظيفة وناعمة ومنعشة بطابع أنيق.', 'A clean, soft, refreshing scent with an elegant character.',
-   65.00, null, '6g', (select id from public.categories where slug='musk'), 45, true, false, false, true)
+   80.00, null, '6g', (select id from public.categories where slug='musk'), 45, true, false, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Perfume Oils (عطور) — 10ml -------------------------------------------------
