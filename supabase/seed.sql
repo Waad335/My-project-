@@ -36,13 +36,12 @@ where id = 1
 
 -- ---- 2. Categories (matches schema.sql; safe to re-run) ---------------------
 insert into public.categories (slug, name_ar, name_en, sort_order) values
-  ('body-care',   'العناية بالجسم', 'Body Care',     1),
-  ('musk',        'مسك',            'Musk',          2),
-  ('perfumes',    'عطور',           'Perfume Oils',  3),
-  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
-  ('blusher',     'بلاشر',          'Blush',         5),
-  ('candles',     'شموع',           'Candles',       6),
-  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 7)
+  ('musk',        'مسك',            'Musk',          1),
+  ('perfumes',    'عطور',           'Perfume Oils',  2),
+  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 3),
+  ('blusher',     'بلاشر',          'Blush',         4),
+  ('candles',     'شموع',           'Candles',       5),
+  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 6)
 on conflict (slug) do update set name_ar = excluded.name_ar, name_en = excluded.name_en, sort_order = excluded.sort_order;
 
 -- ---- Price corrections for products that already exist (the inserts below
@@ -67,19 +66,32 @@ set category_id = (select id from public.categories where slug = 'mukhammaria'),
     price = 85.00
 where sku in ('ATH-LO-001', 'ATH-LO-002', 'ATH-LO-003', 'ATH-LO-004');
 
--- ---- Body Care (العناية بالجسم) ----------------------------------------------
+-- ---- Remove العناية بالجسم (Body Care) — merge its 3 products into لوشن وزيوت.
+-- Prices are unchanged, only the category assignment moves; the category
+-- row itself is dropped once nothing references it.
+update public.products
+set category_id = (select id from public.categories where slug = 'lotion-oils')
+where sku in ('ATH-BC-001', 'ATH-BC-002', 'ATH-BC-003');
+
+delete from public.categories
+where slug = 'body-care'
+  and not exists (select 1 from public.products p where p.category_id = categories.id);
+
+-- ---- ex-"Body Care" products, now filed under لوشن وزيوت (Lotion & Oils) -------
+-- SKU prefix (ATH-BC-) kept as-is (unchanged identifiers/slugs/images/prices),
+-- only the category changed — the العناية بالجسم category was removed.
 insert into public.products
   (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
   ('ATH-BC-001', 'sugar-touch-body-lotion', 'لوشن الجسم - لمسة السكر', 'Sugar Touch Body Lotion',
    'لوشن جسم بلمسة ناعمة ورائحة حلوة، يمنح البشرة إحساسًا بالنعومة والانتعاش.', 'A soft-touch body lotion with a sweet scent that leaves skin smooth and refreshed.',
-   85.00, null, null, (select id from public.categories where slug='body-care'), 30, true, true, false, true),
+   85.00, null, null, (select id from public.categories where slug='lotion-oils'), 30, true, true, false, true),
   ('ATH-BC-002', 'dry-oil-mid-night', 'زيت جاف ميد نايت', 'Dry Oil — Mid Night',
    'زيت جاف خفيف بلمسة ناعمة ولمعان جذاب، مناسب للعناية بالبشرة وإضفاء توهج أنيق.', 'A light dry oil with a soft finish and an attractive shimmer — perfect for skin care and an elegant glow.',
-   100.00, null, null, (select id from public.categories where slug='body-care'), 24, false, true, false, true),
+   100.00, null, null, (select id from public.categories where slug='lotion-oils'), 24, false, true, false, true),
   ('ATH-BC-003', 'dry-oil-yara-candy', 'زيت جاف يارا كاندي', 'Dry Oil — Yara Candy',
    'زيت جاف برائحة حلوة وناعمة، يمنح البشرة لمسة حريرية ولمعانًا جذابًا بدون إحساس دهني ثقيل.', 'A dry oil with a sweet, soft scent that gives skin a silky touch and an attractive shine without feeling heavy.',
-   100.00, null, null, (select id from public.categories where slug='body-care'), 22, false, false, false, true)
+   100.00, null, null, (select id from public.categories where slug='lotion-oils'), 22, false, false, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Musk (مسك) — 6g -----------------------------------------------------------

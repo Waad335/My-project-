@@ -335,13 +335,12 @@ create policy "product_images_bucket_admin_delete" on storage.objects
 -- SEED: categories (required by product seed data — see seed.sql)
 -- =============================================================================
 insert into public.categories (slug, name_ar, name_en, sort_order) values
-  ('body-care',   'العناية بالجسم', 'Body Care',     1),
-  ('musk',        'مسك',            'Musk',          2),
-  ('perfumes',    'عطور',           'Perfume Oils',  3),
-  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
-  ('blusher',     'بلاشر',          'Blush',         5),
-  ('candles',     'شموع',           'Candles',       6),
-  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 7)
+  ('musk',        'مسك',            'Musk',          1),
+  ('perfumes',    'عطور',           'Perfume Oils',  2),
+  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 3),
+  ('blusher',     'بلاشر',          'Blush',         4),
+  ('candles',     'شموع',           'Candles',       5),
+  ('mukhammaria', 'مخمريات',        'Body Mukhammaria', 6)
 on conflict (slug) do nothing;
 
 -- =============================================================================
