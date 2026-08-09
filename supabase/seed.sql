@@ -66,12 +66,14 @@ set category_id = (select id from public.categories where slug = 'mukhammaria'),
     price = 85.00
 where sku in ('ATH-LO-001', 'ATH-LO-002', 'ATH-LO-003', 'ATH-LO-004');
 
--- ---- Remove العناية بالجسم (Body Care) — merge its 3 products into لوشن وزيوت.
--- Prices are unchanged, only the category assignment moves; the category
--- row itself is dropped once nothing references it.
+-- ---- Remove العناية بالجسم (Body Care) — merge ALL of its products into
+-- لوشن وزيوت, matched by category rather than SKU so this covers every
+-- product actually assigned to Body Care regardless of SKU. Prices, names,
+-- images and SKUs are unchanged; only the category assignment moves. The
+-- category row itself is dropped once nothing references it anymore.
 update public.products
 set category_id = (select id from public.categories where slug = 'lotion-oils')
-where sku in ('ATH-BC-001', 'ATH-BC-002', 'ATH-BC-003');
+where category_id = (select id from public.categories where slug = 'body-care');
 
 delete from public.categories
 where slug = 'body-care'
