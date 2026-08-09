@@ -152,8 +152,8 @@
             <div class="field"><label for="stAddress">العنوان</label><input type="text" id="stAddress"></div>
           </div>
           <div class="field-row">
-            <div class="field"><label for="stShipping">رسوم الشحن (ر.س)</label><input type="number" id="stShipping" min="0" step="0.5"></div>
-            <div class="field"><label for="stFreeShipping">الشحن مجاني فوق (ر.س)</label><input type="number" id="stFreeShipping" min="0" step="1"></div>
+            <div class="field"><label for="stShipping">رسوم الشحن (جنيه مصري)</label><input type="number" id="stShipping" min="0" step="0.5"></div>
+            <div class="field"><label for="stFreeShipping">الشحن مجاني فوق (جنيه مصري)</label><input type="number" id="stFreeShipping" min="0" step="1"></div>
           </div>
           <div id="settingsSaved" style="display:none;color:#3f7a5c;font-size:.88rem;margin-bottom:12px">تم حفظ الإعدادات بنجاح.</div>
           <button type="submit" class="btn btn-olive">حفظ الإعدادات</button>
@@ -183,10 +183,13 @@
         <div class="field"><label for="pfCategory">الفئة</label><select id="pfCategory" required></select></div>
       </div>
       <div class="field-row">
-        <div class="field"><label for="pfPrice">السعر (ر.س)</label><input type="number" id="pfPrice" min="0" step="0.5" required></div>
+        <div class="field"><label for="pfPrice">السعر (جنيه مصري)</label><input type="number" id="pfPrice" min="0" step="0.5" required></div>
         <div class="field"><label for="pfDiscount">سعر الخصم (اختياري)</label><input type="number" id="pfDiscount" min="0" step="0.5"></div>
       </div>
-      <div class="field"><label for="pfStock">الكمية في المخزون</label><input type="number" id="pfStock" min="0" step="1" required></div>
+      <div class="field-row">
+        <div class="field"><label for="pfStock">الكمية في المخزون</label><input type="number" id="pfStock" min="0" step="1" required></div>
+        <div class="field"><label for="pfSize">الحجم (اختياري)</label><input type="text" id="pfSize" placeholder="مثال: 6g، 10ml، 20ml"></div>
+      </div>
 
       <div class="checkbox-row">
         <label><input type="checkbox" id="pfFeatured"> منتج مميز</label>

@@ -1,109 +1,139 @@
 -- =============================================================================
 -- ATHAR | أثر — Seed Data
--- Run AFTER schema.sql. Inserts 20 realistic placeholder products (5 per
--- category) so the store has something to browse immediately. Every seed
--- product's image points at a local SVG placeholder shipped with the site
--- (assets/img/products/*.svg) — replace any of this at any time from the
--- Admin Dashboard: edit the product, upload real photos, adjust price/stock,
--- or simply delete the seed row and add your real product instead.
--- Safe to re-run: uses ON CONFLICT (sku) DO NOTHING.
+-- Run AFTER schema.sql. Inserts the real ATHAR catalog (Alexandria, Egypt —
+-- musk, perfume oils, body care, lotion & oils, blush). Prices are in EGP.
+--
+-- Safe to re-run. If you previously ran an older version of this file (the
+-- old placeholder jewelry/accessories catalog — مسكات / Body Splash / سلاسل
+-- يدوية), the block below removes that old seed data first so it doesn't sit
+-- alongside the real catalog. Anything you've since added/edited yourself
+-- from the Admin Dashboard (different SKUs) is left untouched.
 -- =============================================================================
 
--- ---- Handles (مسكات) ---------------------------------------------------------
+-- ---- 1. Clean up the old placeholder catalog (safe no-op if never run) ------
+delete from public.product_images
+where product_id in (
+  select id from public.products
+  where sku like 'ATH-HND-%' or sku like 'ATH-BSP-%'
+     or sku like 'ATH-CHN-%' or sku like 'ATH-BLS-%'
+);
+delete from public.products
+where sku like 'ATH-HND-%' or sku like 'ATH-BSP-%'
+   or sku like 'ATH-CHN-%' or sku like 'ATH-BLS-%';
+
+delete from public.categories
+where slug in ('handles', 'body-splash', 'handmade-chains')
+  and not exists (select 1 from public.products p where p.category_id = categories.id);
+
+-- Fix store contact info if it was already inserted with the old Saudi defaults
+-- (a fresh install already gets the right defaults straight from schema.sql).
+update public.store_settings
+set contact_phone = '01214856903',
+    whatsapp_number = '01214856903',
+    address = 'الإسكندرية، مصر'
+where id = 1
+  and (contact_phone = '+966500000000' or whatsapp_number = '+966500000000' or address like '%السعودية%');
+
+-- ---- 2. Categories (matches schema.sql; safe to re-run) ---------------------
+insert into public.categories (slug, name_ar, name_en, sort_order) values
+  ('body-care',   'العناية بالجسم', 'Body Care',     1),
+  ('musk',        'مسك',            'Musk',          2),
+  ('perfumes',    'عطور',           'Perfume Oils',  3),
+  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
+  ('blusher',     'بلاشر',          'Blush',         5)
+on conflict (slug) do update set name_ar = excluded.name_ar, name_en = excluded.name_en, sort_order = excluded.sort_order;
+
+-- ---- Body Care (العناية بالجسم) ----------------------------------------------
 insert into public.products
-  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
-  ('ATH-HND-001', 'handle-gold-touch', 'مسكة "لمسة ذهب"', 'Gold Touch Handle',
-   'مسكة أنيقة مطلية بالذهب، تصميم دائري بسيط يليق بجميع الإطلالات.', 'An elegant gold-plated handle with a minimal circular design.',
-   185.00, null, (select id from public.categories where slug='handles'), 24, true, false, true, true),
-  ('ATH-HND-002', 'handle-athar-flower', 'مسكة "زهرة الأثر"', 'Athar Flower Handle',
-   'مسكة مستوحاة من تفتّح الزهور، بتفاصيل يدوية دقيقة.', 'Inspired by a blooming flower, finished with delicate handmade detailing.',
-   165.00, 145.00, (select id from public.categories where slug='handles'), 18, false, true, false, true),
-  ('ATH-HND-003', 'handle-moon', 'مسكة "القمر"', 'Moon Handle',
-   'تصميم هلالي أنيق بلمسة عصرية.', 'An elegant crescent-inspired design with a modern finish.',
-   210.00, null, (select id from public.categories where slug='handles'), 12, false, false, false, true),
-  ('ATH-HND-004', 'handle-royal-pearl', 'مسكة "اللؤلؤة الملكية"', 'Royal Pearl Handle',
-   'مسكة مرصّعة بلؤلؤة صناعية فاخرة، مثالية للمناسبات.', 'Set with a single lustrous faux pearl — perfect for special occasions.',
-   225.00, null, (select id from public.categories where slug='handles'), 9, true, false, false, true),
-  ('ATH-HND-005', 'handle-desert-rose', 'مسكة "وردة الصحراء"', 'Desert Rose Handle',
-   'تصميم مستوحى من وردة الصحراء بلمسة ذهبية دافئة.', 'A warm gold-toned design inspired by the desert rose.',
-   175.00, null, (select id from public.categories where slug='handles'), 0, false, false, false, false)
+  ('ATH-BC-001', 'sugar-touch-body-lotion', 'لوشن الجسم - لمسة السكر', 'Sugar Touch Body Lotion',
+   'لوشن جسم بلمسة ناعمة ورائحة حلوة، يمنح البشرة إحساسًا بالنعومة والانتعاش.', 'A soft-touch body lotion with a sweet scent that leaves skin smooth and refreshed.',
+   180.00, null, null, (select id from public.categories where slug='body-care'), 30, true, true, false, true),
+  ('ATH-BC-002', 'dry-oil-mid-night', 'زيت جاف ميد نايت', 'Dry Oil — Mid Night',
+   'زيت جاف خفيف بلمسة ناعمة ولمعان جذاب، مناسب للعناية بالبشرة وإضفاء توهج أنيق.', 'A light dry oil with a soft finish and an attractive shimmer — perfect for skin care and an elegant glow.',
+   190.00, null, null, (select id from public.categories where slug='body-care'), 24, false, true, false, true),
+  ('ATH-BC-003', 'dry-oil-yara-candy', 'زيت جاف يارا كاندي', 'Dry Oil — Yara Candy',
+   'زيت جاف برائحة حلوة وناعمة، يمنح البشرة لمسة حريرية ولمعانًا جذابًا بدون إحساس دهني ثقيل.', 'A dry oil with a sweet, soft scent that gives skin a silky touch and an attractive shine without feeling heavy.',
+   190.00, null, null, (select id from public.categories where slug='body-care'), 22, false, false, false, true)
 on conflict (sku) do nothing;
 
--- ---- Body Splash --------------------------------------------------------------
+-- ---- Musk (مسك) — 6g -----------------------------------------------------------
 insert into public.products
-  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
-  ('ATH-BSP-001', 'splash-royal-jasmine', 'عبير الياسمين الملكي', 'Royal Jasmine Splash',
-   'رذاذ جسم بعبير الياسمين الفاخر، منعش ويدوم طويلاً.', 'A refreshing, long-lasting body splash with luxurious jasmine notes.',
-   140.00, 120.00, (select id from public.categories where slug='body-splash'), 40, true, false, true, true),
-  ('ATH-BSP-002', 'splash-luxury-rose', 'عبير الورد الفاخر', 'Luxury Rose Splash',
-   'مزيج دافئ من الورد الطبيعي والمسك الأبيض.', 'A warm blend of natural rose and white musk.',
-   150.00, null, (select id from public.categories where slug='body-splash'), 33, false, true, false, true),
-  ('ATH-BSP-003', 'splash-warm-amber', 'عبير العنبر الدافئ', 'Warm Amber Splash',
-   'عبير شرقي دافئ بلمسة العنبر والفانيليا.', 'An oriental, warm scent layered with amber and vanilla.',
-   160.00, null, (select id from public.categories where slug='body-splash'), 27, false, false, true, true),
-  ('ATH-BSP-004', 'splash-white-musk', 'عبير المسك الأبيض', 'White Musk Splash',
-   'نقاء المسك الأبيض بتركيبة ناعمة على البشرة.', 'The purity of white musk in a gentle, skin-friendly formula.',
-   135.00, null, (select id from public.categories where slug='body-splash'), 21, false, false, false, true),
-  ('ATH-BSP-005', 'splash-oud-blossom', 'عبير العود والزهور', 'Oud Blossom Splash',
-   'مزيج فاخر بين العود الأصيل وباقة الزهور البيضاء.', 'A rich fusion of authentic oud and a white floral bouquet.',
-   170.00, null, (select id from public.categories where slug='body-splash'), 15, true, false, false, true)
+  ('ATH-MSK-001', 'musk-marshmallow', 'مسك مارشميلو', 'Musk Marshmallow',
+   'رائحة حلوة وناعمة مستوحاة من المارشميلو، مناسبة لمحبي الروائح السكرية الناعمة.', 'A sweet, soft scent inspired by marshmallow — perfect for lovers of gentle sugary fragrances.',
+   70.00, null, '6g', (select id from public.categories where slug='musk'), 40, true, false, true, true),
+  ('ATH-MSK-002', 'musk-cheesecake', 'مسك تشيز كيك', 'Musk Cheesecake',
+   'رائحة حلوة ودافئة بطابع كريمي وسكري مميز.', 'A warm, sweet scent with a distinctive creamy, sugary character.',
+   70.00, null, '6g', (select id from public.categories where slug='musk'), 38, false, true, false, true),
+  ('ATH-MSK-003', 'musk-fruit-mix', 'مسك فروت ميكس', 'Musk Fruit Mix',
+   'مزيج فاكهي منعش وحلو بطابع مشرق ومميز.', 'A refreshing, sweet fruity blend with a bright, distinctive character.',
+   70.00, null, '6g', (select id from public.categories where slug='musk'), 35, false, false, true, true),
+  ('ATH-MSK-004', 'musk-blueberry', 'مسك بلوبيري', 'Musk Blueberry',
+   'رائحة فاكهية ناعمة بطابع التوت الأزرق مع لمسة منعشة.', 'A soft fruity scent with a blueberry character and a refreshing touch.',
+   70.00, null, '6g', (select id from public.categories where slug='musk'), 33, false, false, false, true),
+  ('ATH-MSK-005', 'musk-tahara', 'مسك الطهارة', 'Musk Tahara',
+   'رائحة نظيفة وناعمة ومنعشة بطابع أنيق.', 'A clean, soft, refreshing scent with an elegant character.',
+   65.00, null, '6g', (select id from public.categories where slug='musk'), 45, true, false, false, true)
 on conflict (sku) do nothing;
 
--- ---- Blusher --------------------------------------------------------------------
+-- ---- Perfume Oils (عطور) — 10ml -------------------------------------------------
 insert into public.products
-  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
-  ('ATH-BLS-001', 'blusher-athar-rose', 'بلاشر "وردة أثر"', 'Athar Rose Blusher',
-   'بلاشر بودرة ناعم بلون وردي طبيعي يمنح إشراقة فورية.', 'A silky powder blusher in a natural rose shade for an instant glow.',
-   95.00, null, (select id from public.categories where slug='blusher'), 30, true, false, true, true),
-  ('ATH-BLS-002', 'blusher-soft-peach', 'بلاشر "خوخي ناعم"', 'Soft Peach Blusher',
-   'لون خوخي دافئ يناسب جميع درجات البشرة.', 'A warm peach shade that flatters every skin tone.',
-   90.00, 75.00, (select id from public.categories where slug='blusher'), 22, false, true, false, true),
-  ('ATH-BLS-003', 'blusher-golden-shimmer', 'بلاشر "ذهبي لامع"', 'Golden Shimmer Blusher',
-   'لمسة لامعة ذهبية لإطلالة سهرة فاخرة.', 'A shimmering golden finish for a luxe evening look.',
-   105.00, null, (select id from public.categories where slug='blusher'), 17, false, true, false, true),
-  ('ATH-BLS-004', 'blusher-berry-flush', 'بلاشر "توتي منعش"', 'Berry Flush Blusher',
-   'لون توتي زاهي بقوام قابل للمزج بسهولة.', 'A vivid berry shade with an easily blendable texture.',
-   92.00, null, (select id from public.categories where slug='blusher'), 19, false, false, false, true),
-  ('ATH-BLS-005', 'blusher-coral-veil', 'بلاشر "مرجاني ناعم"', 'Coral Veil Blusher',
-   'لون مرجاني هادئ لإطلالة نهارية طبيعية.', 'A soft coral shade for a natural, everyday finish.',
-   88.00, null, (select id from public.categories where slug='blusher'), 25, false, false, false, true)
+  ('ATH-PRF-001', 'red-candy', 'ريد كاندي', 'Red Candy',
+   'رائحة حلوة وفاكهية بطابع جذاب ومميز.', 'A sweet, fruity scent with an attractive, distinctive character.',
+   160.00, null, '10ml', (select id from public.categories where slug='perfumes'), 20, true, true, false, true),
+  ('ATH-PRF-002', 'blue-velvet', 'بلو فيلفت', 'Blue Velvet',
+   'رائحة أنيقة وعميقة بطابع فاخر ومميز.', 'An elegant, deep scent with a luxurious, distinctive character.',
+   160.00, null, '10ml', (select id from public.categories where slug='perfumes'), 18, false, true, false, true)
 on conflict (sku) do nothing;
 
--- ---- Handmade Chains (سلاسل يدوية) -----------------------------------------------
+-- ---- Lotion & Oils (لوشن وزيوت) — 20ml ------------------------------------------
 insert into public.products
-  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
-  ('ATH-CHN-001', 'chain-athar-luxury', 'سلسلة "أثر الفخامة"', 'Athar Luxury Chain',
-   'سلسلة يدوية مطلية بالذهب بتصميم بسيط وأنيق.', 'A gold-plated handmade chain with a clean, elegant silhouette.',
-   260.00, null, (select id from public.categories where slug='handmade-chains'), 14, true, false, true, true),
-  ('ATH-CHN-002', 'chain-handmade-pearl', 'سلسلة "اللؤلؤة اليدوية"', 'Handmade Pearl Chain',
-   'سلسلة مزينة بلآلئ يدوية الصنع، قطعة فريدة لا تتكرر.', 'Adorned with handcrafted pearls — a truly one-of-a-kind piece.',
-   240.00, 210.00, (select id from public.categories where slug='handmade-chains'), 11, false, true, false, true),
-  ('ATH-CHN-003', 'chain-golden-elegance', 'سلسلة "الأناقة الذهبية"', 'Golden Elegance Chain',
-   'تصميم متعدد الطبقات بلمسة ذهبية فاخرة.', 'A layered design finished in luxurious gold tones.',
-   290.00, null, (select id from public.categories where slug='handmade-chains'), 8, false, false, false, true),
-  ('ATH-CHN-004', 'chain-desert-trace', 'سلسلة "أثر الصحراء"', 'Desert Trace Chain',
-   'سلسلة بتصميم مستوحى من رمال الصحراء الذهبية.', 'A chain design inspired by the golden dunes of the desert.',
-   255.00, null, (select id from public.categories where slug='handmade-chains'), 6, true, false, false, true),
-  ('ATH-CHN-005', 'chain-royal-knot', 'سلسلة "العقدة الملكية"', 'Royal Knot Chain',
-   'عقدة يدوية مركزية تمنح السلسلة طابعاً ملكياً مميزاً.', 'A handcrafted central knot that gives the chain a distinctly regal character.',
-   275.00, null, (select id from public.categories where slug='handmade-chains'), 10, false, false, false, true)
+  ('ATH-LO-001', 'kiayali-vanilla', 'كايالي فانيلا', 'Kiayali Vanilla',
+   'رائحة فانيلا دافئة وحلوة تمنح إحساسًا ناعمًا ومريحًا.', 'A warm, sweet vanilla scent that gives a soft, comforting feel.',
+   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 16, true, false, true, true),
+  ('ATH-LO-002', 'kiayali-marshmallow', 'كايالي مارشميلو', 'Kiayali Marshmallow',
+   'رائحة حلوة وناعمة بطابع كريمي وسكري.', 'A sweet, soft scent with a creamy, sugary character.',
+   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 15, false, false, false, true),
+  ('ATH-LO-003', 'yara-candy-20ml', 'يارا كاندي', 'Yara Candy',
+   'رائحة حلوة وفاكهية وناعمة لمحبي الروائح السكرية.', 'A sweet, fruity, soft scent for lovers of sugary fragrances.',
+   220.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 14, false, true, false, true),
+  ('ATH-LO-004', 'melon', 'ميلون', 'Melon',
+   'رائحة منعشة وفاكهية مستوحاة من الشمام، بطابع حلو وخفيف.', 'A refreshing, fruity scent inspired by melon, with a sweet and light character.',
+   210.00, null, '20ml', (select id from public.categories where slug='lotion-oils'), 17, false, false, false, true)
 on conflict (sku) do nothing;
 
--- ---- product_images: one placeholder image per seed product ---------------------
+-- ---- Blush (بلاشر) — 5ml ---------------------------------------------------------
+insert into public.products
+  (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
+values
+  ('ATH-BLU-001', 'baby-bloom-blush', 'بلاشر بيبي بلوم', 'Baby Bloom Blush',
+   'بلاشر سائل بلمسة ناعمة ولون جذاب، مناسب لإطلالة طبيعية ومشرقة.', 'A liquid blush with a soft touch and an attractive shade — perfect for a natural, radiant look.',
+   140.00, null, '5ml', (select id from public.categories where slug='blusher'), 20, true, true, false, true)
+on conflict (sku) do nothing;
+
+-- ---- product_images: one placeholder image per product ------------------------
+-- Replace these with real product photos any time from the Admin Dashboard
+-- (edit the product → upload images). Placeholder SVGs ship with the site
+-- under assets/img/products/ and are mapped here by category as a starting point.
 insert into public.product_images (product_id, image_url, sort_order)
 select p.id,
   case c.slug
-    when 'handles'         then 'assets/img/products/handles-placeholder.svg'
-    when 'body-splash'     then 'assets/img/products/body-splash-placeholder.svg'
-    when 'blusher'         then 'assets/img/products/blusher-placeholder.svg'
-    when 'handmade-chains' then 'assets/img/products/handmade-chains-placeholder.svg'
+    when 'body-care'    then 'assets/img/products/body-splash-placeholder.svg'
+    when 'musk'          then 'assets/img/products/handles-placeholder.svg'
+    when 'perfumes'      then 'assets/img/products/handmade-chains-placeholder.svg'
+    when 'lotion-oils'   then 'assets/img/products/body-splash-placeholder.svg'
+    when 'blusher'       then 'assets/img/products/blusher-placeholder.svg'
   end,
   0
 from public.products p
 join public.categories c on c.id = p.category_id
-where p.sku like 'ATH-%'
+where (p.sku like 'ATH-BC-%' or p.sku like 'ATH-MSK-%' or p.sku like 'ATH-PRF-%'
+   or p.sku like 'ATH-LO-%' or p.sku like 'ATH-BLU-%')
   and not exists (select 1 from public.product_images pi where pi.product_id = p.id);

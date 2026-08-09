@@ -13,7 +13,7 @@ create extension if not exists "pgcrypto";
 -- ---- categories ----------------------------------------------------------
 create table if not exists public.categories (
   id          uuid primary key default gen_random_uuid(),
-  slug        text not null unique,               -- e.g. 'handles', 'body-splash'
+  slug        text not null unique,               -- e.g. 'musk', 'perfumes'
   name_ar     text not null,
   name_en     text not null,
   sort_order  integer not null default 0,
@@ -31,6 +31,7 @@ create table if not exists public.products (
   description_en   text,
   price            numeric(10,2) not null check (price >= 0),
   discount_price   numeric(10,2) check (discount_price is null or discount_price >= 0),
+  size             text,                                -- e.g. '6g', '10ml', '20ml' — optional, shown on card + detail page
   category_id      uuid references public.categories(id) on delete restrict,
   stock_quantity   integer not null default 0 check (stock_quantity >= 0),
   is_featured      boolean not null default false,
@@ -41,6 +42,9 @@ create table if not exists public.products (
   updated_at       timestamptz not null default now(),
   constraint discount_lower_than_price check (discount_price is null or discount_price <= price)
 );
+
+-- Safety net for projects that ran an earlier version of this schema before the `size` column existed.
+alter table public.products add column if not exists size text;
 
 create index if not exists idx_products_category on public.products(category_id);
 create index if not exists idx_products_featured on public.products(is_featured) where is_featured = true;
@@ -141,9 +145,9 @@ create table if not exists public.store_settings (
   id                      int primary key default 1 check (id = 1),  -- enforce a single row
   store_name              text not null default 'أثر ATHAR',
   contact_email           text not null default 'hello@athar-store.com',
-  contact_phone           text not null default '+966500000000',
-  whatsapp_number         text not null default '+966500000000',
-  address                 text not null default 'الرياض، المملكة العربية السعودية',
+  contact_phone           text not null default '01214856903',
+  whatsapp_number         text not null default '01214856903',
+  address                 text not null default 'الإسكندرية، مصر',
   shipping_flat_rate      numeric(10,2) not null default 25 check (shipping_flat_rate >= 0),
   free_shipping_threshold numeric(10,2) not null default 300 check (free_shipping_threshold >= 0),
   updated_at              timestamptz not null default now()
@@ -331,10 +335,11 @@ create policy "product_images_bucket_admin_delete" on storage.objects
 -- SEED: categories (required by product seed data — see seed.sql)
 -- =============================================================================
 insert into public.categories (slug, name_ar, name_en, sort_order) values
-  ('handles',        'مسكات',        'Handles',         1),
-  ('body-splash',    'Body Splash',  'Body Splash',      2),
-  ('blusher',        'Blusher',      'Blusher',          3),
-  ('handmade-chains','سلاسل يدوية', 'Handmade Chains',  4)
+  ('body-care',   'العناية بالجسم', 'Body Care',     1),
+  ('musk',        'مسك',            'Musk',          2),
+  ('perfumes',    'عطور',           'Perfume Oils',  3),
+  ('lotion-oils', 'لوشن وزيوت',     'Lotion & Oils', 4),
+  ('blusher',     'بلاشر',          'Blush',         5)
 on conflict (slug) do nothing;
 
 -- =============================================================================

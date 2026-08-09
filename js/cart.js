@@ -8,7 +8,7 @@
   'use strict';
 
   var CART_KEY = 'athar_cart_v1';
-  var CURRENCY = 'ر.س';
+  var CURRENCY = 'جنيه مصري';
 
   function readStore(key) {
     try { return JSON.parse(localStorage.getItem(key)) || []; }

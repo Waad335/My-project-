@@ -62,7 +62,7 @@
     setTimeout(function () { toast.classList.remove('is-visible'); }, 2600);
   }
 
-  function money(n) { return Number(n).toLocaleString('ar') + ' ر.س'; }
+  function money(n) { return Number(n).toLocaleString('ar') + ' جنيه مصري'; }
 
   // =========================================================== CATEGORIES ===
   async function loadCategories() {
@@ -292,6 +292,7 @@
     document.getElementById('pfPrice').value = product ? product.price : '';
     document.getElementById('pfDiscount').value = product && product.discount_price != null ? product.discount_price : '';
     document.getElementById('pfStock').value = product ? product.stock_quantity : 0;
+    document.getElementById('pfSize').value = product ? (product.size || '') : '';
     document.getElementById('pfFeatured').checked = product ? product.is_featured : false;
     document.getElementById('pfNew').checked = product ? product.is_new_arrival : false;
     document.getElementById('pfBestseller').checked = product ? product.is_bestseller : false;
@@ -398,6 +399,7 @@
       price: price,
       discount_price: discount,
       stock_quantity: parseInt(document.getElementById('pfStock').value, 10) || 0,
+      size: document.getElementById('pfSize').value.trim() || null,
       is_featured: document.getElementById('pfFeatured').checked,
       is_new_arrival: document.getElementById('pfNew').checked,
       is_bestseller: document.getElementById('pfBestseller').checked,

@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var CURRENCY = 'ر.س';
+  var CURRENCY = 'جنيه مصري';
 
   document.addEventListener('DOMContentLoaded', async function () {
     var content = document.getElementById('pdpContent');
@@ -59,7 +59,7 @@
           }).join('') + '</div>' : '') +
         '</div>' +
         '<div data-reveal>' +
-          '<p class="pdp-category">' + categoryLabel + '</p>' +
+          '<p class="pdp-category">' + categoryLabel + (product.size ? ' · ' + product.size : '') + '</p>' +
           '<h1 class="pdp-title">' + product.name_ar + '</h1>' +
           '<div class="pdp-price-row">' +
             '<span class="pdp-price-now">' + money(effectivePrice) + '</span>' +

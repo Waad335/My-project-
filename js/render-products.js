@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  var CURRENCY = 'ر.س';
+  var CURRENCY = 'جنيه مصري';
   // Pages nested in a subfolder (e.g. admin/) set window.ATHAR_ASSET_BASE = '../'
   // before this script loads so local asset paths still resolve correctly.
   var ASSET_BASE = window.ATHAR_ASSET_BASE || '';
@@ -60,7 +60,7 @@
         '</a>' +
         '<button class="fav-btn" data-fav-toggle data-id="' + product.id + '" aria-label="أضف إلى المفضلة"><svg viewBox="0 0 24 24"><use href="#icon-heart"></use></svg></button>' +
         '<div class="product-info">' +
-          '<p class="product-cat">' + categoryLabel + '</p>' +
+          '<p class="product-cat">' + categoryLabel + (product.size ? ' · ' + product.size : '') + '</p>' +
           '<h3 class="product-name"><a href="product.html?slug=' + encodeURIComponent(product.slug) + '">' + product.name_ar + '</a></h3>' +
           '<div class="product-footer">' +
             '<div class="product-price">' +

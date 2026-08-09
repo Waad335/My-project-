@@ -49,7 +49,7 @@ Design language: generous white space, soft shadows, rounded corners, restrained
 
 ## 3. Features
 
-- 🛍️ **Product catalog** with client-side category filtering (`مسكات`, `Body Splash`, `Blusher`, `سلاسل Hand Made`)
+- 🛍️ **Product catalog** with live category filtering (`مسك`, `عطور`, `العناية بالجسم`, `لوشن وزيوت`, `بلاشر`)
 - 🛒 **Shopping cart** — add/remove items, live quantity & total, persisted in `localStorage`
 - ❤️ **Favorites / wishlist** — toggle per product, persisted in `localStorage`
 - 🔔 **Toast notifications** for cart/favorite/contact-form actions
