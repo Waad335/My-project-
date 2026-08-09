@@ -31,6 +31,47 @@
   perspective: 1400px;
 }
 
+/* ---- 1b. SCROLL-DRIVEN 3D MOTION (js/scroll-3d.js) ------------------------
+   Independent of every pointer-driven effect above: js/scroll-3d.js writes
+   only CSS custom properties + the standalone `scale`/`rotate` properties
+   here, never `transform` on elements that already carry one (hero-emblem's
+   `hero-in` keyframe animation, hero-glow's `float-glow` animation), so
+   scroll motion and pointer parallax always compose instead of fighting.
+   Each rule embeds its own `perspective()` as the first transform function
+   so the depth reads correctly even where an ancestor's `perspective` is
+   dropped for the mobile tier below — scroll motion stays active on every
+   breakpoint (unlike the pointer-only tilt/parallax, which is fine-pointer
+   only). Runs on touch devices too, driven purely by scroll position. */
+.hero-inner {
+  transform: perspective(1400px)
+    translate3d(var(--hero-x, 0px), var(--hero-y, 0px), var(--hero-z, 0px))
+    scale(var(--hero-scale, 1))
+    rotateX(var(--hero-rot, 0deg));
+  opacity: var(--hero-op, 1);
+  transition: transform 0.06s linear, opacity 0.06s linear;
+  will-change: transform;
+}
+.hero::before {
+  transform: scale(var(--hero-bg-scale, 1));
+  transition: transform 0.08s linear;
+}
+.hero-glow {
+  transition: translate 0.08s linear, scale 0.08s linear;
+}
+.hero-emblem {
+  transition: translate 0.4s var(--ease-luxury), scale 0.06s linear, rotate 0.06s linear;
+}
+
+/* Product image parallax-in-card: the image drifts a few px opposite the
+   scroll direction inside its own frame (`.product-media` keeps
+   overflow:hidden), independent of the standalone `scale`/`filter` the
+   pointer-tilt hover effect below already applies to the same element. */
+.product-media img {
+  transform: translate3d(var(--img-px, 0px), var(--img-py, 0px), 0);
+  transition: transform 0.07s linear;
+  will-change: transform;
+}
+
 /* ---- Hero parallax layers -------------------------------------------------
    js/luxury-3d.js sets each layer's own inline `translate` directly (no
    shared custom property needed here); this just establishes the resting
@@ -223,6 +264,14 @@
   .product-card::after, .cat-card::after, .collection-card::after,
   .cat-card::before, .collection-card::before,
   .pdp-wrap > div:first-child::before { display: none; }
+
+  /* Scroll-driven motion (js/scroll-3d.js no-ops under this same media
+     query, but these resets also cover the instant before that check runs
+     and any state left over from a stylesheet-only reduced-motion toggle). */
+  .hero-inner { transform: none !important; opacity: 1 !important; }
+  .hero::before { transform: none !important; }
+  .hero-glow, .hero-emblem { translate: 0px 0px !important; scale: 1 !important; rotate: 0deg !important; }
+  .product-media img { transform: none !important; }
 }
 
 /* Reduce ambient decoration on small screens regardless of motion pref, to
