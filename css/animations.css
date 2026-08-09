@@ -4,20 +4,27 @@
 
 [data-reveal] {
   opacity: 0;
-  transform: translateY(34px);
-  transition: opacity 0.9s var(--ease-luxury), transform 0.9s var(--ease-luxury);
+  transform: perspective(1000px) translate3d(0, 44px, -70px) rotateX(7deg) scale(0.96);
+  transition: opacity 1s var(--ease-luxury), transform 1.05s var(--ease-luxury);
+  will-change: transform, opacity;
 }
-[data-reveal].in-view { opacity: 1; transform: translateY(0); }
+[data-reveal].in-view { opacity: 1; transform: perspective(1000px) translate3d(0, 0, 0) rotateX(0deg) scale(1); }
 
-[data-reveal="scale"] { transform: scale(0.92); }
-[data-reveal="scale"].in-view { transform: scale(1); }
+[data-reveal="scale"] { transform: perspective(1000px) translate3d(0, 0, -130px) rotateX(4deg) scale(0.86); }
+[data-reveal="scale"].in-view { transform: perspective(1000px) translate3d(0, 0, 0) rotateX(0deg) scale(1); }
 
+/* Cards (product/category/value) come forward from depth as they enter the
+   viewport — same [data-reveal-group] > * selector/specificity as before, so
+   it still composes with the pointer-tilt inline `transform` in
+   css/luxury-3d.css exactly as documented there (that rule only ever wins
+   while `.is-tilting`, via inline style). */
 [data-reveal-group] > * {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.7s var(--ease-luxury), transform 0.7s var(--ease-luxury);
+  transform: perspective(1000px) translate3d(0, 38px, -110px) rotateX(8deg) scale(0.9);
+  transition: opacity 0.9s var(--ease-luxury), transform 0.95s var(--ease-luxury);
+  will-change: transform, opacity;
 }
-[data-reveal-group].in-view > * { opacity: 1; transform: translateY(0); }
+[data-reveal-group].in-view > * { opacity: 1; transform: perspective(1000px) translate3d(0, 0, 0) rotateX(0deg) scale(1); }
 [data-reveal-group].in-view > *:nth-child(1) { transition-delay: 0.05s; }
 [data-reveal-group].in-view > *:nth-child(2) { transition-delay: 0.15s; }
 [data-reveal-group].in-view > *:nth-child(3) { transition-delay: 0.25s; }
