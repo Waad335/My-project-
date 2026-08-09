@@ -44,19 +44,33 @@ insert into public.categories (slug, name_ar, name_en, sort_order) values
   ('candles',     'شموع',           'Candles',       6)
 on conflict (slug) do update set name_ar = excluded.name_ar, name_en = excluded.name_en, sort_order = excluded.sort_order;
 
+-- ---- Price corrections for products that already exist (the inserts below
+-- use ON CONFLICT DO NOTHING, so they alone won't update an existing row's
+-- price on re-run — this UPDATE is what actually corrects it there).
+update public.products set price = case sku
+  when 'ATH-BC-001' then 85.00
+  when 'ATH-BC-002' then 100.00
+  when 'ATH-BC-003' then 100.00
+  when 'ATH-BLU-001' then 70.00
+  when 'ATH-CND-003' then 150.00
+  when 'ATH-CND-004' then 150.00
+  when 'ATH-CND-005' then 100.00
+end
+where sku in ('ATH-BC-001', 'ATH-BC-002', 'ATH-BC-003', 'ATH-BLU-001', 'ATH-CND-003', 'ATH-CND-004', 'ATH-CND-005');
+
 -- ---- Body Care (العناية بالجسم) ----------------------------------------------
 insert into public.products
   (sku, slug, name_ar, name_en, description_ar, description_en, price, discount_price, size, category_id, stock_quantity, is_featured, is_new_arrival, is_bestseller, is_available)
 values
   ('ATH-BC-001', 'sugar-touch-body-lotion', 'لوشن الجسم - لمسة السكر', 'Sugar Touch Body Lotion',
    'لوشن جسم بلمسة ناعمة ورائحة حلوة، يمنح البشرة إحساسًا بالنعومة والانتعاش.', 'A soft-touch body lotion with a sweet scent that leaves skin smooth and refreshed.',
-   180.00, null, null, (select id from public.categories where slug='body-care'), 30, true, true, false, true),
+   85.00, null, null, (select id from public.categories where slug='body-care'), 30, true, true, false, true),
   ('ATH-BC-002', 'dry-oil-mid-night', 'زيت جاف ميد نايت', 'Dry Oil — Mid Night',
    'زيت جاف خفيف بلمسة ناعمة ولمعان جذاب، مناسب للعناية بالبشرة وإضفاء توهج أنيق.', 'A light dry oil with a soft finish and an attractive shimmer — perfect for skin care and an elegant glow.',
-   190.00, null, null, (select id from public.categories where slug='body-care'), 24, false, true, false, true),
+   100.00, null, null, (select id from public.categories where slug='body-care'), 24, false, true, false, true),
   ('ATH-BC-003', 'dry-oil-yara-candy', 'زيت جاف يارا كاندي', 'Dry Oil — Yara Candy',
    'زيت جاف برائحة حلوة وناعمة، يمنح البشرة لمسة حريرية ولمعانًا جذابًا بدون إحساس دهني ثقيل.', 'A dry oil with a sweet, soft scent that gives skin a silky touch and an attractive shine without feeling heavy.',
-   190.00, null, null, (select id from public.categories where slug='body-care'), 22, false, false, false, true)
+   100.00, null, null, (select id from public.categories where slug='body-care'), 22, false, false, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Musk (مسك) — 6g -----------------------------------------------------------
@@ -116,7 +130,7 @@ insert into public.products
 values
   ('ATH-BLU-001', 'baby-bloom-blush', 'بلاشر بيبي بلوم', 'Baby Bloom Blush',
    'بلاشر سائل بلمسة ناعمة ولون جذاب، مناسب لإطلالة طبيعية ومشرقة.', 'A liquid blush with a soft touch and an attractive shade — perfect for a natural, radiant look.',
-   140.00, null, '5ml', (select id from public.categories where slug='blusher'), 20, true, true, false, true)
+   70.00, null, '5ml', (select id from public.categories where slug='blusher'), 20, true, true, false, true)
 on conflict (sku) do nothing;
 
 -- ---- Candles (شموع) ---------------------------------------------------------------
@@ -131,13 +145,13 @@ values
    150.00, null, null, (select id from public.categories where slug='candles'), 15, false, false, false, true),
   ('ATH-CND-003', 'candle-sea', 'الشمعة البحرية', 'Sea Candle',
    'شمعة حرفية يدوية الصنع بزيوت عطرية بحرية فاخرة، تمنح السكينة والهدوء.', 'A handcrafted candle with luxurious sea-inspired notes that bring calm and serenity.',
-   250.00, null, null, (select id from public.categories where slug='candles'), 10, true, false, false, true),
+   150.00, null, null, (select id from public.categories where slug='candles'), 10, true, false, false, true),
   ('ATH-CND-004', 'candle-fruits', 'شمعة الفواكه', 'ATHAR Fruits',
    'شمعة تحمل عبق الفواكه المنعشة بمزيج غني ومميز.', 'A candle carrying a fresh, rich blend of fruity notes.',
-   250.00, null, null, (select id from public.categories where slug='candles'), 10, false, true, false, true),
+   150.00, null, null, (select id from public.categories where slug='candles'), 10, false, true, false, true),
   ('ATH-CND-005', 'candle-strawberry', 'سحر الفراولة', 'Strawberry Magic',
    'رائحة غنية وتصميم فريد، تجربة تأخذك بعيداً مع سحر الفراولة.', 'A rich scent and a unique design — an experience that takes you away with the magic of strawberry.',
-   225.00, null, null, (select id from public.categories where slug='candles'), 12, false, false, false, true),
+   100.00, null, null, (select id from public.categories where slug='candles'), 12, false, false, false, true),
   ('ATH-CND-006', 'candle-satin', 'ساتان - فانيليا وجوز الهند', 'SATIN — Vanilla & Coconut',
    'شمعة فانيليا وجوز الهند متعددة الاستخدامات، لترطيب وتعطير الجسم والجو.', 'A multi-use vanilla and coconut candle for moisturizing and scenting the body and your space.',
    100.00, null, null, (select id from public.categories where slug='candles'), 18, true, false, true, true)
