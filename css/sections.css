@@ -11,6 +11,27 @@
   background: var(--grad-hero);
   overflow: hidden;
   isolation: isolate;
+  /* --hero-space: the vertical distance from the tagline baked into the
+     photo (background-position: center 50%, fixed) down to the bottom
+     edge of the hero, in px — measured directly (not assumed) at four
+     viewport sizes and fit to ~0.2102px per vw + 0.5px per vh. This is
+     the one shared "how much room do we actually have" signal that
+     --cta-bottom-gap below, the CTA button padding, and .hero-scroll's
+     own size/position all scale from — so on spacious viewports (the
+     1394x1124 reference) everything renders at its original full size,
+     and only on tight viewports (1366x768 most of all) do the CTA row
+     and scroll-hint shrink, just enough to keep both comfortably clear
+     of the tagline and of each other without changing anything at the
+     reference composition itself. */
+  --hero-space: calc(50vh - 21.02vw);
+  /* Targets a 20px gap above the CTA row, in terms of --hero-space and
+     the CTA row's own (now viewport-dependent, see .hero-cta .btn)
+     height: row-top = space - ctaHeight(space), so padding-bottom =
+     space - ctaHeight(space) - 20px. Floored low (4px) rather than 0
+     only to avoid a literal zero-padding edge case; capped generously
+     (220px) so extremely tall/narrow windows don't push the row
+     implausibly high. */
+  --cta-bottom-gap: clamp(4px, calc(var(--hero-space) * 0.8606 - 43.95px), 220px);
 }
 .hero::before {
   content: "";
@@ -36,12 +57,12 @@
   position: absolute; inset: 0;
   background-image: url('../assets/athar-logo.jpeg.jpeg');
   background-size: cover;
-  /* Anchored low (not flush bottom) so `cover`'s top-only crop on wide
-     desktop viewports still leaves enough dune/sky above the wordmark —
-     keeps the logo out of the very top of the frame — while staying close
-     enough to the bottom edge that the CTA row below doesn't drift back
-     into overlap as the window's aspect ratio changes. */
-  background-position: center 75%;
+  /* Plain center: matches the reference composition (dune/sea visible
+     above the wordmark, logo sitting in the lower-middle of the frame)
+     instead of the tighter top-crop of an off-center anchor. The CTA
+     row's clearance below is handled separately via .hero-inner's
+     bottom padding, which is tuned to this exact anchor. */
+  background-position: center 50%;
   z-index: 1;
 }
 .hero-glow {
@@ -63,11 +84,14 @@
   width: 100%;
   max-width: var(--container);
   margin-inline: auto;
-  /* Bottom padding scales with viewport width (not height) to match the
-     bottom-anchored `cover` crop above: on wide/short screens the photo is
-     cropped from the top only, so the CTA row's distance from the bottom
-     edge needs to track image width-scale, not window height. */
-  padding: calc(var(--header-h) + var(--space-5)) var(--space-4) clamp(4.5rem, 24vw, 11rem);
+  /* Bottom padding is --cta-bottom-gap (see .hero above) — keeps the CTA
+     row ~20px clear of the tagline baked into the photo at every size,
+     working together with the row's own viewport-scaled height (see
+     .hero-cta .btn) and .hero-scroll's matching offset below so all
+     three (tagline, CTA row, scroll-hint) stay comfortably clear of each
+     other, verified at 1366x768 (tightest), 1440x900, 1920x1080, and the
+     reference's 1394x1124 (unchanged from its original size there). */
+  padding: calc(var(--header-h) + var(--space-5)) var(--space-4) var(--cta-bottom-gap);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -121,6 +145,17 @@
   display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center;
   opacity: 0; animation: hero-in 1.1s var(--ease-luxury) 0.8s forwards;
 }
+/* Scoped to these two buttons only (never the sitewide .btn, used on every
+   other page) — shrinks vertical padding from the shared 16px down to as
+   little as 4px on tight viewports (see --hero-space on .hero), freeing
+   just enough of the limited space at sizes like 1366x768 for both the
+   tagline-above and scroll-hint-below gaps to stay positive, while
+   resolving back to the original 16px — completely unchanged — at the
+   1394x1124 reference. Horizontal padding, text, colors, and links are
+   untouched. */
+.hero-cta .btn {
+  padding-block: clamp(4px, calc(var(--hero-space) * 0.0697 - 2.75px), 16px);
+}
 /* Scoped override (the shared .btn-outline is only ever used here) so the
    outline CTA reads as teal-on-photo, matching the reference, instead of
    the white-on-dark-gradient styling every other page's .btn-outline
@@ -137,29 +172,52 @@
 }
 .hero-scroll {
   position: absolute;
-  bottom: var(--space-4); left: 50%;
+  /* Targets a 20px gap below the CTA row in terms of --hero-space, the
+     CTA row's own bottom padding (--cta-bottom-gap) and the scroll-hint's
+     own (now viewport-dependent, see .mouse/gap below) height: bottom
+     offset = --cta-bottom-gap - hintHeight(space) - 20px. Floored at 0
+     (flush to the bottom edge) so the tightest viewports (1366x768) get
+     every last px before touching the CTA row — even then it lands only
+     a few px short of the full 20px target, not touching — and capped at
+     40px so spacious viewports don't push the hint needlessly far from
+     the edge once the target is already met. */
+  bottom: clamp(0px, calc(var(--hero-space) * 0.68634 - 81.07px), 40px);
+  left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: center;
+  /* Shrinks alongside the mouse icon below (see --hero-space on .hero) so
+     the two stay in visual proportion; resolves to the original 8px,
+     unchanged, at the 1394x1124 reference. */
+  gap: clamp(2px, calc(var(--hero-space) * 0.03486 - 1.38px), 8px);
   color: rgba(255,255,255,0.6);
   font-size: 0.72rem;
   letter-spacing: 0.2em;
 }
 .hero-scroll .mouse {
-  width: 22px; height: 36px;
+  width: 22px;
+  /* Shrinks from the original 36px down to as little as 12px on the
+     tightest viewports (see --hero-space on .hero) — still a legible
+     small pill/mouse shape, just more compact — and resolves back to the
+     original 36px, unchanged, at the 1394x1124 reference. */
+  height: clamp(12px, calc(var(--hero-space) * 0.1394 - 1.5px), 36px);
   border: 1.5px solid rgba(255,255,255,0.5);
   border-radius: 12px;
   position: relative;
 }
+/* top/height in % (of .mouse's own height) rather than fixed px, so the
+   dot and its travel distance scale down along with the icon on tight
+   viewports instead of overflowing a shrunk pill — resolves to the same
+   ~6px/~18px/~7px as before at the 1394x1124 reference's 36px-tall icon. */
 .hero-scroll .mouse::before {
   content: "";
-  position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
-  width: 3px; height: 7px;
+  position: absolute; top: 16%; left: 50%; transform: translateX(-50%);
+  width: 3px; height: 19%;
   background: var(--gold);
   border-radius: 2px;
   animation: scroll-dot 1.8s ease-in-out infinite;
 }
-@keyframes scroll-dot { 0% { opacity: 1; top: 6px; } 70% { opacity: 0; top: 18px; } 100% { opacity: 0; top: 6px; } }
+@keyframes scroll-dot { 0% { opacity: 1; top: 16%; } 70% { opacity: 0; top: 50%; } 100% { opacity: 0; top: 16%; } }
 
 /* ---- Marquee strip ---- */
 .marquee {
