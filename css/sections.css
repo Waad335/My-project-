@@ -26,6 +26,23 @@
   mix-blend-mode: overlay;
   z-index: 0;
 }
+/* Real ATHAR logo photo (assets/athar-logo.jpeg.jpeg), used exactly as
+   provided — no crop/recolor/edit — as the hero's visual backdrop. Sits
+   above the base gradient/glow (z-index 0) and below the live hero text/
+   CTAs (.hero-inner, z-index 2), with a dark scrim so the existing white
+   heading/subtext/eyebrow stay readable over the light sand/sky photo. */
+.hero-visual {
+  position: absolute; inset: 0;
+  background-image: url('../assets/athar-logo.jpeg.jpeg');
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+.hero-visual::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,40,44,0.55) 0%, rgba(10,40,44,0.68) 55%, rgba(10,40,44,0.8) 100%);
+}
 .hero-glow {
   position: absolute;
   width: 640px; height: 640px;
