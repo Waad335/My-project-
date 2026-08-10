@@ -36,11 +36,12 @@
   position: absolute; inset: 0;
   background-image: url('../assets/athar-logo.jpeg.jpeg');
   background-size: cover;
-  /* Anchored to the bottom so `cover` only ever crops from the top (sky/
-     dune) on wide desktop viewports — keeps the photo's own wordmark/CTA
-     area flush with the bottom of the section instead of drifting as the
-     window's aspect ratio changes. */
-  background-position: center bottom;
+  /* Anchored low (not flush bottom) so `cover`'s top-only crop on wide
+     desktop viewports still leaves enough dune/sky above the wordmark —
+     keeps the logo out of the very top of the frame — while staying close
+     enough to the bottom edge that the CTA row below doesn't drift back
+     into overlap as the window's aspect ratio changes. */
+  background-position: center 75%;
   z-index: 1;
 }
 .hero-glow {
