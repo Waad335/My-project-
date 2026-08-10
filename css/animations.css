@@ -55,7 +55,14 @@ body { animation: page-fade 0.6s ease; }
   transition: opacity 0.6s var(--ease-luxury), visibility 0.6s var(--ease-luxury);
 }
 .loader.is-hidden { opacity: 0; visibility: hidden; }
+/* Same #icon-logo-mark markup/geometry used everywhere else on the site
+   (header, hero, footer) — its .ring/.seal classes already exist in that
+   shared symbol precisely so a two-tone rendering like this one can be
+   applied without touching the artwork itself. Ring: turquoise/blue main
+   brand color; seal: soft gold — the ATHAR mark's own two colors, at full
+   contrast against the deep-turquoise loader background. */
 .loader-mark { width: 70px; height: 70px; color: var(--gold-light); animation: loader-pulse 1.6s ease-in-out infinite; }
+.loader-mark .ring { stroke: var(--olive-bright); }
 @keyframes loader-pulse {
   0%, 100% { opacity: 0.5; transform: scale(0.92); }
   50% { opacity: 1; transform: scale(1.05); }
