@@ -51,6 +51,12 @@
 
     var glow = hero.querySelector('.hero-glow');
     var emblem = hero.querySelector('.hero-emblem');
+    // The two hero CTA buttons ("تسوق الآن" / "قصة أثر") — the only elements
+    // this function gives their own, independent scroll motion (layered
+    // on top of the block-level --hero-* motion below via a dedicated
+    // css/luxury-3d.css rule), so each reads as its own small object in
+    // the depth stack instead of moving as one rigid row.
+    var ctaButtons = hero.querySelectorAll('.hero-cta .btn');
 
     var visible = true;
     if ('IntersectionObserver' in window) {
@@ -92,6 +98,27 @@
       if (emblem) {
         emblem.style.scale = (1 - progress * 0.34).toFixed(3);
         emblem.style.rotate = (progress * 10).toFixed(2) + 'deg';
+      }
+
+      // CTA buttons: tiny independent translate3d/scale/tilt per button,
+      // on top of the block motion above — kept deliberately small so the
+      // combined effect stays subtle rather than doubling up. The two
+      // buttons drift in mirrored directions (alternating sign) for a
+      // gentle "diverging" feel rather than moving as one flat unit. The
+      // 3D tilt needs an ancestor `perspective`, which css/luxury-3d.css
+      // drops entirely at the mobile breakpoint (<=640px) — skip the tilt
+      // there so it never renders as a flat, unforeshortened squash.
+      if (ctaButtons.length) {
+        var tiltable = (window.innerWidth || 1024) > 640;
+        for (var i = 0; i < ctaButtons.length; i++) {
+          var dir = i % 2 === 0 ? 1 : -1;
+          var btn = ctaButtons[i];
+          btn.style.setProperty('--btn-x', (progress * 5 * dir).toFixed(1) + 'px');
+          btn.style.setProperty('--btn-y', (progress * -10).toFixed(1) + 'px');
+          btn.style.setProperty('--btn-z', (progress * -28).toFixed(1) + 'px');
+          btn.style.setProperty('--btn-scale', (1 - progress * 0.05).toFixed(3));
+          btn.style.setProperty('--btn-rot', tiltable ? (progress * 3.5 * dir).toFixed(2) + 'deg' : '0deg');
+        }
       }
     });
 

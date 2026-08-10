@@ -66,6 +66,26 @@
   transition: translate 0.4s var(--ease-luxury), scale 0.06s linear, rotate 0.06s linear;
 }
 
+/* Individual hero CTA buttons ("تسوق الآن" / "قصة أثر"): a small, independent
+   scroll-linked translate3d/scale/tilt on each button, layered underneath
+   the block-level .hero-inner motion above so the pair reads as two
+   separate objects in the depth stack rather than one rigid row. Combined
+   with the pointer-magnetic --mx3d/--my3d offset (desktop only, see
+   js/luxury-3d.js) via calc() so both effects compose instead of one
+   silently winning. More specific than the sitewide magnet rule below, so
+   this only ever touches these two buttons — every other .btn/.icon-btn/
+   .add-cart-btn/.fav-btn on the site keeps using that rule unchanged.
+   Standalone translate/scale/rotate (not `transform`) so the existing
+   .btn-gold/.btn-outline :hover and .btn:active `transform` keep working
+   untouched, per the file-level note above. */
+.hero-cta .btn {
+  translate: calc(var(--mx3d, 0px) + var(--btn-x, 0px)) calc(var(--my3d, 0px) + var(--btn-y, 0px)) var(--btn-z, 0px);
+  scale: var(--btn-scale, 1);
+  rotate: 1 0 0 var(--btn-rot, 0deg);
+  transition: translate 0.08s linear, scale 0.08s linear, rotate 0.08s linear;
+  will-change: translate;
+}
+
 /* Product image parallax-in-card: the image drifts a few px opposite the
    scroll direction inside its own frame (`.product-media` keeps
    overflow:hidden), independent of the standalone `scale`/`filter` the
@@ -246,6 +266,11 @@
     transform: scale(0.98) rotate(1deg);
   }
   .hero::after { width: 180px; height: 180px; }
+  /* Resets the sitewide pointer-magnet translate (never set on touch anyway,
+     since js/luxury-3d.js itself skips coarse pointers). Deliberately does
+     NOT reach the two hero CTA buttons: `.hero-cta .btn` above is more
+     specific and keeps driving their scroll-linked translate/scale/rotate,
+     since js/scroll-3d.js (unlike js/luxury-3d.js) runs on touch too. */
   .btn, .icon-btn, .add-cart-btn, .fav-btn { translate: 0px 0px; }
 }
 
@@ -275,6 +300,7 @@
   .hero-inner { transform: none !important; opacity: 1 !important; }
   .hero::before, .hero-visual { transform: none !important; }
   .hero-glow, .hero-emblem { translate: 0px 0px !important; scale: 1 !important; rotate: 0deg !important; }
+  .hero-cta .btn { translate: 0px 0px !important; scale: 1 !important; rotate: 0deg !important; }
   .product-media img { transform: none !important; }
 }
 
