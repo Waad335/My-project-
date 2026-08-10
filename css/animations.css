@@ -55,7 +55,7 @@ body { animation: page-fade 0.6s ease; }
   transition: opacity 0.6s var(--ease-luxury), visibility 0.6s var(--ease-luxury);
 }
 .loader.is-hidden { opacity: 0; visibility: hidden; }
-.loader-mark { width: 70px; height: 70px; animation: loader-pulse 1.6s ease-in-out infinite; }
+.loader-mark { width: 70px; height: 70px; color: var(--gold-light); animation: loader-pulse 1.6s ease-in-out infinite; }
 @keyframes loader-pulse {
   0%, 100% { opacity: 0.5; transform: scale(0.92); }
   50% { opacity: 1; transform: scale(1.05); }

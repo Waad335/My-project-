@@ -225,7 +225,7 @@
 .collection-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
 .collection-card .cm-bg { position: absolute; inset: 0; background: var(--grad-olive); }
 .collection-card:nth-child(2) .cm-bg { background: linear-gradient(160deg, #cdb27a, #94793F); }
-.collection-card:nth-child(3) .cm-bg { background: linear-gradient(160deg, #33564e, #12241f); }
+.collection-card:nth-child(3) .cm-bg { background: linear-gradient(160deg, #2E8891, #123B40); }
 .collection-card:nth-child(4) .cm-bg { background: linear-gradient(160deg, #d8c299, #B89A5E); }
 .collection-card .cm-bg svg { width: 46%; opacity: 0.22; position: absolute; inset-inline-end: -6%; bottom: -8%; }
 .collection-card .cm-content {
@@ -311,7 +311,7 @@ html[dir="rtl"] .collection-card:hover .cm-link svg { transform: translateX(4px)
 .pdp-title { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 14px; }
 .pdp-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
 .pdp-price-now { font-family: var(--font-latin); font-size: 2rem; font-weight: 600; color: var(--olive); }
-.pdp-price-old { font-family: var(--font-latin); font-size: 1.2rem; color: #b3b3ac; text-decoration: line-through; }
+.pdp-price-old { font-family: var(--font-latin); font-size: 1.2rem; color: #A89A88; text-decoration: line-through; }
 .pdp-discount-badge { background: var(--grad-gold); color: var(--olive-2); font-size: .78rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-pill); }
 
 .stock-badge { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; font-weight: 600; margin-bottom: var(--space-3); }

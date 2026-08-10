@@ -2,25 +2,29 @@
    ATHAR | أثر — Design Tokens
    ========================================================================== */
 :root {
-  /* Brand palette */
-  --olive: #264A43;
-  --olive-2: #1a332e;
-  --olive-soft: #33564e;
-  --olive-tint: #eef2f0;
+  /* Brand palette — ATHAR logo-inspired: turquoise/aqua main, sandy
+     beige/champagne secondary, soft muted gold accent, warm ivory
+     background, deep warm charcoal/brown text. Variable names kept as-is
+     (--olive*/--gold*/--cream*/--ink*) since every rule across the site
+     already consumes them as tokens — only the values changed here. */
+  --olive: #1D6B74;       /* main: deep turquoise (buttons, badges, prices, nav accents) */
+  --olive-2: #123B40;     /* deepest turquoise (headings, footer, hero, loader, shadows) */
+  --olive-soft: #2E8891;  /* mid turquoise (decorative gradients) */
+  --olive-tint: #EAF4F3;  /* pale turquoise tint */
   --gold: #B89A5E;
   --gold-light: #D8C299;
   --gold-dark: #94793F;
   --white: #FFFFFF;
-  --cream: #FBF9F5;
-  --cream-2: #F4EFE6;
-  --ink: #2A2A28;
-  --ink-soft: #5C5C57;
-  --line: rgba(38, 74, 67, 0.12);
+  --cream: #FBF9F5;       /* warm ivory background */
+  --cream-2: #E7D9C0;     /* secondary: sandy beige / champagne */
+  --ink: #332A22;         /* deep warm charcoal / dark brown text */
+  --ink-soft: #6B5C4E;    /* warm taupe secondary text */
+  --line: rgba(29, 107, 116, 0.16);
 
   /* Gradients */
-  --grad-olive: linear-gradient(160deg, #2c534b 0%, #1a332e 100%);
+  --grad-olive: linear-gradient(160deg, #1F7A83 0%, #123B40 100%);
   --grad-gold: linear-gradient(135deg, #cdb27a 0%, #B89A5E 45%, #94793F 100%);
-  --grad-hero: radial-gradient(120% 120% at 20% 0%, #2f5a51 0%, #1a332e 55%, #12241f 100%);
+  --grad-hero: radial-gradient(120% 120% at 20% 0%, #256F78 0%, #123B40 55%, #0A282C 100%);
 
   /* Typography */
   --font-display: 'Aref Ruqaa', 'Amiri', serif;
@@ -43,9 +47,9 @@
   --radius-pill: 999px;
 
   /* Shadows */
-  --shadow-sm: 0 4px 16px rgba(26, 51, 46, 0.06);
-  --shadow-md: 0 14px 40px rgba(26, 51, 46, 0.10);
-  --shadow-lg: 0 28px 70px rgba(26, 51, 46, 0.16);
+  --shadow-sm: 0 4px 16px rgba(18, 59, 64, 0.06);
+  --shadow-md: 0 14px 40px rgba(18, 59, 64, 0.10);
+  --shadow-lg: 0 28px 70px rgba(18, 59, 64, 0.16);
   --shadow-gold: 0 10px 30px rgba(184, 154, 94, 0.28);
 
   /* Motion */

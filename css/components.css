@@ -193,7 +193,7 @@
 .cat-card .cat-media svg { width: 62%; height: 62%; margin: auto; position: absolute; inset: 0; opacity: 0.92; }
 .cat-card .cat-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(26,51,46,0) 35%, rgba(20,38,34,0.86) 100%);
+  background: linear-gradient(180deg, rgba(18,59,64,0) 35%, rgba(10,40,44,0.86) 100%);
 }
 .cat-card .cat-label {
   position: absolute;
@@ -245,7 +245,7 @@
   display: block;
   position: relative;
   aspect-ratio: 1/1.05;
-  background: linear-gradient(155deg, var(--cream-2), #ece4d4 120%);
+  background: linear-gradient(155deg, var(--cream-2), #DCC7A3 120%);
   overflow: hidden;
 }
 .product-media svg {
@@ -304,7 +304,7 @@
 }
 .product-price { display: flex; align-items: baseline; gap: 6px; }
 .price-now { font-family: var(--font-latin); font-size: 1.35rem; font-weight: 600; color: var(--olive); }
-.price-old { font-family: var(--font-latin); font-size: 0.95rem; color: #b3b3ac; text-decoration: line-through; }
+.price-old { font-family: var(--font-latin); font-size: 0.95rem; color: #A89A88; text-decoration: line-through; }
 .add-cart-btn {
   width: 44px; height: 44px;
   border-radius: 50%;
@@ -395,7 +395,7 @@
 .insta-item .insta-media svg { width: 44%; height: 44%; position: absolute; inset: 0; margin: auto; opacity: 0.9; }
 .insta-item .insta-overlay {
   position: absolute; inset: 0;
-  background: rgba(26,51,46,0.72);
+  background: rgba(18,59,64,0.72);
   display: flex; align-items: center; justify-content: center;
   opacity: 0;
   transition: opacity var(--dur-fast) var(--ease-luxury);
@@ -471,7 +471,7 @@
 }
 .field textarea { resize: vertical; min-height: 140px; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
-.field input[readonly] { background: var(--cream, #f6f3ed); color: var(--ink-soft); cursor: not-allowed; }
+.field input[readonly] { background: var(--cream, #FBF9F5); color: var(--ink-soft); cursor: not-allowed; }
 
 /* ---- Breadcrumb / Page header ---- */
 .page-hero {
@@ -627,7 +627,7 @@ html[dir="rtl"] .cart-drawer.is-open { transform: translateX(0); }
 .qty-btn:hover { border-color: var(--gold); background: rgba(184,154,94,0.1); }
 a.is-disabled-link { pointer-events: none; opacity: 0.5; }
 .overlay-scrim {
-  position: fixed; inset: 0; background: rgba(20,38,34,0.5);
+  position: fixed; inset: 0; background: rgba(10,40,44,0.55);
   z-index: 850; opacity: 0; visibility: hidden; transition: opacity var(--dur-med) ease;
 }
 .overlay-scrim.is-visible { opacity: 1; visibility: visible; }
