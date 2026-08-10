@@ -5,7 +5,7 @@
   /* Brand palette — matched to the ATHAR logo/hero photo: turquoise as the
      main brand color, sandy beige + ivory + soft gold as secondary
      accents, dark warm brown for text. Variable names kept as-is
-     (--olive*/--gold*/--cream*/--ink*) since every rule across the site
+     (the --olive, --gold, --cream, --ink families) since every rule across the site
      already consumes them as tokens — only the values changed here.
 
      Two turquoise roles, both taken from the exact requested values:

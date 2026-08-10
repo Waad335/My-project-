@@ -27,21 +27,17 @@
   z-index: 0;
 }
 /* Real ATHAR logo photo (assets/athar-logo.jpeg.jpeg), used exactly as
-   provided — no crop/recolor/edit — as the hero's visual backdrop. Sits
-   above the base gradient/glow (z-index 0) and below the live hero text/
-   CTAs (.hero-inner, z-index 2), with a dark scrim so the existing white
-   heading/subtext/eyebrow stay readable over the light sand/sky photo. */
+   provided — no crop/recolor/edit — as the hero's visual backdrop, shown
+   at full natural brightness (no scrim). The photo already carries its
+   own "ATHAR" wordmark/tagline, so the live duplicate heading elements
+   are visually hidden below (kept in the DOM for SEO/accessibility) —
+   only the CTA buttons and scroll hint sit on top of the photo now. */
 .hero-visual {
   position: absolute; inset: 0;
   background-image: url('../assets/athar-logo.jpeg.jpeg');
   background-size: cover;
   background-position: center;
   z-index: 1;
-}
-.hero-visual::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(3,47,54,0.55) 0%, rgba(3,47,54,0.68) 55%, rgba(3,47,54,0.8) 100%);
 }
 .hero-glow {
   position: absolute;
@@ -95,7 +91,36 @@
   margin-bottom: var(--space-4);
   opacity: 0; animation: hero-in 1.1s var(--ease-luxury) 0.6s forwards;
 }
-.hero-cta { display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center; opacity: 0; animation: hero-in 1.1s var(--ease-luxury) 0.8s forwards; }
+/* Visually hidden (same technique as .visually-hidden in base.css) —
+   the photo above already carries the ATHAR mark/wordmark/tagline, so
+   this live duplicate is kept for SEO/screen readers only, matching the
+   reference: photo + CTAs, no separate overlaid heading block. */
+.hero-emblem, .hero-eyebrow, .hero h1, .hero p.hero-sub {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.hero-cta {
+  display: flex; gap: var(--space-2); flex-wrap: wrap; justify-content: center;
+  opacity: 0; animation: hero-in 1.1s var(--ease-luxury) 0.8s forwards;
+  /* With the heading block visually hidden above, .hero-inner's flex
+     centering alone would land the buttons mid-photo, overlapping the
+     mark. Push down to sit below the photo's own wordmark/tagline,
+     matching the reference. */
+  margin-top: 59vh;
+}
+/* Scoped override (the shared .btn-outline is only ever used here) so the
+   outline CTA reads as teal-on-photo, matching the reference, instead of
+   the white-on-dark-gradient styling every other page's .btn-outline
+   still uses on its own solid-color hero. */
+.hero-cta .btn-outline {
+  background: rgba(255,255,255,0.88);
+  color: var(--olive);
+  border-color: var(--olive-soft);
+}
+.hero-cta .btn-outline:hover { background: var(--white); border-color: var(--olive); }
 @keyframes hero-in {
   from { opacity: 0; transform: translateY(26px); }
   to { opacity: 1; transform: translateY(0); }

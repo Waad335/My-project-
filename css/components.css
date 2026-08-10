@@ -89,6 +89,15 @@
 .brand-mark path, .brand-mark .seal { fill: var(--gold); }
 .site-header:not(.is-scrolled):not(.is-solid) .brand-word-ar,
 .site-header:not(.is-scrolled):not(.is-solid) .brand-word-en { color: var(--white); }
+/* index.html only (every other page's header always carries data-solid,
+   since only the homepage has the bright, un-scrimmed hero photo instead
+   of a dark gradient) — the brand mark reads in its own two-tone colors
+   over the light sand/sky, matching the photo itself. Higher specificity
+   than the white rule above via the extra :not([data-solid]), so this
+   wins on index.html without touching any other page's transparent
+   header state. */
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .brand-word-ar { color: var(--olive); }
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .brand-word-en { color: var(--gold-dark); }
 .brand-word {
   display: flex;
   flex-direction: column;
@@ -120,6 +129,7 @@
   transition: color var(--dur-fast) ease;
 }
 .site-header:not(.is-scrolled):not(.is-solid) .nav-list a { color: rgba(255,255,255,0.92); }
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .nav-list a { color: var(--ink); }
 .nav-list a::after {
   content: "";
   position: absolute;
@@ -132,6 +142,7 @@
 .nav-list a[aria-current="page"]::after { width: 100%; }
 .nav-list a:hover { color: var(--gold-dark); }
 .site-header:not(.is-scrolled):not(.is-solid) .nav-list a:hover { color: var(--gold-light); }
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .nav-list a:hover { color: var(--olive); }
 
 .header-actions { display: flex; align-items: center; gap: var(--space-2); }
 .icon-btn {
@@ -143,6 +154,7 @@
   transition: background var(--dur-fast) ease, color var(--dur-fast) ease, transform var(--dur-fast) ease;
 }
 .site-header:not(.is-scrolled):not(.is-solid) .icon-btn { color: var(--white); }
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .icon-btn { color: var(--ink); }
 .icon-btn:hover { background: rgba(201,169,110,0.14); color: var(--gold-dark); transform: translateY(-2px); }
 .icon-btn svg { width: 21px; height: 21px; }
 .icon-badge {
@@ -167,6 +179,7 @@
   color: var(--olive-2);
 }
 .site-header:not(.is-scrolled):not(.is-solid) .nav-toggle { color: var(--white); }
+.site-header:not([data-solid]):not(.is-scrolled):not(.is-solid) .nav-toggle { color: var(--ink); }
 .nav-toggle svg { width: 24px; height: 24px; }
 
 /* ---- Cards: Category ---- */
