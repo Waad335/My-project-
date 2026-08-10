@@ -62,6 +62,13 @@
   .insta-grid { grid-template-columns: repeat(2, 1fr); }
   .newsletter-form { flex-direction: column; }
   .hero { min-height: 92vh; }
+  /* Mobile portrait is the one regime where `cover` crops horizontally,
+     not vertically (image is roughly square, viewport is much taller than
+     wide), so the photo's full height — and the vh-relative position of
+     its wordmark/CTA area — always maps 1:1 to the viewport. Restore the
+     original flow-centered + vh-offset behavior here instead of the
+     bottom-anchored one used above 640px. */
+  .hero-inner { align-self: auto; justify-content: center; padding-bottom: var(--space-6); }
   .hero-cta { margin-top: 37vh; }
   .about-badge { width: 100px; height: 100px; bottom: -18px; inset-inline-start: -14px; }
   .header-actions .icon-btn.hide-mobile { display: none; }
