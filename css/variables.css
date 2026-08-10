@@ -2,30 +2,40 @@
    ATHAR | أثر — Design Tokens
    ========================================================================== */
 :root {
-  /* Brand palette — ATHAR logo-inspired: turquoise/aqua main, sandy
-     beige/champagne secondary, soft muted gold accent, warm ivory
-     background, deep warm charcoal/brown text. Variable names kept as-is
+  /* Brand palette — matched to the ATHAR logo/hero photo: turquoise as the
+     main brand color, sandy beige + ivory + soft gold as secondary
+     accents, dark warm brown for text. Variable names kept as-is
      (--olive*/--gold*/--cream*/--ink*) since every rule across the site
-     already consumes them as tokens — only the values changed here. */
-  --olive: #1D6B74;       /* main: deep turquoise (buttons, badges, prices, nav accents) */
-  --olive-2: #123B40;     /* deepest turquoise (headings, footer, hero, loader, shadows) */
-  --olive-soft: #2E8891;  /* mid turquoise (decorative gradients) */
-  --olive-tint: #EAF4F3;  /* pale turquoise tint */
-  --olive-bright: #6FCBD1; /* luminous turquoise for on-dark accents (e.g. loader ring) */
-  --gold: #B89A5E;
-  --gold-light: #D8C299;
-  --gold-dark: #94793F;
+     already consumes them as tokens — only the values changed here.
+
+     Two turquoise roles, both taken from the exact requested values:
+     --olive is the "deep turquoise" (#087B8A family) used wherever text
+     or button-label contrast matters (buttons, badges, prices, nav);
+     --olive-soft is the exact "primary turquoise" (#1D9BAA) used for
+     large/decorative surfaces (hero, glows, gradients) where strict
+     small-text contrast doesn't apply. --olive-2/--gold-dark are nudged
+     slightly darker than their nearest requested value specifically to
+     clear WCAG AA 4.5:1 as text (headings / eyebrow labels respectively);
+     everywhere else uses the requested hex exactly. */
+  --olive: #076F7C;        /* deep turquoise (buttons, badges, prices, nav accents) — ~AA-nudged from #087B8A */
+  --olive-2: #065A66;      /* deepest turquoise (headings, footer, hero, loader, shadows) */
+  --olive-soft: #1D9BAA;   /* primary turquoise, exact — decorative/large surfaces */
+  --olive-tint: #E4F5F6;   /* pale turquoise tint */
+  --olive-bright: #7FE0E8; /* luminous turquoise for on-dark accents (e.g. loader ring) */
+  --gold: #C9A96E;         /* soft gold, exact */
+  --gold-light: #E3CA9C;
+  --gold-dark: #836537;    /* darkened from a straight tint of --gold for AA-legible label text on ivory */
   --white: #FFFFFF;
-  --cream: #FBF9F5;       /* warm ivory background */
-  --cream-2: #E7D9C0;     /* secondary: sandy beige / champagne */
-  --ink: #332A22;         /* deep warm charcoal / dark brown text */
-  --ink-soft: #6B5C4E;    /* warm taupe secondary text */
-  --line: rgba(29, 107, 116, 0.16);
+  --cream: #F7F1E6;        /* warm ivory background, exact */
+  --cream-2: #E8D3B5;      /* soft sandy beige, exact */
+  --ink: #4A3A2A;          /* dark warm brown text, exact */
+  --ink-soft: #7A6650;     /* lighter warm brown, secondary text */
+  --line: rgba(7, 111, 124, 0.16);
 
   /* Gradients */
-  --grad-olive: linear-gradient(160deg, #1F7A83 0%, #123B40 100%);
-  --grad-gold: linear-gradient(135deg, #cdb27a 0%, #B89A5E 45%, #94793F 100%);
-  --grad-hero: radial-gradient(120% 120% at 20% 0%, #256F78 0%, #123B40 55%, #0A282C 100%);
+  --grad-olive: linear-gradient(160deg, #1D9BAA 0%, #065A66 100%);
+  --grad-gold: linear-gradient(135deg, #E3CA9C 0%, #C9A96E 45%, #836537 100%);
+  --grad-hero: radial-gradient(120% 120% at 20% 0%, #1D9BAA 0%, #065A66 55%, #032F36 100%);
 
   /* Typography */
   --font-display: 'Aref Ruqaa', 'Amiri', serif;
@@ -48,10 +58,10 @@
   --radius-pill: 999px;
 
   /* Shadows */
-  --shadow-sm: 0 4px 16px rgba(18, 59, 64, 0.06);
-  --shadow-md: 0 14px 40px rgba(18, 59, 64, 0.10);
-  --shadow-lg: 0 28px 70px rgba(18, 59, 64, 0.16);
-  --shadow-gold: 0 10px 30px rgba(184, 154, 94, 0.28);
+  --shadow-sm: 0 4px 16px rgba(6, 90, 102, 0.06);
+  --shadow-md: 0 14px 40px rgba(6, 90, 102, 0.10);
+  --shadow-lg: 0 28px 70px rgba(6, 90, 102, 0.16);
+  --shadow-gold: 0 10px 30px rgba(201, 169, 110, 0.28);
 
   /* Motion */
   --ease-luxury: cubic-bezier(0.19, 1, 0.22, 1);

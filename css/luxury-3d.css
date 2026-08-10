@@ -105,7 +105,7 @@
 }
 .product-card, .cat-card, .collection-card {
   box-shadow:
-    var(--shx3d, 0px) var(--shy3d, 10px) var(--shb3d, 30px) rgba(18, 59, 64, var(--sho3d, 0.08)),
+    var(--shx3d, 0px) var(--shy3d, 10px) var(--shb3d, 30px) rgba(6,90,102, var(--sho3d, 0.08)),
     var(--shadow-sm);
 }
 .product-card.is-tilting,
@@ -189,7 +189,7 @@
   position: absolute;
   width: 320px; height: 320px;
   border-radius: 50%;
-  border: 1px solid rgba(184,154,94,0.18);
+  border: 1px solid rgba(201,169,110,0.18);
   top: 14%;
   inset-inline-start: 6%;
   z-index: 0;
@@ -213,7 +213,7 @@
   inset: -20px;
   z-index: -1;
   border-radius: var(--radius-lg);
-  background: radial-gradient(60% 60% at 50% 40%, rgba(184,154,94,0.16), transparent 70%);
+  background: radial-gradient(60% 60% at 50% 40%, rgba(201,169,110,0.16), transparent 70%);
   translate: var(--px3d-pdp, 0px) var(--py3d-pdp, 0px);
   pointer-events: none;
 }
