@@ -101,7 +101,7 @@
 }
 .product-card, .cat-card, .collection-card {
   box-shadow:
-    var(--shx3d, 0px) var(--shy3d, 10px) var(--shb3d, 30px) rgba(26, 51, 46, var(--sho3d, 0.08)),
+    var(--shx3d, 0px) var(--shy3d, 10px) var(--shb3d, 30px) rgba(18, 59, 64, var(--sho3d, 0.08)),
     var(--shadow-sm);
 }
 .product-card.is-tilting,

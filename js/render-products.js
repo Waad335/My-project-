@@ -80,7 +80,7 @@
   function productGridSkeleton(count) {
     var html = '';
     for (var i = 0; i < count; i++) {
-      html += '<div class="product-card" style="height:380px;background:linear-gradient(90deg,#f4efe6 25%,#ece4d4 37%,#f4efe6 63%);background-size:400% 100%;animation:athar-skeleton 1.4s ease infinite"></div>';
+      html += '<div class="product-card" style="height:380px;background:linear-gradient(90deg,#F5F0E6 25%,#EADFC8 37%,#F5F0E6 63%);background-size:400% 100%;animation:athar-skeleton 1.4s ease infinite"></div>';
     }
     return html;
   }
