@@ -69,7 +69,10 @@
      original flow-centered + vh-offset behavior here instead of the
      bottom-anchored one used above 640px. */
   .hero-inner { align-self: auto; justify-content: center; padding-bottom: var(--space-6); }
-  .hero-cta { margin-top: 37vh; }
+  /* 37vh -> 42vh: clearance between the baked-in tagline and the CTA row
+     (was only ~2px on common phone widths; the .hero-visual inset also
+     shifted the tagline up a bit, so together this lands ~27-30px). */
+  .hero-cta { margin-top: 42vh; }
   .about-badge { width: 100px; height: 100px; bottom: -18px; inset-inline-start: -14px; }
   .header-actions .icon-btn.hide-mobile { display: none; }
   .products-toolbar { flex-direction: column; align-items: stretch; }
@@ -78,6 +81,19 @@
   .toolbar-controls input[type="number"] { flex: 1; width: auto; }
   .pdp-actions { flex-direction: column; align-items: stretch; }
   .pdp-actions .pdp-fav-btn { align-self: center; }
+}
+
+/* Narrow phones (~380px and under, e.g. iPhone SE) wrap the two CTA
+   buttons onto two lines, nearly doubling the CTA row's height. At that
+   width there's already a pre-existing overlap between the CTA row and
+   both the tagline above and the scroll hint below, in the unmodified
+   code — the 41vh increase above would push the row further down and
+   trade a smaller tagline overlap for a larger scroll-hint one, not a
+   net fix. Explicitly keep this tier at the original 37vh rather than
+   let it inherit 41vh, so this pre-existing edge case is left exactly as
+   it was rather than shifted sideways. */
+@media (max-width: 382px) {
+  .hero-cta { margin-top: 37vh; }
 }
 
 @media (min-width: 861px) {

@@ -24,14 +24,15 @@
      of the tagline and of each other without changing anything at the
      reference composition itself. */
   --hero-space: calc(50vh - 21.02vw);
-  /* Targets a 20px gap above the CTA row, in terms of --hero-space and
-     the CTA row's own (now viewport-dependent, see .hero-cta .btn)
-     height: row-top = space - ctaHeight(space), so padding-bottom =
-     space - ctaHeight(space) - 20px. Floored low (4px) rather than 0
-     only to avoid a literal zero-padding edge case; capped generously
-     (220px) so extremely tall/narrow windows don't push the row
-     implausibly high. */
-  --cta-bottom-gap: clamp(4px, calc(var(--hero-space) * 0.8606 - 43.95px), 220px);
+  /* Targets a ~28px gap above the CTA row (was 20px; +12px added after
+     .hero-visual's inset shifted the baked-in tagline up a bit, which
+     also freed room to widen this gap without reopening the CTA/scroll-
+     hint clearance problem — it improves alongside gap1 rather than
+     trading against it, since the tagline moved, not the CTA row).
+     Floored low (4px) rather than 0 only to avoid a literal zero-padding
+     edge case; capped generously (220px) so extremely tall/narrow
+     windows don't push the row implausibly high. */
+  --cta-bottom-gap: clamp(4px, calc(var(--hero-space) * 0.8606 - 31.95px), 220px);
 }
 .hero::before {
   content: "";
@@ -48,13 +49,20 @@
   z-index: 0;
 }
 /* Real ATHAR logo photo (assets/athar-logo.jpeg.jpeg), used exactly as
-   provided — no crop/recolor/edit — as the hero's visual backdrop, shown
-   at full natural brightness (no scrim). The photo already carries its
-   own "ATHAR" wordmark/tagline, so the live duplicate heading elements
-   are visually hidden below (kept in the DOM for SEO/accessibility) —
-   only the CTA buttons and scroll hint sit on top of the photo now. */
+   provided — no crop/recolor/edit — as the hero's visual backdrop. The
+   photo already carries its own "ATHAR" wordmark/tagline, so the live
+   duplicate heading elements are visually hidden below (kept in the DOM
+   for SEO/accessibility) — only the CTA buttons and scroll hint sit on
+   top of the photo now. */
 .hero-visual {
-  position: absolute; inset: 0;
+  position: absolute;
+  /* Inset on all four sides (was inset:0/full-bleed) so the photo reads as
+     a contained, slightly smaller element within the hero rather than an
+     edge-to-edge dominant background — the hero's own gradient shows as a
+     thin margin around it. background-size/position below still apply to
+     this (now slightly smaller) box, so the crop/composition is identical,
+     just at a marginally smaller overall scale. */
+  inset: clamp(14px, 2.8vw, 40px);
   background-image: url('../assets/athar-logo.jpeg.jpeg');
   background-size: cover;
   /* Plain center: matches the reference composition (dune/sea visible
@@ -64,6 +72,18 @@
      bottom padding, which is tuned to this exact anchor. */
   background-position: center 50%;
   z-index: 1;
+  /* Slight contrast/saturation lift for a crisper, richer read of the
+     same photo — no resize, no recolor of its content. */
+  filter: saturate(1.06) contrast(1.05) brightness(1.015);
+}
+/* Very soft vignette — kept light so the photo still reads as natural and
+   clear, not darkened; the inset above (not this) does the "smaller/more
+   contained" work now. */
+.hero-visual::after {
+  content: "";
+  position: absolute; inset: 0;
+  box-shadow: inset 0 0 90px 10px rgba(18, 20, 16, 0.08);
+  pointer-events: none;
 }
 .hero-glow {
   position: absolute;
