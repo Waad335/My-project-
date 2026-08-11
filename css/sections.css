@@ -24,15 +24,14 @@
      of the tagline and of each other without changing anything at the
      reference composition itself. */
   --hero-space: calc(50vh - 21.02vw);
-  /* Targets a ~28px gap above the CTA row (was 20px; +12px added after
-     .hero-visual's inset shifted the baked-in tagline up a bit, which
-     also freed room to widen this gap without reopening the CTA/scroll-
-     hint clearance problem — it improves alongside gap1 rather than
-     trading against it, since the tagline moved, not the CTA row).
-     Floored low (4px) rather than 0 only to avoid a literal zero-padding
-     edge case; capped generously (220px) so extremely tall/narrow
-     windows don't push the row implausibly high. */
-  --cta-bottom-gap: clamp(4px, calc(var(--hero-space) * 0.8606 - 31.95px), 220px);
+  /* Targets a ~36px gap above the CTA row (was ~28px) for clearly visible
+     breathing room. This trades directly against the CTA/scroll-hint gap
+     below (same row, pushed further from the bottom edge) — still
+     comfortably positive everywhere, tightest at 1366x768. Floored low
+     (4px) rather than 0 only to avoid a literal zero-padding edge case;
+     capped generously (220px) so extremely tall/narrow windows don't push
+     the row implausibly high. */
+  --cta-bottom-gap: clamp(4px, calc(var(--hero-space) * 0.8606 - 39.95px), 220px);
 }
 .hero::before {
   content: "";
@@ -72,9 +71,11 @@
      bottom padding, which is tuned to this exact anchor. */
   background-position: center 50%;
   z-index: 1;
-  /* Slight contrast/saturation lift for a crisper, richer read of the
-     same photo — no resize, no recolor of its content. */
-  filter: saturate(1.06) contrast(1.05) brightness(1.015);
+  /* Warmer, richer color grading (golden-hour feel) — saturation/contrast
+     lifted further and a touch of sepia + a slight warm hue-rotate, still
+     the same photo/crop/position, no resize or recolor of its content
+     beyond this filter. */
+  filter: saturate(1.18) contrast(1.08) brightness(1.05) sepia(0.1) hue-rotate(-3deg);
 }
 /* Very soft vignette — kept light so the photo still reads as natural and
    clear, not darkened; the inset above (not this) does the "smaller/more
@@ -84,6 +85,26 @@
   position: absolute; inset: 0;
   box-shadow: inset 0 0 90px 10px rgba(18, 20, 16, 0.08);
   pointer-events: none;
+}
+/* Warm golden glow/bloom behind the wordmark/tagline — additive light
+   (mix-blend-mode: screen) rather than a dark contrast patch, matching
+   the reference's radiant look. Position mirrors the same measured
+   formula used throughout this hero (gold-pixel detection across several
+   viewports): desktop's `cover` crop is width-constrained, so the text's
+   screen position shifts with viewport aspect ratio, fit to
+   50vh + 12.5vw - 10.5px. Sits above the photo (z-index:1) but below the
+   CTA row/scroll hint (z-index:2), and is fully non-interactive. */
+.hero-text-glow {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(255,205,110,0.4) 0%, rgba(255,190,90,0.18) 45%, transparent 78%);
+  top: calc(50vh + 12.5vw - 10.5px);
+  width: clamp(240px, 36vw, 520px);
+  height: clamp(140px, 21vw, 320px);
 }
 .hero-glow {
   position: absolute;
@@ -184,6 +205,7 @@
   background: rgba(255,255,255,0.88);
   color: var(--olive);
   border-color: var(--olive-soft);
+  border-width: 2px;
 }
 .hero-cta .btn-outline:hover { background: var(--white); border-color: var(--olive); }
 @keyframes hero-in {

@@ -69,10 +69,14 @@
      original flow-centered + vh-offset behavior here instead of the
      bottom-anchored one used above 640px. */
   .hero-inner { align-self: auto; justify-content: center; padding-bottom: var(--space-6); }
-  /* 37vh -> 42vh: clearance between the baked-in tagline and the CTA row
-     (was only ~2px on common phone widths; the .hero-visual inset also
-     shifted the tagline up a bit, so together this lands ~27-30px). */
-  .hero-cta { margin-top: 42vh; }
+  /* 37vh -> 44vh: clearance between the baked-in tagline and the CTA row
+     (37vh was only ~2px on common phone widths; 42vh landed ~27-30px;
+     44vh pushes to ~36-40px for clearly visible breathing room). */
+  .hero-cta { margin-top: 44vh; }
+  /* Same height-constrained regime means the text position is a stable %
+     of .hero's own height here (measured ~62.1%), instead of the vh+vw
+     screen-absolute formula used above 640px. */
+  .hero-text-glow { top: 62.1%; width: min(80vw, 340px); height: clamp(120px, 20vh, 220px); }
   .about-badge { width: 100px; height: 100px; bottom: -18px; inset-inline-start: -14px; }
   .header-actions .icon-btn.hide-mobile { display: none; }
   .products-toolbar { flex-direction: column; align-items: stretch; }
