@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------- */
+/* VELOURA design tokens                                                  */
+/* ---------------------------------------------------------------------- */
+
+:root {
+  /* Palette */
+  --color-ivory: #faf7f2;
+  --color-beige: #ede4d6;
+  --color-sand: #d9c9b4;
+  --color-brown: #4a3b2c;
+  --color-charcoal: #23201c;
+  --color-black: #14120f;
+  --color-gold: #b08d4f;
+  --color-gold-soft: #cba86a;
+  --color-white: #ffffff;
+
+  --color-bg: var(--color-ivory);
+  --color-fg: var(--color-black);
+  --color-muted: #6f6355;
+  --color-border: rgba(20, 18, 15, 0.1);
+  --color-surface: var(--color-white);
+
+  /* Typography */
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-inter), Inter, "Helvetica Neue", Arial, sans-serif;
+
+  /* Motion */
+  --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 240ms;
+  --duration-base: 560ms;
+  --duration-slow: 900ms;
+}
+
+@theme inline {
+  --color-ivory: var(--color-ivory);
+  --color-beige: var(--color-beige);
+  --color-sand: var(--color-sand);
+  --color-brown: var(--color-brown);
+  --color-charcoal: var(--color-charcoal);
+  --color-black: var(--color-black);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-surface: var(--color-surface);
+
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+
+  --animate-marquee: marquee 32s linear infinite;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-white);
+}
+
+/* Focus visibility kept intentional and on-brand instead of the browser default */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.font-serif-display {
+  font-family: var(--font-serif);
+}
+
+/* Reduced motion: neutralize scroll smoothing and long transitions site-wide */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Editorial placeholder art texture (used where no photography exists) */
+.grain-overlay {
+  position: relative;
+  isolation: isolate;
+}
+.grain-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.text-balance {
+  text-wrap: balance;
+}
