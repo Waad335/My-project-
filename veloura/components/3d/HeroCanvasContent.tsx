@@ -127,7 +127,6 @@ export function HeroCanvasContent({
 
   return (
     <>
-      <color attach="background" args={["#00000000"]} />
       <ambientLight intensity={0.7} />
       <directionalLight position={[4, 6, 5]} intensity={1.1} color="#fff4e0" castShadow />
       <pointLight position={[-4, -2, 2]} intensity={0.4} color={GOLD} />
