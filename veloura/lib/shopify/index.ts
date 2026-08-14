@@ -1,4 +1,4 @@
-import { isShopifyConfigured, shopifyFetch } from "./client";
+import { isShopifyConfigured, shopifyFetch, ShopifyApiError } from "./client";
 import {
   GET_COLLECTIONS_QUERY,
   GET_COLLECTION_PRODUCTS_QUERY,
@@ -19,6 +19,29 @@ export { isShopifyConfigured } from "./client";
 
 const TAGS = { products: "products", collections: "collections", cart: "cart" };
 
+/**
+ * Read-path safety net: if Shopify credentials are present but wrong (bad
+ * domain, expired/incorrect token) or the API is briefly unreachable, log a
+ * clear diagnostic server-side instead of letting the error bubble up and
+ * crash the page. Callers get back `null`/`data: null` and render their
+ * existing empty state, exactly as if nothing were configured yet.
+ */
+async function safeShopifyFetch<TData>(
+  args: Parameters<typeof shopifyFetch<TData>>[0]
+): Promise<{ data: TData | null }> {
+  try {
+    return await shopifyFetch<TData>(args);
+  } catch (error) {
+    const reason =
+      error instanceof ShopifyApiError ? error.message : "Unexpected error contacting Shopify";
+    console.error(
+      `[shopify] Request failed — check NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and SHOPIFY_STOREFRONT_ACCESS_TOKEN. Reason: ${reason}`,
+      error instanceof ShopifyApiError ? error.errors : error
+    );
+    return { data: null };
+  }
+}
+
 /** Fetch a page of products, optionally filtered by a Storefront search query and sorted. */
 export async function getProducts(options: ProductFilterOptions = {}): Promise<ShopifyProduct[]> {
   if (!isShopifyConfigured) {
@@ -29,7 +52,7 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<S
   if (options.query) queryParts.push(options.query);
   if (options.collectionHandle) queryParts.push(`collection:${options.collectionHandle}`);
 
-  const { data } = await shopifyFetch<{ products: { edges: { node: unknown }[] } }>({
+  const { data } = await safeShopifyFetch<{ products: { edges: { node: unknown }[] } }>({
     query: GET_PRODUCTS_QUERY,
     variables: {
       first: 100,
@@ -51,7 +74,7 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
     return mockProducts.find((p) => p.handle === handle) ?? null;
   }
 
-  const { data } = await shopifyFetch<{ product: unknown }>({
+  const { data } = await safeShopifyFetch<{ product: unknown }>({
     query: GET_PRODUCT_QUERY,
     variables: { handle },
     tags: [TAGS.products],
@@ -68,7 +91,7 @@ export async function getProductRecommendations(productId: string): Promise<Shop
     return mockProducts.filter((p) => p.id !== productId).slice(0, 4);
   }
 
-  const { data } = await shopifyFetch<{ productRecommendations: unknown[] }>({
+  const { data } = await safeShopifyFetch<{ productRecommendations: unknown[] }>({
     query: GET_PRODUCT_RECOMMENDATIONS_QUERY,
     variables: { productId },
     tags: [TAGS.products],
@@ -84,7 +107,7 @@ export async function getCollections(): Promise<ShopifyCollection[]> {
     return mockCollections;
   }
 
-  const { data } = await shopifyFetch<{ collections: { edges: { node: unknown }[] } }>({
+  const { data } = await safeShopifyFetch<{ collections: { edges: { node: unknown }[] } }>({
     query: GET_COLLECTIONS_QUERY,
     tags: [TAGS.collections],
     revalidate: 300,
@@ -99,7 +122,7 @@ export async function getCollection(handle: string): Promise<ShopifyCollection |
     return mockCollections.find((c) => c.handle === handle) ?? null;
   }
 
-  const { data } = await shopifyFetch<{ collection: unknown }>({
+  const { data } = await safeShopifyFetch<{ collection: unknown }>({
     query: GET_COLLECTION_QUERY,
     variables: { handle },
     tags: [TAGS.collections],
@@ -124,12 +147,15 @@ export async function getCollectionProducts(
     return { collection, products };
   }
 
-  const { data } = await shopifyFetch<{ collection: unknown }>({
+  const { data } = await safeShopifyFetch<{ collection: unknown }>({
     query: GET_COLLECTION_PRODUCTS_QUERY,
     variables: {
       handle,
       first: 100,
-      sortKey: options.sortKey ?? "COLLECTION_DEFAULT",
+      // Collection-scoped sorting uses Shopify's `ProductCollectionSortKeys`
+      // enum, which spells this option `CREATED` (not `CREATED_AT` as on the
+      // top-level `products` query's `ProductSortKeys`).
+      sortKey: options.sortKey === "CREATED_AT" ? "CREATED" : options.sortKey ?? "COLLECTION_DEFAULT",
       reverse: options.reverse ?? false,
     },
     tags: [TAGS.collections, TAGS.products],

@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 interface AccordionItemProps {
   question: string;
@@ -27,7 +28,7 @@ function AccordionItem({ question, children, defaultOpen = false }: AccordionIte
         <span className="font-serif-display text-lg text-black">{question}</span>
         <span
           className={cn(
-            "shrink-0 text-xl font-light text-gold transition-transform duration-500",
+            "shrink-0 text-xl font-light text-gold-deep transition-transform duration-base",
             open && "rotate-45"
           )}
           aria-hidden="true"
@@ -43,7 +44,7 @@ function AccordionItem({ question, children, defaultOpen = false }: AccordionIte
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: prefersReducedMotion ? 0 : DURATION.fast, ease: EASE_LUXURY }}
             className="overflow-hidden"
           >
             <p className="pb-5 pr-8 text-sm leading-relaxed text-muted">{children}</p>

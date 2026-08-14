@@ -32,7 +32,7 @@ export function Footer() {
             <ul className="flex flex-col gap-3 text-sm">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="hover:text-gold">
+                  <Link href={link.href} className="hover:text-gold-deep">
                     {link.label}
                   </Link>
                 </li>
@@ -45,7 +45,7 @@ export function Footer() {
             <ul className="flex flex-col gap-3 text-sm">
               {FOOTER_LINKS.support.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="hover:text-gold">
+                  <Link href={link.href} className="hover:text-gold-deep">
                     {link.label}
                   </Link>
                 </li>

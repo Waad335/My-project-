@@ -77,7 +77,7 @@ export function Scene3D({ variant, className }: { variant: Variant; className?: 
   }, [canRender3D]);
 
   return (
-    <div ref={containerRef} className={cn("relative overflow-hidden", className)}>
+    <div ref={containerRef} className={cn("overflow-hidden", className)}>
       {canRender3D && !isMobile && variant === "hero" && <HeroScene scrollProgress={scrollProgress} />}
       {canRender3D && !isMobile && variant === "workspace" && (
         <WorkspaceScene scrollProgress={scrollProgress} />

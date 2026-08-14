@@ -28,7 +28,7 @@ export function WhyVeloura() {
     <section className="border-y border-black/10 bg-ivory py-24 md:py-32">
       <div className="mx-auto max-w-[1600px] px-6 md:px-10 lg:px-14">
         <Reveal className="mb-16 max-w-xl">
-          <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Why VELOURA</p>
+          <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Why VELOURA</p>
           <h2 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">
             Quiet luxury, in every file.
           </h2>
@@ -37,7 +37,7 @@ export function WhyVeloura() {
         <StaggerGroup className="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => (
             <StaggerItem key={feature.title}>
-              <div className="mb-5 text-gold">{feature.icon}</div>
+              <div className="mb-5 text-gold-deep">{feature.icon}</div>
               <h3 className="font-serif-display mb-2 text-xl">{feature.title}</h3>
               <p className="text-sm leading-relaxed text-muted">{feature.description}</p>
             </StaggerItem>

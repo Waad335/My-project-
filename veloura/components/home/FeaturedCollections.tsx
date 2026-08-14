@@ -9,7 +9,7 @@ export function FeaturedCollections({ collections }: { collections: ShopifyColle
     <section className="mx-auto max-w-[1600px] px-6 py-24 md:px-10 md:py-32 lg:px-14">
       <div className="mb-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <Reveal>
-          <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Collections</p>
+          <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Collections</p>
           <h2 className="font-serif-display max-w-xl text-4xl leading-[1.05] sm:text-5xl">
             Curated for your next chapter.
           </h2>

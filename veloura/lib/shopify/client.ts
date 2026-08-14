@@ -1,8 +1,8 @@
 import "server-only";
 
-const API_VERSION = "2025-01";
+const API_VERSION = "2026-07";
 
-const domain = process.env.SHOPIFY_STORE_DOMAIN ?? process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
+const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
 const storefrontToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
 export const isShopifyConfigured = Boolean(domain && storefrontToken);

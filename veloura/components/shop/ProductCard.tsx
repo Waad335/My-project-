@@ -6,6 +6,7 @@ import type { ShopifyProduct } from "@/types/shopify";
 import { PlaceholderArt } from "@/components/ui/PlaceholderArt";
 import { PriceTag } from "@/components/ui/PriceTag";
 import Image from "next/image";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 export function ProductCard({ product, priority = false }: { product: ShopifyProduct; priority?: boolean }) {
   const prefersReducedMotion = useReducedMotion();
@@ -16,7 +17,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
   return (
     <Link
       href={`/products/${product.handle}`}
-      className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-gold)]"
+      className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-deep"
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-beige">
         {primaryImage ? (
@@ -24,7 +25,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
             <motion.div
               className="absolute inset-0"
               whileHover={prefersReducedMotion ? undefined : { scale: 1.06 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: DURATION.base, ease: EASE_LUXURY }}
             >
               <Image
                 src={primaryImage.url}
@@ -41,7 +42,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                className="absolute inset-0 object-cover opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-100"
+                className="absolute inset-0 object-cover opacity-0 transition-opacity duration-base ease-out group-hover:opacity-100"
               />
             )}
           </>
@@ -49,7 +50,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
           <motion.div
             className="absolute inset-0"
             whileHover={prefersReducedMotion ? undefined : { scale: 1.06 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: DURATION.base, ease: EASE_LUXURY }}
           >
             <PlaceholderArt seed={product.handle} label={product.title} className="absolute inset-0" />
           </motion.div>
@@ -66,7 +67,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
           </span>
         )}
 
-        <span className="pointer-events-none absolute inset-x-3 bottom-3 translate-y-2 bg-ivory/95 px-4 py-2.5 text-center text-[11px] uppercase tracking-[0.16em] text-black opacity-0 transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+        <span className="pointer-events-none absolute inset-x-3 bottom-3 translate-y-2 bg-ivory/95 px-4 py-2.5 text-center text-[11px] uppercase tracking-[0.16em] text-black opacity-0 transition-all duration-base ease-out group-hover:translate-y-0 group-hover:opacity-100">
           View Product
         </span>
       </div>
@@ -76,7 +77,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
           {category && (
             <p className="mb-1 text-[10px] uppercase tracking-[0.16em] text-muted">{category}</p>
           )}
-          <h3 className="font-serif-display text-lg leading-snug text-black group-hover:text-gold">
+          <h3 className="font-serif-display text-lg leading-snug text-black group-hover:text-gold-deep">
             {product.title}
           </h3>
         </div>

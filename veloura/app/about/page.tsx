@@ -14,7 +14,7 @@ export default function AboutPage() {
     <div className="pb-24 pt-32 lg:pt-40">
       <div className="mx-auto max-w-4xl px-6 text-center">
         <Reveal>
-          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-gold">About VELOURA</p>
+          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-gold-deep">About VELOURA</p>
         </Reveal>
         <Reveal delay={0.1} blur>
           <h1 className="font-serif-display text-balance text-5xl leading-[1.08] sm:text-6xl md:text-7xl">

@@ -14,6 +14,11 @@
   --color-black: #14120f;
   --color-gold: #b08d4f;
   --color-gold-soft: #cba86a;
+  /* Same gold hue, darkened for AA-safe text on light backgrounds (ivory/beige/white).
+     text-gold on ivory measures 2.9:1 (fails 4.5:1); text-gold-deep measures 4.83:1.
+     Use --color-gold for dark backgrounds, large display type, and decorative use;
+     use --color-gold-deep for any gold *text* on a light surface. */
+  --color-gold-deep: #84693b;
   --color-white: #ffffff;
 
   --color-bg: var(--color-ivory);
@@ -26,10 +31,12 @@
   --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-sans: var(--font-inter), Inter, "Helvetica Neue", Arial, sans-serif;
 
-  /* Motion */
+  /* Motion — single source of truth for transition timing site-wide.
+     fast: micro-interactions (backdrops, toggles). base: standard reveals,
+     drawers, crossfades. slow: hero-level dramatic entrances. */
   --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 240ms;
-  --duration-base: 560ms;
+  --duration-base: 650ms;
   --duration-slow: 900ms;
 }
 
@@ -42,6 +49,7 @@
   --color-black: var(--color-black);
   --color-gold: var(--color-gold);
   --color-gold-soft: var(--color-gold-soft);
+  --color-gold-deep: var(--color-gold-deep);
 
   --color-background: var(--color-bg);
   --color-foreground: var(--color-fg);
@@ -51,6 +59,12 @@
 
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
+
+  /* Exposed as duration-fast/base/slow and ease-luxury Tailwind utilities */
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+  --duration-slow: var(--duration-slow);
+  --ease-luxury: var(--ease-luxury);
 
   --animate-marquee: marquee 32s linear infinite;
 }
@@ -76,9 +90,11 @@ body {
   color: var(--color-white);
 }
 
-/* Focus visibility kept intentional and on-brand instead of the browser default */
+/* Focus visibility kept intentional and on-brand instead of the browser default.
+   gold-deep is used here (not gold) because focus rings must clear 3:1 against
+   whatever surface they land on, and gold only clears that on dark surfaces. */
 :focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-gold-deep);
   outline-offset: 3px;
 }
 

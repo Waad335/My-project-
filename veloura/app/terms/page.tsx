@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-2xl px-6 pb-24 pt-32 md:px-10 lg:pt-40">
       <Reveal className="mb-12">
-        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Legal</p>
+        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Legal</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">Terms of Service</h1>
         <p className="mt-4 text-xs text-muted">Last updated: {new Date().getFullYear()}</p>
       </Reveal>

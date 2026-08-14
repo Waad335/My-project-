@@ -11,7 +11,7 @@ export function NewsletterForm() {
   }
 
   if (status === "submitted") {
-    return <p className="text-sm text-gold">Thank you — you&apos;re on the list.</p>;
+    return <p className="text-sm text-gold-deep">Thank you — you&apos;re on the list.</p>;
   }
 
   return (
@@ -30,7 +30,7 @@ export function NewsletterForm() {
       <button
         type="submit"
         aria-label="Subscribe"
-        className="shrink-0 text-xs uppercase tracking-[0.16em] text-gold hover:text-black"
+        className="shrink-0 text-xs uppercase tracking-[0.16em] text-gold-deep hover:text-black"
       >
         Join
       </button>

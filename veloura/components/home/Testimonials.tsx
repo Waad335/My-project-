@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 const TESTIMONIALS = [
   {
@@ -48,7 +49,7 @@ export function Testimonials() {
               initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -16 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: prefersReducedMotion ? 0 : DURATION.base, ease: EASE_LUXURY }}
             >
               <p className="font-serif-display text-balance text-2xl italic leading-snug sm:text-3xl">
                 &ldquo;{current.quote}&rdquo;
@@ -68,7 +69,7 @@ export function Testimonials() {
               aria-selected={i === index}
               aria-label={`Show testimonial from ${t.name}`}
               onClick={() => setIndex(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
+              className={`h-1.5 rounded-full transition-all duration-base ${
                 i === index ? "w-8 bg-gold" : "w-1.5 bg-ivory/25"
               }`}
             />

@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { PlaceholderArt } from "@/components/ui/PlaceholderArt";
 import type { ShopifyImage } from "@/types/shopify";
 import { cn } from "@/lib/utils";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 export function ProductGallery({
   images,
@@ -31,7 +32,7 @@ export function ProductGallery({
               initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.02 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: prefersReducedMotion ? 0 : DURATION.base, ease: EASE_LUXURY }}
               className="absolute inset-0"
             >
               <Image
@@ -62,7 +63,7 @@ export function ProductGallery({
               aria-current={active === i}
               className={cn(
                 "relative aspect-square overflow-hidden bg-beige transition-opacity",
-                active === i ? "opacity-100 ring-1 ring-gold" : "opacity-60 hover:opacity-90"
+                active === i ? "opacity-100 ring-1 ring-gold-deep" : "opacity-60 hover:opacity-90"
               )}
             >
               <Image src={image.url} alt="" fill sizes="10vw" className="object-cover" />

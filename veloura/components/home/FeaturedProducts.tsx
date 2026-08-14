@@ -9,7 +9,7 @@ export function FeaturedProducts({ products }: { products: ShopifyProduct[] }) {
       <div className="mx-auto max-w-[1600px] px-6 md:px-10 lg:px-14">
         <div className="mb-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <Reveal>
-            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Best Sellers</p>
+            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Best Sellers</p>
             <h2 className="font-serif-display max-w-xl text-4xl leading-[1.05] sm:text-5xl">
               Considered by design, chosen by many.
             </h2>

@@ -39,7 +39,7 @@ export default function FaqPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 pb-24 pt-32 md:px-10 lg:pt-40">
       <Reveal className="mb-14">
-        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">FAQ</p>
+        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">FAQ</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">
           Frequently Asked Questions
         </h1>

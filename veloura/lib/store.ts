@@ -26,6 +26,19 @@ export const useUiStore = create<UiState>((set) => ({
     set((state) => ({ isMobileMenuOpen: value ?? !state.isMobileMenuOpen })),
 }));
 
+interface ShopTransitionState {
+  /** True while a /shop filter/sort/search navigation is in flight — lets the
+   * results grid (a sibling of the filters sidebar) show a skeleton without
+   * both components needing to share a parent Client Component. */
+  isPending: boolean;
+  setPending: (value: boolean) => void;
+}
+
+export const useShopTransitionStore = create<ShopTransitionState>((set) => ({
+  isPending: false,
+  setPending: (value) => set({ isPending: value }),
+}));
+
 interface CartState {
   cart: ShopifyCart | null;
   isLoading: boolean;
@@ -42,8 +55,13 @@ export const useCartStore = create<CartState>((set, get) => ({
   isHydrated: false,
   hydrate: async () => {
     if (get().isHydrated) return;
-    const cart = await getCartAction();
-    set({ cart, isHydrated: true });
+    try {
+      const cart = await getCartAction();
+      set({ cart, isHydrated: true });
+    } catch (error) {
+      console.error("[cart] Failed to load existing cart", error);
+      set({ cart: null, isHydrated: true });
+    }
   },
   addItem: async (variantId, quantity = 1) => {
     set({ isLoading: true });

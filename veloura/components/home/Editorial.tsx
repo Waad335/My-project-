@@ -5,12 +5,12 @@ export function Editorial() {
     <section className="mx-auto max-w-[1600px] px-6 py-28 md:px-10 md:py-40 lg:px-14">
       <div className="mx-auto max-w-5xl">
         <Reveal blur direction="none">
-          <p className="mb-8 text-center text-xs uppercase tracking-[0.3em] text-gold">The Philosophy</p>
+          <p className="mb-8 text-center text-xs uppercase tracking-[0.3em] text-gold-deep">The Philosophy</p>
         </Reveal>
         <Reveal blur direction="none" delay={0.1}>
           <h2 className="font-serif-display text-balance text-center text-4xl leading-[1.12] sm:text-6xl md:text-7xl">
             Designed for people who believe{" "}
-            <span className="italic text-gold">details matter.</span>
+            <span className="italic text-gold-deep">details matter.</span>
           </h2>
         </Reveal>
         <Reveal delay={0.25}>

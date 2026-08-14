@@ -2,19 +2,23 @@
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 type Direction = "up" | "down" | "left" | "right" | "none";
+
+/** 18px — mid-point of the 16-20px "subtle, not a slide" offset range. */
+const REVEAL_OFFSET = 18;
 
 const distanceFor = (direction: Direction) => {
   switch (direction) {
     case "up":
-      return { y: 28 };
+      return { y: REVEAL_OFFSET };
     case "down":
-      return { y: -28 };
+      return { y: -REVEAL_OFFSET };
     case "left":
-      return { x: 28 };
+      return { x: REVEAL_OFFSET };
     case "right":
-      return { x: -28 };
+      return { x: -REVEAL_OFFSET };
     default:
       return {};
   }
@@ -37,7 +41,7 @@ export function Reveal({
   children,
   direction = "up",
   delay = 0,
-  duration = 0.9,
+  duration = DURATION.base,
   className,
   blur = false,
   once = true,
@@ -61,7 +65,7 @@ export function Reveal({
       transition: {
         duration: prefersReducedMotion ? 0 : duration,
         delay: prefersReducedMotion ? 0 : delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: EASE_LUXURY,
       },
     },
   };
@@ -131,7 +135,7 @@ export function StaggerItem({
           opacity: 1,
           x: 0,
           y: 0,
-          transition: { duration: prefersReducedMotion ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: prefersReducedMotion ? 0 : DURATION.base, ease: EASE_LUXURY },
         },
       }}
     >

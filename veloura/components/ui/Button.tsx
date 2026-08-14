@@ -6,12 +6,12 @@ type Variant = "primary" | "secondary" | "ghost" | "light" | "outlineLight";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "group relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans tracking-[0.08em] uppercase transition-colors duration-300 ease-[var(--ease-luxury)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-gold)] disabled:opacity-40 disabled:pointer-events-none";
+  "group relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans tracking-[0.08em] uppercase transition-colors duration-fast ease-luxury focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-deep disabled:opacity-40 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
   primary: "bg-black text-ivory hover:bg-brown",
   secondary: "border border-black/70 text-black hover:border-black hover:bg-black hover:text-ivory",
-  ghost: "text-black hover:text-gold",
+  ghost: "text-black hover:text-gold-deep",
   // For use on dark/photographic backgrounds (e.g. the hero) — ivory fill, flips to gold on hover.
   light: "bg-ivory text-black hover:bg-gold",
   // Outline variant for use on dark backgrounds — ivory border/text, fills ivory on hover.

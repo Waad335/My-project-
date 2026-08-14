@@ -7,10 +7,12 @@ import { useCartStore, useUiStore } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
 import { ProductMedia } from "@/components/ui/ProductMedia";
 import { Button } from "@/components/ui/Button";
+import { CartLinesSkeleton } from "@/components/ui/Skeleton";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 export function CartDrawer() {
   const { isCartOpen, closeCart } = useUiStore();
-  const { cart, updateItem, removeItem, isLoading } = useCartStore();
+  const { cart, isHydrated, updateItem, removeItem, isLoading } = useCartStore();
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export function CartDrawer() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
+            transition={{ duration: prefersReducedMotion ? 0 : DURATION.fast }}
             onClick={closeCart}
             className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-[2px]"
             aria-hidden="true"
@@ -55,7 +57,7 @@ export function CartDrawer() {
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: prefersReducedMotion ? 0 : DURATION.base, ease: EASE_LUXURY }}
             className="fixed right-0 top-0 z-[80] flex h-full w-full max-w-md flex-col bg-ivory shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-black/10 px-6 py-6">
@@ -72,7 +74,9 @@ export function CartDrawer() {
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-6">
-              {isEmpty ? (
+              {!isHydrated ? (
+                <CartLinesSkeleton />
+              ) : isEmpty ? (
                 <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
                   <p className="text-sm text-muted">Your bag is empty.</p>
                   <Button href="/shop" size="sm" onClick={closeCart}>
@@ -96,7 +100,7 @@ export function CartDrawer() {
                           <Link
                             href={`/products/${line.merchandise.product.handle}`}
                             onClick={closeCart}
-                            className="font-serif-display text-base leading-tight hover:text-gold"
+                            className="font-serif-display text-base leading-tight hover:text-gold-deep"
                           >
                             {line.merchandise.product.title}
                           </Link>
@@ -112,7 +116,7 @@ export function CartDrawer() {
                             <button
                               type="button"
                               disabled={isLoading}
-                              onClick={() => updateItem(line.id, line.quantity - 1)}
+                              onClick={() => updateItem(line.id, line.quantity - 1).catch(console.error)}
                               aria-label="Decrease quantity"
                               className="px-2.5 py-1 text-sm hover:bg-black/5 disabled:opacity-40"
                             >
@@ -122,7 +126,7 @@ export function CartDrawer() {
                             <button
                               type="button"
                               disabled={isLoading}
-                              onClick={() => updateItem(line.id, line.quantity + 1)}
+                              onClick={() => updateItem(line.id, line.quantity + 1).catch(console.error)}
                               aria-label="Increase quantity"
                               className="px-2.5 py-1 text-sm hover:bg-black/5 disabled:opacity-40"
                             >
@@ -132,7 +136,7 @@ export function CartDrawer() {
                           <button
                             type="button"
                             disabled={isLoading}
-                            onClick={() => removeItem(line.id)}
+                            onClick={() => removeItem(line.id).catch(console.error)}
                             className="text-xs uppercase tracking-wide text-muted hover:text-black disabled:opacity-40"
                           >
                             Remove

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getCollections, getProducts } from "@/lib/shopify";
-import { ProductGrid } from "@/components/shop/ProductGrid";
+import { ShopResults } from "@/components/shop/ShopResults";
 import { ShopFilters } from "@/components/shop/ShopFilters";
+import { ShopFilterDrawer } from "@/components/shop/ShopFilterDrawer";
 import { Reveal } from "@/components/ui/Reveal";
 import type { ProductFilterOptions } from "@/types/shopify";
 
@@ -53,7 +54,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-32 md:px-10 lg:px-14 lg:pt-40">
       <Reveal className="mb-14 max-w-2xl">
-        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Shop</p>
+        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Shop</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">
           The Full Collection
         </h1>
@@ -62,13 +63,17 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         </p>
       </Reveal>
 
+      <Suspense fallback={null}>
+        <ShopFilterDrawer collections={collections} />
+      </Suspense>
+
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[240px_1fr]">
-        <aside className="lg:sticky lg:top-32 lg:self-start">
+        <aside className="hidden lg:block lg:sticky lg:top-32 lg:self-start">
           <Suspense fallback={null}>
             <ShopFilters collections={collections} />
           </Suspense>
         </aside>
-        <ProductGrid products={products} />
+        <ShopResults products={products} />
       </div>
     </div>
   );

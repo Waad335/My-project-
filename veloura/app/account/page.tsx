@@ -12,7 +12,7 @@ export default function AccountPage() {
   return (
     <div className="mx-auto max-w-lg px-6 pb-24 pt-32 text-center md:px-10 lg:pt-40">
       <Reveal>
-        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Account</p>
+        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Account</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">
           Sign in with Shopify
         </h1>

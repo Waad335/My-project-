@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Third-party skill tooling (UI/UX Pro Max etc.) — not app source, not ours to lint.
+    ".claude/**",
   ]),
 ]);
 

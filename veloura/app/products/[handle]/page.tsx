@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getProduct, getProductRecommendations, getProducts } from "@/lib/shopify";
+import { getProduct, getProducts } from "@/lib/shopify";
 import { getDigitalProductMeta } from "@/lib/shopify/digital-meta";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { AddToCart } from "@/components/shop/AddToCart";
 import { PriceTag } from "@/components/ui/PriceTag";
 import { Accordion } from "@/components/ui/Accordion";
-import { Reveal } from "@/components/ui/Reveal";
-import { ProductCard } from "@/components/shop/ProductCard";
+import { ProductRecommendations } from "@/components/shop/ProductRecommendations";
+import { ProductGridSkeleton } from "@/components/ui/Skeleton";
 import { SITE_URL } from "@/lib/constants";
 
 type Params = Promise<{ handle: string }>;
@@ -78,7 +79,6 @@ export default async function ProductPage({ params }: { params: Params }) {
     : product.featuredImage
       ? [product.featuredImage]
       : [];
-  const recommendations = await getProductRecommendations(product.id);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -108,7 +108,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
         <div className="lg:sticky lg:top-32 lg:self-start">
           {product.collections?.[0] && (
-            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-gold">
+            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-gold-deep">
               {product.collections[0].title}
             </p>
           )}
@@ -164,7 +164,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               <ul className="flex flex-col gap-2 text-sm">
                 {meta.includedFiles.map((file) => (
                   <li key={file} className="flex items-center gap-2">
-                    <span className="text-gold" aria-hidden="true">
+                    <span className="text-gold-deep" aria-hidden="true">
                       &#10022;
                     </span>
                     {file}
@@ -181,18 +181,16 @@ export default async function ProductPage({ params }: { params: Params }) {
         </div>
       </div>
 
-      {recommendations.length > 0 && (
-        <section className="mt-28">
-          <Reveal>
-            <h2 className="font-serif-display mb-10 text-3xl">You May Also Like</h2>
-          </Reveal>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {recommendations.slice(0, 4).map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
-      )}
+      <Suspense
+        fallback={
+          <section className="mt-28" aria-hidden="true">
+            <h2 className="font-serif-display mb-10 text-3xl text-black/20">You May Also Like</h2>
+            <ProductGridSkeleton count={4} />
+          </section>
+        }
+      >
+        <ProductRecommendations productId={product.id} />
+      </Suspense>
     </div>
   );
 }

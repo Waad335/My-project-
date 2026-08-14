@@ -15,7 +15,7 @@ export default async function CollectionsPage() {
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-32 md:px-10 lg:px-14 lg:pt-40">
       <Reveal className="mb-14 max-w-2xl">
-        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold">Collections</p>
+        <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Collections</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">
           Every Discipline, One Point of View
         </h1>

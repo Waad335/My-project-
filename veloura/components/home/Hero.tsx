@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Scene3D } from "@/components/3d/Scene3D";
 import { Button } from "@/components/ui/Button";
 import { SITE_TAGLINE } from "@/lib/constants";
+import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -28,7 +29,7 @@ export function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION.slow, ease: EASE_LUXURY }}
           className="text-[11px] uppercase tracking-[0.5em] text-gold-soft"
         >
           Est. Digital Atelier
@@ -37,7 +38,7 @@ export function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: prefersReducedMotion ? 0 : 1.1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION.slow, delay: 0.1, ease: EASE_LUXURY }}
           className="font-serif-display text-balance text-6xl font-medium leading-[1.02] sm:text-7xl md:text-8xl"
         >
           VELOURA
@@ -46,7 +47,7 @@ export function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 1, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION.slow, delay: 0.28, ease: EASE_LUXURY }}
           className="font-serif-display text-balance text-2xl italic text-ivory/90 sm:text-3xl"
         >
           {SITE_TAGLINE}
@@ -55,7 +56,7 @@ export function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION.slow, delay: 0.4, ease: EASE_LUXURY }}
           className="max-w-lg text-balance text-sm leading-relaxed text-ivory/65 sm:text-base"
         >
           Premium digital resources designed for ambitious creators and modern professionals —
@@ -65,7 +66,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 1, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: prefersReducedMotion ? 0 : DURATION.slow, delay: 0.55, ease: EASE_LUXURY }}
           className="mt-3 flex flex-col gap-4 sm:flex-row"
         >
           <Button href="/shop" size="lg" variant="light">
@@ -80,7 +81,7 @@ export function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
+        transition={{ delay: 1.2, duration: DURATION.slow }}
         className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-ivory/60"
         aria-hidden="true"
       >

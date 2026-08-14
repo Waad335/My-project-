@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
+import { useShopTransitionStore } from "@/lib/store";
 import type { ShopifyCollection } from "@/types/shopify";
 
 const SORT_OPTIONS = [
@@ -19,9 +20,14 @@ export function ShopFilters({ collections }: { collections: ShopifyCollection[] 
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const setShopPending = useShopTransitionStore((s) => s.setPending);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [minPrice, setMinPrice] = useState(searchParams.get("min") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max") ?? "");
+
+  useEffect(() => {
+    setShopPending(isPending);
+  }, [isPending, setShopPending]);
 
   const activeCollection = searchParams.get("collection") ?? "";
   const activeSort = searchParams.get("sort") ?? "";
@@ -79,7 +85,7 @@ export function ShopFilters({ collections }: { collections: ShopifyCollection[] 
           <button
             onClick={() => updateParams({ collection: null })}
             className={cn(
-              "text-left text-sm transition-colors hover:text-gold",
+              "text-left text-sm transition-colors hover:text-gold-deep",
               !activeCollection ? "font-medium text-black" : "text-muted"
             )}
           >
@@ -90,7 +96,7 @@ export function ShopFilters({ collections }: { collections: ShopifyCollection[] 
               key={c.handle}
               onClick={() => updateParams({ collection: activeCollection === c.handle ? null : c.handle })}
               className={cn(
-                "text-left text-sm transition-colors hover:text-gold",
+                "text-left text-sm transition-colors hover:text-gold-deep",
                 activeCollection === c.handle ? "font-medium text-black" : "text-muted"
               )}
             >
@@ -153,7 +159,7 @@ export function ShopFilters({ collections }: { collections: ShopifyCollection[] 
             setMaxPrice("");
             router.push(pathname, { scroll: false });
           }}
-          className="self-start text-xs uppercase tracking-[0.16em] text-gold hover:text-black"
+          className="self-start text-xs uppercase tracking-[0.16em] text-gold-deep hover:text-black"
         >
           Clear all filters
         </button>

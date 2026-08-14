@@ -53,7 +53,13 @@ export function PlaceholderArt({ seed, label, className, angle }: PlaceholderArt
       >
         {initial}
       </span>
-      <span className="absolute bottom-4 left-4 right-4 text-[10px] uppercase tracking-[0.3em] text-white/50 sm:bottom-6 sm:left-6">
+      {/*
+        Deliberately top-right: every current overlay that sits on top of this
+        placeholder (product "New"/"Sold Out" badges, the gallery's "Instant
+        Digital Download" tag, collection-card titles/CTAs) anchors to the
+        left or bottom edge, so the top-right corner is guaranteed clear.
+      */}
+      <span className="absolute right-4 top-4 text-[10px] uppercase tracking-[0.3em] text-white/50 sm:right-6 sm:top-6">
         VELOURA
       </span>
     </div>
