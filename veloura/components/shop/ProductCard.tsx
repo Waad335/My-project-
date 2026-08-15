@@ -3,16 +3,18 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ShopifyProduct } from "@/types/shopify";
-import { PlaceholderArt } from "@/components/ui/PlaceholderArt";
+import { ProductMockup } from "@/components/ui/ProductMockup";
 import { PriceTag } from "@/components/ui/PriceTag";
 import Image from "next/image";
 import { DURATION, EASE_LUXURY } from "@/lib/motion";
+import { getMockupCategory } from "@/lib/mockup-category";
 
 export function ProductCard({ product, priority = false }: { product: ShopifyProduct; priority?: boolean }) {
   const prefersReducedMotion = useReducedMotion();
   const primaryImage = product.featuredImage ?? product.images[0] ?? null;
   const secondaryImage = product.images.find((img) => img.url !== primaryImage?.url) ?? null;
   const category = product.collections?.[0]?.title ?? product.productType;
+  const mockupCategory = getMockupCategory(product);
 
   return (
     <Link
@@ -52,7 +54,12 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
             whileHover={prefersReducedMotion ? undefined : { scale: 1.06 }}
             transition={{ duration: DURATION.base, ease: EASE_LUXURY }}
           >
-            <PlaceholderArt seed={product.handle} label={product.title} className="absolute inset-0" />
+            <ProductMockup
+              seed={product.handle}
+              title={product.title}
+              category={mockupCategory}
+              className="absolute inset-0"
+            />
           </motion.div>
         )}
 

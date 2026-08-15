@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { PlaceholderArt } from "./PlaceholderArt";
+import { ProductMockup } from "./ProductMockup";
 import { cn } from "@/lib/utils";
+import type { MockupCategory } from "@/lib/mockup-category";
 
 interface ProductMediaProps {
   src?: string | null;
@@ -9,10 +11,11 @@ interface ProductMediaProps {
   className?: string;
   sizes?: string;
   priority?: boolean;
+  category?: MockupCategory;
 }
 
-/** Renders a real Shopify CDN image when available, else a branded placeholder panel. */
-export function ProductMedia({ src, alt, seed, className, sizes, priority }: ProductMediaProps) {
+/** Renders a real Shopify CDN image when available, else a branded mockup/placeholder panel. */
+export function ProductMedia({ src, alt, seed, className, sizes, priority, category }: ProductMediaProps) {
   if (src) {
     return (
       <div className={cn("relative overflow-hidden", className)}>
@@ -30,7 +33,11 @@ export function ProductMedia({ src, alt, seed, className, sizes, priority }: Pro
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      <PlaceholderArt seed={seed} label={alt} className="absolute inset-0" />
+      {category ? (
+        <ProductMockup seed={seed} title={alt} category={category} className="absolute inset-0" />
+      ) : (
+        <PlaceholderArt seed={seed} label={alt} className="absolute inset-0" />
+      )}
     </div>
   );
 }

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { PlaceholderArt } from "@/components/ui/PlaceholderArt";
+import { ProductMockup } from "@/components/ui/ProductMockup";
 import type { ShopifyImage } from "@/types/shopify";
+import type { MockupCategory } from "@/lib/mockup-category";
 import { cn } from "@/lib/utils";
 import { DURATION, EASE_LUXURY } from "@/lib/motion";
 
@@ -12,10 +13,12 @@ export function ProductGallery({
   images,
   handle,
   title,
+  category,
 }: {
   images: ShopifyImage[];
   handle: string;
   title: string;
+  category: MockupCategory;
 }) {
   const [active, setActive] = useState(0);
   const prefersReducedMotion = useReducedMotion();
@@ -45,7 +48,13 @@ export function ProductGallery({
               />
             </motion.div>
           ) : (
-            <PlaceholderArt key="placeholder" seed={handle} label={title} className="absolute inset-0" />
+            <ProductMockup
+              key="placeholder"
+              seed={handle}
+              title={title}
+              category={category}
+              className="absolute inset-0"
+            />
           )}
         </AnimatePresence>
         <span className="absolute left-4 top-4 bg-black/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-ivory">

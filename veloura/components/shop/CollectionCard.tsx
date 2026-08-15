@@ -4,9 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ShopifyCollection } from "@/types/shopify";
-import { PlaceholderArt } from "@/components/ui/PlaceholderArt";
+import { ProductMockup } from "@/components/ui/ProductMockup";
 import { cn } from "@/lib/utils";
 import { DURATION, EASE_LUXURY } from "@/lib/motion";
+import { getMockupCategory } from "@/lib/mockup-category";
+import { getCollectionAsset } from "@/lib/collection-assets";
 
 export function CollectionCard({
   collection,
@@ -19,6 +21,7 @@ export function CollectionCard({
 }) {
   const prefersReducedMotion = useReducedMotion();
   const aspect = size === "lg" ? "aspect-[4/5] md:aspect-[16/11]" : "aspect-[4/5]";
+  const asset = getCollectionAsset(collection.handle);
 
   return (
     <Link
@@ -38,8 +41,21 @@ export function CollectionCard({
             sizes="(min-width: 1024px) 40vw, 100vw"
             className="object-cover"
           />
+        ) : asset ? (
+          <Image
+            src={asset.url}
+            alt={collection.title}
+            fill
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            className="object-cover"
+          />
         ) : (
-          <PlaceholderArt seed={collection.handle} label={collection.title} className="absolute inset-0" />
+          <ProductMockup
+            seed={collection.handle}
+            title={collection.title}
+            category={getMockupCategory({ collections: [{ handle: collection.handle }] })}
+            className="absolute inset-0"
+          />
         )}
       </motion.div>
 

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProduct, getProducts } from "@/lib/shopify";
 import { getDigitalProductMeta } from "@/lib/shopify/digital-meta";
 import { ProductGallery } from "@/components/shop/ProductGallery";
+import { getMockupCategory } from "@/lib/mockup-category";
 import { AddToCart } from "@/components/shop/AddToCart";
 import { PriceTag } from "@/components/ui/PriceTag";
 import { Accordion } from "@/components/ui/Accordion";
@@ -104,7 +105,12 @@ export default async function ProductPage({ params }: { params: Params }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
-        <ProductGallery images={images} handle={product.handle} title={product.title} />
+        <ProductGallery
+          images={images}
+          handle={product.handle}
+          title={product.title}
+          category={getMockupCategory(product)}
+        />
 
         <div className="lg:sticky lg:top-32 lg:self-start">
           {product.collections?.[0] && (

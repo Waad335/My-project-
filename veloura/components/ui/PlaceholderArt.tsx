@@ -1,21 +1,13 @@
-import { cn } from "@/lib/utils";
+import { cn, hashSeed } from "@/lib/utils";
 
-const PALETTES = [
+export const MOCKUP_PALETTES = [
   ["#3a2c1e", "#b08d4f"],
   ["#4a3b2c", "#d9c9b4"],
   ["#23201c", "#cba86a"],
   ["#5b4632", "#ede4d6"],
   ["#14120f", "#b08d4f"],
 ];
-
-function hashSeed(seed: string) {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
+const PALETTES = MOCKUP_PALETTES;
 
 interface PlaceholderArtProps {
   seed: string;
