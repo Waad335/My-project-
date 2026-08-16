@@ -23,8 +23,9 @@ const TAGS = { products: "products", collections: "collections", cart: "cart" };
  * Read-path safety net: if Shopify credentials are present but wrong (bad
  * domain, expired/incorrect token) or the API is briefly unreachable, log a
  * clear diagnostic server-side instead of letting the error bubble up and
- * crash the page. Callers get back `null`/`data: null` and render their
- * existing empty state, exactly as if nothing were configured yet.
+ * crash the page. Callers get back `data: null` — distinct from a
+ * successful-but-empty response — so they can fall back to the demo
+ * catalogue instead of rendering a false "0 products" empty state.
  */
 async function safeShopifyFetch<TData>(
   args: Parameters<typeof shopifyFetch<TData>>[0]
@@ -40,6 +41,10 @@ async function safeShopifyFetch<TData>(
     );
     return { data: null };
   }
+}
+
+function warnFallback(what: string) {
+  console.warn(`[shopify] Falling back to the demo catalogue for ${what} — live fetch failed (see error above).`);
 }
 
 /** Fetch a page of products, optionally filtered by a Storefront search query and sorted. */
@@ -64,7 +69,12 @@ export async function getProducts(options: ProductFilterOptions = {}): Promise<S
     revalidate: 60,
   });
 
-  const products = (data?.products.edges ?? []).map((e) => transformProduct(e.node as never));
+  if (!data) {
+    warnFallback("getProducts");
+    return filterMockProducts(mockProducts, options);
+  }
+
+  const products = data.products.edges.map((e) => transformProduct(e.node as never));
   return filterByPrice(products, options);
 }
 
@@ -81,7 +91,12 @@ export async function getProduct(handle: string): Promise<ShopifyProduct | null>
     revalidate: 60,
   });
 
-  if (!data?.product) return null;
+  if (!data) {
+    warnFallback(`getProduct("${handle}")`);
+    return mockProducts.find((p) => p.handle === handle) ?? null;
+  }
+
+  if (!data.product) return null;
   return transformProduct(data.product as never);
 }
 
@@ -98,7 +113,12 @@ export async function getProductRecommendations(productId: string): Promise<Shop
     revalidate: 60,
   });
 
-  return (data?.productRecommendations ?? []).map((p) => transformProduct(p as never));
+  if (!data) {
+    warnFallback("getProductRecommendations");
+    return mockProducts.filter((p) => p.id !== productId).slice(0, 4);
+  }
+
+  return data.productRecommendations.map((p) => transformProduct(p as never));
 }
 
 /** Fetch all collections. */
@@ -113,7 +133,12 @@ export async function getCollections(): Promise<ShopifyCollection[]> {
     revalidate: 300,
   });
 
-  return (data?.collections.edges ?? []).map((e) => transformCollection(e.node as never));
+  if (!data) {
+    warnFallback("getCollections");
+    return mockCollections;
+  }
+
+  return data.collections.edges.map((e) => transformCollection(e.node as never));
 }
 
 /** Fetch a single collection (without products) by handle. */
@@ -129,8 +154,22 @@ export async function getCollection(handle: string): Promise<ShopifyCollection |
     revalidate: 300,
   });
 
-  if (!data?.collection) return null;
+  if (!data) {
+    warnFallback(`getCollection("${handle}")`);
+    return mockCollections.find((c) => c.handle === handle) ?? null;
+  }
+
+  if (!data.collection) return null;
   return transformCollection(data.collection as never);
+}
+
+function getMockCollectionProducts(
+  handle: string
+): { collection: ShopifyCollection; products: ShopifyProduct[] } | null {
+  const collection = mockCollections.find((c) => c.handle === handle);
+  if (!collection) return null;
+  const products = mockProducts.filter((p) => p.collections?.some((c) => c.handle === handle));
+  return { collection, products };
 }
 
 /** Fetch a collection along with its products. */
@@ -139,12 +178,7 @@ export async function getCollectionProducts(
   options: Pick<ProductFilterOptions, "sortKey" | "reverse"> = {}
 ): Promise<{ collection: ShopifyCollection; products: ShopifyProduct[] } | null> {
   if (!isShopifyConfigured) {
-    const collection = mockCollections.find((c) => c.handle === handle);
-    if (!collection) return null;
-    const products = mockProducts.filter((p) =>
-      p.collections?.some((c) => c.handle === handle)
-    );
-    return { collection, products };
+    return getMockCollectionProducts(handle);
   }
 
   const { data } = await safeShopifyFetch<{ collection: unknown }>({
@@ -162,7 +196,12 @@ export async function getCollectionProducts(
     revalidate: 60,
   });
 
-  if (!data?.collection) return null;
+  if (!data) {
+    warnFallback(`getCollectionProducts("${handle}")`);
+    return getMockCollectionProducts(handle);
+  }
+
+  if (!data.collection) return null;
   const collection = transformCollection(data.collection as never);
   return { collection, products: collection.products ?? [] };
 }

@@ -5,12 +5,19 @@ import { ShopResults } from "@/components/shop/ShopResults";
 import { ShopFilters } from "@/components/shop/ShopFilters";
 import { ShopFilterDrawer } from "@/components/shop/ShopFilterDrawer";
 import { Reveal } from "@/components/ui/Reveal";
+import { SITE_OG_IMAGE, SITE_URL } from "@/lib/constants";
 import type { ProductFilterOptions } from "@/types/shopify";
 
 export const metadata: Metadata = {
   title: "Shop All Products",
   description: "Browse the complete VELOURA catalogue of premium digital templates, planners, and brand kits.",
   alternates: { canonical: "/shop" },
+  openGraph: {
+    title: "Shop All Products — VELOURA",
+    description: "Browse the complete VELOURA catalogue of premium digital templates, planners, and brand kits.",
+    images: [SITE_OG_IMAGE],
+    url: `${SITE_URL}/shop`,
+  },
 };
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -51,8 +58,21 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     getCollections(),
   ]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    url: `${SITE_URL}/shop`,
+    itemListElement: products.map((product, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/products/${product.handle}`,
+      name: product.title,
+    })),
+  };
+
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-32 md:px-10 lg:px-14 lg:pt-40">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Reveal className="mb-14 max-w-2xl">
         <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Shop</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">

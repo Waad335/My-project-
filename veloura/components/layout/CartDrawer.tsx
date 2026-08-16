@@ -36,6 +36,7 @@ export function CartDrawer() {
 
   const lines = cart?.lines ?? [];
   const isEmpty = lines.length === 0;
+  const checkoutReady = Boolean(cart && cart.checkoutUrl !== "#shopify-not-configured");
 
   return (
     <AnimatePresence>
@@ -158,11 +159,19 @@ export function CartDrawer() {
                   </span>
                 </div>
                 <p className="mb-4 text-[11px] text-muted">
-                  Taxes and instant download delivery calculated at checkout.
+                  {checkoutReady
+                    ? "Taxes and instant download delivery calculated at checkout."
+                    : "Checkout requires a connected Shopify store. See the README to connect one."}
                 </p>
-                <Button href={cart.checkoutUrl} className="w-full">
-                  Checkout
-                </Button>
+                {checkoutReady ? (
+                  <Button href={cart.checkoutUrl} className="w-full">
+                    Checkout
+                  </Button>
+                ) : (
+                  <Button type="button" disabled className="w-full">
+                    Checkout Unavailable
+                  </Button>
+                )}
               </div>
             )}
           </motion.aside>

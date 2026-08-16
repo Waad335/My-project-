@@ -8,6 +8,7 @@ import { PriceTag } from "@/components/ui/PriceTag";
 import Image from "next/image";
 import { DURATION, EASE_LUXURY } from "@/lib/motion";
 import { getMockupCategory } from "@/lib/mockup-category";
+import { getProductAsset } from "@/lib/product-assets";
 
 export function ProductCard({ product, priority = false }: { product: ShopifyProduct; priority?: boolean }) {
   const prefersReducedMotion = useReducedMotion();
@@ -15,6 +16,7 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
   const secondaryImage = product.images.find((img) => img.url !== primaryImage?.url) ?? null;
   const category = product.collections?.[0]?.title ?? product.productType;
   const mockupCategory = getMockupCategory(product);
+  const asset = getProductAsset(product.handle);
 
   return (
     <Link
@@ -48,6 +50,21 @@ export function ProductCard({ product, priority = false }: { product: ShopifyPro
               />
             )}
           </>
+        ) : asset ? (
+          <motion.div
+            className="absolute inset-0"
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.06 }}
+            transition={{ duration: DURATION.base, ease: EASE_LUXURY }}
+          >
+            <Image
+              src={asset.url}
+              alt={product.title}
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+              priority={priority}
+              className="object-cover"
+            />
+          </motion.div>
         ) : (
           <motion.div
             className="absolute inset-0"

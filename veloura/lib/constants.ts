@@ -4,6 +4,13 @@ export const SITE_DESCRIPTION =
   "VELOURA creates premium digital resources — resume templates, brand kits, digital planners, and social media templates — designed for ambitious creators and modern professionals.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://veloura.com";
 
+/** Default social-share image, used wherever a page has no more specific product/collection image. */
+export const SITE_OG_IMAGE = {
+  url: "/images/products/03-reverie-brand-kit.png",
+  width: 684,
+  height: 856,
+};
+
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },

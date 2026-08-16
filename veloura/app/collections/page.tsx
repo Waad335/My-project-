@@ -2,18 +2,38 @@ import type { Metadata } from "next";
 import { getCollections } from "@/lib/shopify";
 import { CollectionCard } from "@/components/shop/CollectionCard";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/ui/Reveal";
+import { SITE_OG_IMAGE, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Collections",
   description: "Browse VELOURA's curated collections — resume templates, brand kits, digital planners, and more.",
   alternates: { canonical: "/collections" },
+  openGraph: {
+    title: "Collections — VELOURA",
+    description: "Browse VELOURA's curated collections — resume templates, brand kits, digital planners, and more.",
+    images: [SITE_OG_IMAGE],
+    url: `${SITE_URL}/collections`,
+  },
 };
 
 export default async function CollectionsPage() {
   const collections = await getCollections();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    url: `${SITE_URL}/collections`,
+    itemListElement: collections.map((collection, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}/collections/${collection.handle}`,
+      name: collection.title,
+    })),
+  };
+
   return (
     <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-32 md:px-10 lg:px-14 lg:pt-40">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Reveal className="mb-14 max-w-2xl">
         <p className="mb-3 text-xs uppercase tracking-[0.24em] text-gold-deep">Collections</p>
         <h1 className="font-serif-display text-4xl leading-[1.05] sm:text-5xl">

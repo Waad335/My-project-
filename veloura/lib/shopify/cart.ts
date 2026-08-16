@@ -1,5 +1,5 @@
 import "server-only";
-import { isShopifyConfigured, shopifyFetch } from "./client";
+import { isShopifyConfigured, shopifyFetch, ShopifyApiError } from "./client";
 import {
   ADD_TO_CART_MUTATION,
   CREATE_CART_MUTATION,
@@ -10,6 +10,25 @@ import {
 import { transformCart } from "./transforms";
 import { mockProducts } from "./mock-data";
 import type { ShopifyCart } from "@/types/shopify";
+
+interface CartUserError {
+  field: string[] | null;
+  message: string;
+}
+
+/**
+ * Shopify's cart mutations can return HTTP 200 with the (unchanged) cart
+ * plus a non-empty `userErrors` array — e.g. insufficient inventory or an
+ * invalid merchandise id. Left unchecked, that reads as a silent success.
+ */
+function assertNoUserErrors(userErrors: CartUserError[] | undefined, action: string): void {
+  if (userErrors && userErrors.length > 0) {
+    throw new ShopifyApiError(
+      `Shopify rejected ${action}: ${userErrors.map((e) => e.message).join(" ")}`,
+      userErrors
+    );
+  }
+}
 
 export interface CartLineInput {
   merchandiseId: string;
@@ -104,12 +123,15 @@ export async function createCart(lines: CartLineInput[] = []): Promise<ShopifyCa
     return cart;
   }
 
-  const { data } = await shopifyFetch<{ cartCreate: { cart: unknown } }>({
+  const { data } = await shopifyFetch<{
+    cartCreate: { cart: unknown; userErrors: CartUserError[] };
+  }>({
     query: CREATE_CART_MUTATION,
     variables: { lines },
     cache: "no-store",
   });
 
+  assertNoUserErrors(data?.cartCreate.userErrors, "cart creation");
   if (!data?.cartCreate.cart) throw new Error("Failed to create cart");
   return transformCart(data.cartCreate.cart as never);
 }
@@ -137,12 +159,15 @@ export async function addToCart(cartId: string, lines: CartLineInput[]): Promise
     return updated;
   }
 
-  const { data } = await shopifyFetch<{ cartLinesAdd: { cart: unknown } }>({
+  const { data } = await shopifyFetch<{
+    cartLinesAdd: { cart: unknown; userErrors: CartUserError[] };
+  }>({
     query: ADD_TO_CART_MUTATION,
     variables: { cartId, lines },
     cache: "no-store",
   });
 
+  assertNoUserErrors(data?.cartLinesAdd.userErrors, "adding to cart");
   if (!data?.cartLinesAdd.cart) throw new Error("Failed to add line to cart");
   return transformCart(data.cartLinesAdd.cart as never);
 }
@@ -169,12 +194,15 @@ export async function updateCart(
     return recalculated;
   }
 
-  const { data } = await shopifyFetch<{ cartLinesUpdate: { cart: unknown } }>({
+  const { data } = await shopifyFetch<{
+    cartLinesUpdate: { cart: unknown; userErrors: CartUserError[] };
+  }>({
     query: UPDATE_CART_MUTATION,
     variables: { cartId, lines },
     cache: "no-store",
   });
 
+  assertNoUserErrors(data?.cartLinesUpdate.userErrors, "updating cart line");
   if (!data?.cartLinesUpdate.cart) throw new Error("Failed to update cart line");
   return transformCart(data.cartLinesUpdate.cart as never);
 }
@@ -190,12 +218,15 @@ export async function removeFromCart(cartId: string, lineIds: string[]): Promise
     return next;
   }
 
-  const { data } = await shopifyFetch<{ cartLinesRemove: { cart: unknown } }>({
+  const { data } = await shopifyFetch<{
+    cartLinesRemove: { cart: unknown; userErrors: CartUserError[] };
+  }>({
     query: REMOVE_FROM_CART_MUTATION,
     variables: { cartId, lineIds },
     cache: "no-store",
   });
 
+  assertNoUserErrors(data?.cartLinesRemove.userErrors, "removing cart line");
   if (!data?.cartLinesRemove.cart) throw new Error("Failed to remove cart line");
   return transformCart(data.cartLinesRemove.cart as never);
 }

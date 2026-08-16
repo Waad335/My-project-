@@ -3,6 +3,7 @@ import { PlaceholderArt } from "./PlaceholderArt";
 import { ProductMockup } from "./ProductMockup";
 import { cn } from "@/lib/utils";
 import type { MockupCategory } from "@/lib/mockup-category";
+import { getProductAsset } from "@/lib/product-assets";
 
 interface ProductMediaProps {
   src?: string | null;
@@ -16,11 +17,13 @@ interface ProductMediaProps {
 
 /** Renders a real Shopify CDN image when available, else a branded mockup/placeholder panel. */
 export function ProductMedia({ src, alt, seed, className, sizes, priority, category }: ProductMediaProps) {
-  if (src) {
+  const resolvedSrc = src ?? getProductAsset(seed)?.url;
+
+  if (resolvedSrc) {
     return (
       <div className={cn("relative overflow-hidden", className)}>
         <Image
-          src={src}
+          src={resolvedSrc}
           alt={alt}
           fill
           sizes={sizes ?? "(min-width: 1024px) 33vw, 100vw"}

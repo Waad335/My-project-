@@ -10,7 +10,8 @@ import { PriceTag } from "@/components/ui/PriceTag";
 import { Accordion } from "@/components/ui/Accordion";
 import { ProductRecommendations } from "@/components/shop/ProductRecommendations";
 import { ProductGridSkeleton } from "@/components/ui/Skeleton";
-import { SITE_URL } from "@/lib/constants";
+import { SITE_OG_IMAGE, SITE_URL } from "@/lib/constants";
+import { getProductAsset } from "@/lib/product-assets";
 
 type Params = Promise<{ handle: string }>;
 
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const product = await getProduct(handle);
   if (!product) return {};
 
-  const image = product.featuredImage?.url;
+  const asset = product.featuredImage ?? getProductAsset(handle) ?? SITE_OG_IMAGE;
 
   return {
     title: product.seo.title || product.title,
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     openGraph: {
       title: product.title,
       description: product.description,
-      images: image ? [{ url: image }] : undefined,
+      images: [asset],
       type: "website",
       url: `${SITE_URL}/products/${handle}`,
     },
@@ -81,12 +82,14 @@ export default async function ProductPage({ params }: { params: Params }) {
       ? [product.featuredImage]
       : [];
 
+  const ogImageUrl = product.featuredImage?.url ?? getProductAsset(handle)?.url ?? SITE_OG_IMAGE.url;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.title,
     description: product.description,
-    image: product.featuredImage?.url,
+    image: ogImageUrl.startsWith("http") ? ogImageUrl : `${SITE_URL}${ogImageUrl}`,
     sku: variant?.id,
     brand: { "@type": "Brand", name: "VELOURA" },
     offers: {

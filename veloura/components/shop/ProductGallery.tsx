@@ -8,6 +8,7 @@ import type { ShopifyImage } from "@/types/shopify";
 import type { MockupCategory } from "@/lib/mockup-category";
 import { cn } from "@/lib/utils";
 import { DURATION, EASE_LUXURY } from "@/lib/motion";
+import { getProductAsset } from "@/lib/product-assets";
 
 export function ProductGallery({
   images,
@@ -24,6 +25,7 @@ export function ProductGallery({
   const prefersReducedMotion = useReducedMotion();
   const hasImages = images.length > 0;
   const activeImage = images[active];
+  const asset = getProductAsset(handle);
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,6 +43,23 @@ export function ProductGallery({
               <Image
                 src={activeImage.url}
                 alt={activeImage.altText ?? title}
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                priority
+                className="object-cover"
+              />
+            </motion.div>
+          ) : asset ? (
+            <motion.div
+              key="asset"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: prefersReducedMotion ? 0 : DURATION.base, ease: EASE_LUXURY }}
+              className="absolute inset-0"
+            >
+              <Image
+                src={asset.url}
+                alt={title}
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 priority
