@@ -76,6 +76,21 @@ export const useCartStore = create<CartState>()(
       subtotal: () => get().items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0),
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: "dodana-cart" }
+    {
+      name: "dodana-cart",
+      // Only persist actual cart data — isDrawerOpen is transient UI state and
+      // must never be rehydrated from a previous session (it would otherwise
+      // reopen the drawer, blocking the page, on every fresh page load after
+      // a user last left it open).
+      partialize: (state) => ({ items: state.items, appliedPromo: state.appliedPromo }),
+      // localStorage reads are synchronous, so without this the store would
+      // rehydrate from localStorage *during* the client's first render —
+      // before the server-rendered (cart-less) HTML has finished hydrating —
+      // producing a text-content mismatch (e.g. checkout total: server "EGP 0"
+      // vs client "EGP 180") and a full client-side re-render of the tree.
+      // Skipping auto-hydration keeps the first client render identical to
+      // the server's; AppProviders triggers the real rehydration afterwards.
+      skipHydration: true,
+    }
   )
 );
