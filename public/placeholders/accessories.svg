@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F0E1C4"/>
+      <stop offset="100%" stop-color="#FBF5EF"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg4)"/>
+  <rect x="14" y="14" width="372" height="472" rx="24" fill="none" stroke="#C79A5E" stroke-width="1.5" opacity="0.55"/>
+  <g transform="translate(200,220)" fill="none" stroke="#3A2620" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 -60 L45 -20 L28 45 L-28 45 L-45 -20 Z"/>
+    <path d="M0 -60 L0 45 M-45 -20 L45 -20"/>
+  </g>
+  <path d="M170 300 c0-10 8-16 15-10 c7-6 15 0 15 10 c0 9-15 18-15 18 s-15-9-15-18z" fill="#DB9A96"/>
+  <text x="200" y="410" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#3A2620" letter-spacing="2">DODANA</text>
+  <text x="200" y="436" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#AD7F45" letter-spacing="4">ACCESSORIES</text>
+  <rect x="14" y="14" width="112" height="30" rx="15" fill="#3A2620" opacity="0.75"/>
+  <text x="70" y="34" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#FBF5EF">Sample image</text>
+</svg>
