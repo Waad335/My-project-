@@ -13,6 +13,9 @@ export default async function ContactPage() {
 
   const links = [
     { icon: MessageCircle, label: t("whatsappOrder"), href: `https://wa.me/${whatsappDigits}` },
+    ...(settings.whatsappGroupUrl
+      ? [{ icon: MessageCircle, label: t("whatsappGroup"), href: settings.whatsappGroupUrl }]
+      : []),
     { icon: Instagram, label: "Instagram", href: settings.instagramUrl },
     { icon: Music2, label: "TikTok", href: settings.tiktokUrl },
   ];

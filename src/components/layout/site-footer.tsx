@@ -24,7 +24,7 @@ export async function SiteFooter() {
           <GoldHairline className="my-4" />
           <div className="flex items-center gap-3">
             <a
-              href={settings?.instagramUrl || "https://instagram.com/dodana"}
+              href={settings?.instagramUrl || "https://www.instagram.com/dodana.girls/"}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -50,6 +50,16 @@ export async function SiteFooter() {
               {t("whatsappOrder")}
             </a>
           </div>
+          {settings?.whatsappGroupUrl && (
+            <a
+              href={settings.whatsappGroupUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-xs font-medium text-ivory/70 underline underline-offset-2 transition hover:text-gold-400"
+            >
+              {t("whatsappGroup")}
+            </a>
+          )}
         </div>
 
         <div>

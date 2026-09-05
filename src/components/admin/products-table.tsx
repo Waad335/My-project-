@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { cn } from "@/lib/utils";
 
 type Row = {
@@ -70,7 +70,7 @@ export function ProductsTable({ rows }: { rows: Row[] }) {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-ivory-200">
-                      {row.image && <Image src={row.image} alt={row.nameEn} fill sizes="40px" className="object-cover" />}
+                      <DodanaImage src={row.image} alt={row.nameEn} fill sizes="40px" className="object-cover" />
                     </div>
                     <div>
                       <p className="font-medium text-mocha-700">{row.nameEn}</p>

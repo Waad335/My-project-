@@ -130,6 +130,7 @@ export const orderStatusUpdateSchema = z.object({
 
 export const siteSettingsSchema = z.object({
   whatsappNumber: z.string().trim().min(6),
+  whatsappGroupUrl: z.string().trim().url().optional().or(z.literal("")),
   instagramUrl: z.string().trim().url().optional().or(z.literal("")),
   tiktokUrl: z.string().trim().url().optional().or(z.literal("")),
   freeShippingThreshold: z.number().min(0).optional().nullable(),

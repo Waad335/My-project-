@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Truck, ShieldCheck } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { formatEGP } from "@/lib/utils";
 
 type Zone = {
@@ -268,7 +268,7 @@ export function CheckoutForm({
             return (
               <li key={key} className="flex items-center gap-3">
                 <div className="relative h-14 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-ivory-200">
-                  {item.image && <Image src={item.image} alt={name} fill sizes="48px" className="object-cover" />}
+                  <DodanaImage src={item.image} alt={name} fill sizes="48px" className="object-cover" />
                 </div>
                 <div className="flex-1">
                   <p className="line-clamp-1 text-sm text-mocha-700">{name}</p>

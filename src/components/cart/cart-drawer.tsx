@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { formatEGP } from "@/lib/utils";
 
 export function CartDrawer() {
@@ -53,9 +53,7 @@ export function CartDrawer() {
                   return (
                     <li key={key} className="flex gap-3">
                       <div className="relative h-20 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-ivory-200">
-                        {item.image && (
-                          <Image src={item.image} alt={name} fill sizes="64px" className="object-cover" />
-                        )}
+                        <DodanaImage src={item.image} alt={name} fill sizes="64px" className="object-cover" />
                       </div>
                       <div className="flex flex-1 flex-col">
                         <div className="flex items-start justify-between gap-2">

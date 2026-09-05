@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({
@@ -17,18 +17,16 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-3">
       <div className="relative aspect-square w-full overflow-hidden rounded-card bg-ivory-200">
-        {current ? (
-          <Image
-            src={current.url}
-            alt={current.alt || fallbackAlt}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-mocha-300">DODANA</div>
-        )}
+        <DodanaImage
+          src={current?.url}
+          alt={current?.alt || fallbackAlt}
+          fill
+          showWordmark
+          iconClassName="h-8 w-8"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          priority
+          className="object-cover"
+        />
       </div>
 
       {images.length > 1 && (
@@ -43,7 +41,7 @@ export function ProductGallery({
               )}
               aria-label={`View image ${i + 1}`}
             >
-              <Image src={img.url} alt={img.alt || fallbackAlt} fill sizes="64px" className="object-cover" />
+              <DodanaImage src={img.url} alt={img.alt || fallbackAlt} fill sizes="64px" className="object-cover" />
             </button>
           ))}
         </div>

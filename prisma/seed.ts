@@ -57,7 +57,8 @@ async function main() {
     create: {
       id: "settings",
       whatsappNumber: process.env.WHATSAPP_NUMBER || "201000000000",
-      instagramUrl: "https://instagram.com/dodana",
+      whatsappGroupUrl: "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn",
+      instagramUrl: "https://www.instagram.com/dodana.girls/",
       tiktokUrl: "https://tiktok.com/@dodana",
       codEnabled: true,
       onlinePaymentEnabled: false,

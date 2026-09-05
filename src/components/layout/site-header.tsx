@@ -22,7 +22,10 @@ export async function SiteHeader() {
       )}
       <div className="container-dodana flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-2 lg:hidden">
-          <MobileNav />
+          <MobileNav
+            instagramUrl={settings?.instagramUrl || "https://www.instagram.com/dodana.girls/"}
+            whatsappGroupUrl={settings?.whatsappGroupUrl || "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn"}
+          />
         </div>
 
         <Link href="/" className="flex items-center gap-1.5">

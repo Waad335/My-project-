@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { SparkleDivider } from "@/components/icons/decorative";
+import { DodanaImage } from "@/components/ui/dodana-image";
 
 export async function CategoryGrid() {
   const t = await getTranslations("sections");
@@ -27,15 +27,13 @@ export async function CategoryGrid() {
             className="group flex flex-col items-center gap-3 rounded-card border border-mocha-700/5 bg-white p-4 text-center shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
           >
             <div className="relative h-28 w-full overflow-hidden rounded-2xl bg-ivory-200 sm:h-32">
-              {cat.image && (
-                <Image
-                  src={cat.image}
-                  alt={locale === "ar" ? cat.nameAr : cat.nameEn}
-                  fill
-                  sizes="200px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              )}
+              <DodanaImage
+                src={cat.image}
+                alt={locale === "ar" ? cat.nameAr : cat.nameEn}
+                fill
+                sizes="200px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
             <span className="flex items-center gap-1.5 font-heading text-sm text-mocha-700 sm:text-base">
               <span aria-hidden="true">{cat.emoji}</span>

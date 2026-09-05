@@ -3,10 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Instagram, MessageCircle } from "lucide-react";
 import { NAV_CATEGORIES } from "@/lib/categories-nav";
 
-export function MobileNav() {
+export function MobileNav({
+  instagramUrl,
+  whatsappGroupUrl,
+}: {
+  instagramUrl: string;
+  whatsappGroupUrl: string;
+}) {
   const [open, setOpen] = useState(false);
   const locale = useLocale();
   const t = useTranslations("nav");
@@ -64,9 +70,31 @@ export function MobileNav() {
                 {t("trackOrder")}
               </Link>
             </nav>
-            <p className="mt-auto pt-6 text-center font-heading italic text-blush-400">
-              {locale === "ar" ? "لقيناها عشانك 💗" : "Good taste, already found."}
-            </p>
+            <div className="mt-auto flex flex-col items-center gap-3 pt-6">
+              <div className="flex items-center gap-3">
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-mocha-700/15 text-mocha-600 transition hover:border-gold-400 hover:text-gold-500"
+                >
+                  <Instagram size={16} />
+                </a>
+                <a
+                  href={whatsappGroupUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp Group"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-mocha-700/15 text-mocha-600 transition hover:border-gold-400 hover:text-gold-500"
+                >
+                  <MessageCircle size={16} />
+                </a>
+              </div>
+              <p className="text-center font-heading italic text-blush-400">
+                {locale === "ar" ? "لقيناها عشانك 💗" : "Good taste, already found."}
+              </p>
+            </div>
           </div>
         </div>
       )}

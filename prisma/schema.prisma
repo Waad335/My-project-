@@ -38,20 +38,20 @@ model AdminUser {
 // ---------------------------------------------------------------------------
 
 model Category {
-  id            String         @id @default(cuid())
-  slug          String         @unique
+  id            String        @id @default(cuid())
+  slug          String        @unique
   nameEn        String
   nameAr        String
   descriptionEn String?
   descriptionAr String?
   emoji         String?
   image         String?
-  sortOrder     Int            @default(0)
-  isActive      Boolean        @default(true)
+  sortOrder     Int           @default(0)
+  isActive      Boolean       @default(true)
   subcategories Subcategory[]
   products      Product[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("categories")
 }
@@ -81,9 +81,9 @@ enum AvailabilityStatus {
 }
 
 model Product {
-  id            String              @id @default(cuid())
-  sku           String              @unique
-  slug          String              @unique
+  id            String  @id @default(cuid())
+  sku           String  @unique
+  slug          String  @unique
   nameEn        String
   nameAr        String
   descriptionEn String
@@ -94,33 +94,34 @@ model Product {
   warningsAr    String?
 
   categoryId    String
-  category      Category            @relation(fields: [categoryId], references: [id])
+  category      Category     @relation(fields: [categoryId], references: [id])
   subcategoryId String?
-  subcategory   Subcategory?        @relation(fields: [subcategoryId], references: [id])
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
 
-  price         Decimal             @db.Decimal(10, 2)
-  oldPrice      Decimal?            @db.Decimal(10, 2)
-  salePrice     Decimal?            @db.Decimal(10, 2)
+  price     Decimal  @db.Decimal(10, 2)
+  oldPrice  Decimal? @db.Decimal(10, 2)
+  salePrice Decimal? @db.Decimal(10, 2)
 
-  stock         Int                 @default(0)
-  availability  AvailabilityStatus  @default(IN_STOCK)
+  stock        Int                @default(0)
+  availability AvailabilityStatus @default(IN_STOCK)
 
-  isFeatured    Boolean             @default(false)
-  isBestSeller  Boolean             @default(false)
-  isNewArrival  Boolean             @default(false)
-  isActive      Boolean             @default(true)
+  isFeatured   Boolean @default(false)
+  isBestSeller Boolean @default(false)
+  isNewArrival Boolean @default(false)
+  isActive     Boolean @default(true)
 
-  ratingAvg     Decimal             @default(0) @db.Decimal(2, 1)
-  ratingCount   Int                 @default(0)
+  ratingAvg   Decimal @default(0) @db.Decimal(2, 1)
+  ratingCount Int     @default(0)
 
-  images        ProductImage[]
-  variants      ProductVariant[]
-  reviews       Review[]
-  orderItems    OrderItem[]
-  cartEntries   CartItemSnapshot[]
+  images           ProductImage[]
+  variants         ProductVariant[]
+  reviews          Review[]
+  orderItems       OrderItem[]
+  cartEntries      CartItemSnapshot[]
+  instagramImports InstagramImport[]
 
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([categoryId])
   @@index([subcategoryId])
@@ -185,19 +186,19 @@ model Review {
 // ---------------------------------------------------------------------------
 
 model Customer {
-  id         String   @id @default(cuid())
-  name       String
-  phone      String
-  whatsapp   String?
-  email      String?
-  governorate String
-  city        String
-  address     String
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  whatsapp     String?
+  email        String?
+  governorate  String
+  city         String
+  address      String
   buildingInfo String?
-  notes       String?
-  orders      Order[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  notes        String?
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([phone])
   @@map("customers")
@@ -229,38 +230,38 @@ enum PaymentProviderType {
 }
 
 model Order {
-  id              String        @id @default(cuid())
-  orderNumber     String        @unique
-  customerId      String
-  customer        Customer      @relation(fields: [customerId], references: [id])
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
 
-  status          OrderStatus   @default(PENDING)
-  paymentStatus   PaymentStatus @default(UNPAID)
+  status          OrderStatus         @default(PENDING)
+  paymentStatus   PaymentStatus       @default(UNPAID)
   paymentProvider PaymentProviderType @default(COD)
 
-  items           OrderItem[]
-  payments        Payment[]
+  items    OrderItem[]
+  payments Payment[]
 
-  subtotal        Decimal       @db.Decimal(10, 2)
-  discountAmount  Decimal       @default(0) @db.Decimal(10, 2)
-  shippingFee     Decimal       @db.Decimal(10, 2)
-  total           Decimal       @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @default(0) @db.Decimal(10, 2)
+  shippingFee    Decimal @db.Decimal(10, 2)
+  total          Decimal @db.Decimal(10, 2)
 
-  promoCodeId     String?
-  promoCode       PromoCode?    @relation(fields: [promoCodeId], references: [id])
+  promoCodeId String?
+  promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id])
 
-  shippingGovernorate String
-  shippingCity        String
-  shippingAddress     String
+  shippingGovernorate  String
+  shippingCity         String
+  shippingAddress      String
   shippingBuildingInfo String?
   shippingMethodLabel  String
-  isCairoDelivery      Boolean  @default(false)
+  isCairoDelivery      Boolean @default(false)
 
-  customerNotes   String?
-  internalNotes   String?
+  customerNotes String?
+  internalNotes String?
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([customerId])
   @@index([status])
@@ -269,22 +270,22 @@ model Order {
 }
 
 model OrderItem {
-  id             String          @id @default(cuid())
-  orderId        String
-  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId      String?
-  product        Product?        @relation(fields: [productId], references: [id])
-  variantId      String?
-  variant        ProductVariant? @relation(fields: [variantId], references: [id])
+  id        String          @id @default(cuid())
+  orderId   String
+  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product?        @relation(fields: [productId], references: [id])
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
 
   nameEnSnapshot String
   nameArSnapshot String
   skuSnapshot    String
   imageSnapshot  String?
   variantLabel   String?
-  unitPrice      Decimal         @db.Decimal(10, 2)
+  unitPrice      Decimal @db.Decimal(10, 2)
   quantity       Int
-  lineTotal      Decimal         @db.Decimal(10, 2)
+  lineTotal      Decimal @db.Decimal(10, 2)
 
   @@index([orderId])
   @@map("order_items")
@@ -337,53 +338,111 @@ enum PromoType {
 }
 
 model PromoCode {
-  id             String      @id @default(cuid())
-  code           String      @unique
-  type           PromoType
-  value          Decimal     @db.Decimal(10, 2)
-  minOrderValue  Decimal?    @db.Decimal(10, 2)
-  maxDiscount    Decimal?    @db.Decimal(10, 2)
-  usageLimit     Int?
-  usedCount      Int         @default(0)
-  startsAt       DateTime?
-  expiresAt      DateTime?
-  isActive       Boolean     @default(true)
-  orders         Order[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id            String    @id @default(cuid())
+  code          String    @unique
+  type          PromoType
+  value         Decimal   @db.Decimal(10, 2)
+  minOrderValue Decimal?  @db.Decimal(10, 2)
+  maxDiscount   Decimal?  @db.Decimal(10, 2)
+  usageLimit    Int?
+  usedCount     Int       @default(0)
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  isActive      Boolean   @default(true)
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@map("promo_codes")
 }
 
 model ShippingZone {
-  id           String   @id @default(cuid())
-  governorate  String   @unique
+  id            String   @id @default(cuid())
+  governorate   String   @unique
   governorateAr String
-  fee          Decimal  @db.Decimal(10, 2)
-  etaEn        String
-  etaAr        String
-  isCairo      Boolean  @default(false)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  fee           Decimal  @db.Decimal(10, 2)
+  etaEn         String
+  etaAr         String
+  isCairo       Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("shipping_zones")
 }
 
 // Singleton settings row (id always "settings").
 model SiteSettings {
-  id                     String   @id @default("settings")
-  whatsappNumber         String   @default("201000000000")
-  instagramUrl           String   @default("https://instagram.com/dodana")
-  tiktokUrl              String   @default("https://tiktok.com/@dodana")
-  freeShippingThreshold  Decimal? @db.Decimal(10, 2)
-  codEnabled             Boolean  @default(true)
-  onlinePaymentEnabled   Boolean  @default(false)
-  announcementEn         String?
-  announcementAr         String?
-  returnsPolicyEn        String   @db.Text
-  returnsPolicyAr        String   @db.Text
-  updatedAt              DateTime @updatedAt
+  id                    String   @id @default("settings")
+  whatsappNumber        String   @default("201000000000")
+  whatsappGroupUrl      String?  @default("https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn")
+  instagramUrl          String   @default("https://www.instagram.com/dodana.girls/")
+  tiktokUrl             String   @default("https://tiktok.com/@dodana")
+  freeShippingThreshold Decimal? @db.Decimal(10, 2)
+  codEnabled            Boolean  @default(true)
+  onlinePaymentEnabled  Boolean  @default(false)
+  announcementEn        String?
+  announcementAr        String?
+  returnsPolicyEn       String   @db.Text
+  returnsPolicyAr       String   @db.Text
+  updatedAt             DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+// ---------------------------------------------------------------------------
+// Instagram integration
+// ---------------------------------------------------------------------------
+
+// Singleton row (id always "instagram") holding connection state for the
+// one DODANA Instagram Professional account. accessToken is server-only —
+// no API route ever returns it to the client; only status/username/time
+// fields are surfaced to the admin UI.
+model InstagramConnection {
+  id             String    @id @default("instagram")
+  isConnected    Boolean   @default(false)
+  igUserId       String?
+  username       String?
+  accessToken    String?
+  tokenExpiresAt DateTime?
+  lastSyncAt     DateTime?
+  lastSyncStatus String?
+  lastSyncError  String?
+  updatedAt      DateTime  @updatedAt
+
+  @@map("instagram_connection")
+}
+
+enum InstagramImportStatus {
+  NEEDS_REVIEW
+  READY
+  PUBLISHED
+  REJECTED
+}
+
+// One row per synced Instagram media item, kept as a draft until an admin
+// approves it. mediaId is the Instagram-side identifier and the dedupe key
+// (re-syncing the same post updates this row instead of creating another).
+model InstagramImport {
+  id                   String                @id @default(cuid())
+  mediaId              String                @unique
+  mediaType            String
+  permalink            String
+  caption              String?
+  mediaTimestamp       DateTime?
+  originalMediaUrl     String?
+  storedImageUrl       String?
+  detectedNameEn       String?
+  detectedPriceEGP     Decimal?              @db.Decimal(10, 2)
+  priceNeedsReview     Boolean               @default(true)
+  detectedCategorySlug String?
+  categoryNeedsReview  Boolean               @default(true)
+  status               InstagramImportStatus @default(NEEDS_REVIEW)
+  publishedProductId   String?
+  publishedProduct     Product?              @relation(fields: [publishedProductId], references: [id])
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  @@index([status])
+  @@map("instagram_imports")
 }

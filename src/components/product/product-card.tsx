@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Heart, ShoppingBag } from "lucide-react";
 import type { ProductCardData } from "@/lib/serialize";
 import { PriceTag } from "@/components/ui/price-tag";
 import { RatingStars } from "@/components/ui/rating-stars";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { useCartStore } from "@/store/cart-store";
 import { useToastStore } from "@/store/toast-store";
 import { cn } from "@/lib/utils";
@@ -45,17 +45,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       className="group block overflow-hidden rounded-card border border-mocha-700/5 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ivory-200">
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={(locale === "ar" ? product.imageAltAr : product.imageAltEn) || name}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-mocha-300">DODANA</div>
-        )}
+        <DodanaImage
+          src={product.image}
+          alt={(locale === "ar" ? product.imageAltAr : product.imageAltEn) || name}
+          fill
+          showWordmark
+          sizes="(max-width: 768px) 50vw, 25vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
 
         <div className="absolute start-2 top-2 flex flex-col gap-1.5">
           {product.isNewArrival && <span className="badge-new">{t("new")}</span>}

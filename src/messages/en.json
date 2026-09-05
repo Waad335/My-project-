@@ -37,7 +37,7 @@
     "newDropSubtitle": "Fresh in, before everyone else finds out.",
     "whyDodana": "Why DODANA",
     "instagram": "Follow the Boutique",
-    "instagramSubtitle": "@dodana on Instagram",
+    "instagramSubtitle": "@dodana.girls on Instagram",
     "youMayAlsoLike": "You May Also Like",
     "relatedProducts": "Related Products",
     "reviews": "Customer Reviews",
@@ -145,7 +145,8 @@
     "contact": "Contact Us",
     "followUs": "Follow Us",
     "rights": "All rights reserved.",
-    "whatsappOrder": "Order via WhatsApp"
+    "whatsappOrder": "Order via WhatsApp",
+    "whatsappGroup": "Join our WhatsApp Group"
   },
   "common": {
     "egp": "EGP",
