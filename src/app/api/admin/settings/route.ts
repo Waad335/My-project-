@@ -26,6 +26,7 @@ export async function PATCH(request: Request) {
     where: { id: "settings" },
     data: {
       whatsappNumber: data.whatsappNumber,
+      whatsappGroupUrl: data.whatsappGroupUrl || "",
       instagramUrl: data.instagramUrl || "",
       tiktokUrl: data.tiktokUrl || "",
       freeShippingThreshold: data.freeShippingThreshold ?? null,

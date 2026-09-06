@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Heart, ShoppingBag } from "lucide-react";
 import type { ProductCardData } from "@/lib/serialize";
 import { PriceTag } from "@/components/ui/price-tag";
 import { RatingStars } from "@/components/ui/rating-stars";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { useCartStore } from "@/store/cart-store";
 import { useToastStore } from "@/store/toast-store";
+import { useWishlistStore } from "@/store/wishlist-store";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ product }: { product: ProductCardData }) {
@@ -16,9 +17,24 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const t = useTranslations("product");
   const addItem = useCartStore((s) => s.addItem);
   const push = useToastStore((s) => s.push);
+  const wishlisted = useWishlistStore((s) => s.has(product.id));
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
 
   const name = locale === "ar" ? product.nameAr : product.nameEn;
   const outOfStock = product.availability === "OUT_OF_STOCK" || product.stock === 0;
+
+  function handleToggleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist({
+      productId: product.id,
+      slug: product.slug,
+      nameEn: product.nameEn,
+      nameAr: product.nameAr,
+      image: product.image,
+      price: product.effectivePrice,
+    });
+  }
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
@@ -45,17 +61,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       className="group block overflow-hidden rounded-card border border-mocha-700/5 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ivory-200">
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={(locale === "ar" ? product.imageAltAr : product.imageAltEn) || name}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-mocha-300">DODANA</div>
-        )}
+        <DodanaImage
+          src={product.image}
+          alt={(locale === "ar" ? product.imageAltAr : product.imageAltEn) || name}
+          fill
+          showWordmark
+          sizes="(max-width: 768px) 50vw, 25vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+        />
 
         <div className="absolute start-2 top-2 flex flex-col gap-1.5">
           {product.isNewArrival && <span className="badge-new">{t("new")}</span>}
@@ -67,11 +80,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
 
         <button
           type="button"
-          aria-label="Wishlist"
-          className="absolute end-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-mocha-500 opacity-0 shadow-soft transition-opacity duration-200 group-hover:opacity-100"
-          onClick={(e) => e.preventDefault()}
+          aria-label={wishlisted ? t("removeFromWishlist") : t("addToWishlist")}
+          onClick={handleToggleWishlist}
+          className={cn(
+            "absolute end-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-soft transition-all duration-200",
+            wishlisted ? "text-blush-500 opacity-100" : "text-mocha-500 opacity-0 group-hover:opacity-100"
+          )}
         >
-          <Heart size={15} />
+          <Heart size={15} fill={wishlisted ? "currentColor" : "none"} />
         </button>
 
         <button

@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   ExternalLink,
+  Instagram,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeartIcon } from "@/components/icons/decorative";
@@ -24,6 +25,7 @@ const NAV = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/shipping", label: "Shipping", icon: Truck },
   { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
+  { href: "/admin/instagram", label: "Instagram", icon: Instagram },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

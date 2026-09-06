@@ -31,33 +31,29 @@ function getSupabaseAdminClient() {
   });
 }
 
-async function saveToSupabaseStorage(file: File): Promise<string> {
+async function persistImageBuffer(buffer: Buffer, contentType: string): Promise<string> {
+  const filename = `${randomUUID()}.${extensionFor(contentType)}`;
   const supabase = getSupabaseAdminClient();
-  if (!supabase) throw new Error("Supabase Storage is not configured.");
 
-  const filename = `${randomUUID()}.${extensionFor(file.type)}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  const { error } = await supabase.storage.from(SUPABASE_STORAGE_BUCKET).upload(filename, buffer, {
-    contentType: file.type,
-    upsert: false,
-  });
-  if (error) {
-    throw new Error(`Image upload failed: ${error.message}`);
+  if (supabase) {
+    const { error } = await supabase.storage.from(SUPABASE_STORAGE_BUCKET).upload(filename, buffer, {
+      contentType,
+      upsert: false,
+    });
+    if (error) throw new Error(`Image upload failed: ${error.message}`);
+    return supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(filename).data.publicUrl;
   }
 
-  const { data } = supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(filename);
-  return data.publicUrl;
-}
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "Image storage is not configured for production. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY " +
+        "(see README 'Supabase Storage' section) — or paste an image URL instead of uploading a file."
+    );
+  }
 
-async function saveToLocalFilesystem(file: File): Promise<string> {
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   await mkdir(uploadDir, { recursive: true });
-
-  const filename = `${randomUUID()}.${extensionFor(file.type)}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(uploadDir, filename), buffer);
-
   return `/uploads/${filename}`;
 }
 
@@ -85,16 +81,30 @@ export async function saveUploadedImage(file: File): Promise<string> {
     throw new Error("Image is too large (max 5MB).");
   }
 
-  if (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
-    return saveToSupabaseStorage(file);
-  }
+  const buffer = Buffer.from(await file.arrayBuffer());
+  return persistImageBuffer(buffer, file.type);
+}
 
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(
-      "Image storage is not configured for production. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY " +
-        "(see README 'Supabase Storage' section) — or paste an image URL instead of uploading a file."
-    );
-  }
+/**
+ * Copies a remote image (e.g. a temporary Instagram CDN URL) into our own
+ * storage, returning the new persistent URL — or null if anything about the
+ * fetch fails or looks wrong, so callers can fall back gracefully (e.g. keep
+ * showing the original URL for now) instead of the whole sync failing.
+ * Never throws.
+ */
+export async function saveImageFromUrl(remoteUrl: string): Promise<string | null> {
+  try {
+    const res = await fetch(remoteUrl);
+    if (!res.ok) return null;
 
-  return saveToLocalFilesystem(file);
+    const contentType = res.headers.get("content-type")?.split(";")[0]?.trim() || "";
+    if (!ALLOWED_TYPES.has(contentType)) return null;
+
+    const buffer = Buffer.from(await res.arrayBuffer());
+    if (buffer.byteLength === 0 || buffer.byteLength > MAX_SIZE_BYTES) return null;
+
+    return await persistImageBuffer(buffer, contentType);
+  } catch {
+    return null;
+  }
 }

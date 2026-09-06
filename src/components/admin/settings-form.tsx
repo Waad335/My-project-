@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 type Settings = {
   whatsappNumber: string;
+  whatsappGroupUrl: string;
   instagramUrl: string;
   tiktokUrl: string;
   freeShippingThreshold: number | null;
@@ -54,6 +55,10 @@ export function SettingsForm({ initial }: { initial: Settings }) {
           <div>
             <label className="label-field">WhatsApp Number (with country code, no +)</label>
             <input className="input-field" placeholder="201234567890" value={values.whatsappNumber} onChange={(e) => update("whatsappNumber", e.target.value)} />
+          </div>
+          <div>
+            <label className="label-field">WhatsApp Group URL</label>
+            <input className="input-field" placeholder="https://chat.whatsapp.com/..." value={values.whatsappGroupUrl} onChange={(e) => update("whatsappGroupUrl", e.target.value)} />
           </div>
           <div>
             <label className="label-field">Instagram URL</label>

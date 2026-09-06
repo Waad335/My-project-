@@ -4,6 +4,8 @@ import { NAV_CATEGORIES } from "@/lib/categories-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { CartIconButton } from "@/components/layout/cart-icon-button";
+import { WishlistIconButton } from "@/components/layout/wishlist-icon-button";
+import { SearchButton } from "@/components/layout/search-button";
 import { getSiteSettings } from "@/lib/settings";
 import { HeartIcon } from "@/components/icons/decorative";
 
@@ -22,7 +24,10 @@ export async function SiteHeader() {
       )}
       <div className="container-dodana flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-2 lg:hidden">
-          <MobileNav />
+          <MobileNav
+            instagramUrl={settings?.instagramUrl || "https://www.instagram.com/dodana.girls/"}
+            whatsappGroupUrl={settings?.whatsappGroupUrl || "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn"}
+          />
         </div>
 
         <Link href="/" className="flex items-center gap-1.5">
@@ -43,16 +48,14 @@ export async function SiteHeader() {
               {t(cat.labelKey)}
             </Link>
           ))}
-          <Link href="/new-arrivals" className="text-sm font-medium text-mocha-600 transition hover:text-mocha-800">
-            {t("newArrivals")}
-          </Link>
-          <Link href="/best-sellers" className="text-sm font-medium text-mocha-600 transition hover:text-mocha-800">
-            {t("bestSellers")}
-          </Link>
         </nav>
 
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           <LocaleSwitcher className="hidden sm:inline-flex" />
+          <SearchButton />
+          <div className="hidden lg:block">
+            <WishlistIconButton />
+          </div>
           <CartIconButton />
         </div>
       </div>

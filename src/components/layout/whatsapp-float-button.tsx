@@ -15,9 +15,9 @@ export function WhatsAppFloatButton({ number }: { number?: string | null }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Order via WhatsApp"
-      className="fixed bottom-5 end-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-soft-lg transition-transform hover:scale-105 active:scale-95 sm:h-14 sm:w-14"
+      className="fixed bottom-5 end-5 z-40 flex h-14 w-14 items-center justify-center rounded-full border-2 border-gold-300 bg-mocha-700 text-ivory shadow-soft-lg transition-transform hover:scale-105 hover:bg-mocha-800 active:scale-95"
     >
-      <MessageCircle size={26} fill="white" className="text-[#25D366]" />
+      <MessageCircle size={24} className="text-gold-300" />
     </a>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { PromoCodeForm } from "@/components/cart/promo-code-form";
+import { DodanaImage } from "@/components/ui/dodana-image";
 import { formatEGP } from "@/lib/utils";
 
 export function CartPageContent() {
@@ -43,7 +43,7 @@ export function CartPageContent() {
             return (
               <li key={key} className="card-surface flex gap-4 p-4">
                 <Link href={`/product/${item.slug}`} className="relative h-24 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-ivory-200">
-                  {item.image && <Image src={item.image} alt={name} fill sizes="80px" className="object-cover" />}
+                  <DodanaImage src={item.image} alt={name} fill sizes="80px" className="object-cover" />
                 </Link>
                 <div className="flex flex-1 flex-col">
                   <div className="flex items-start justify-between gap-2">
