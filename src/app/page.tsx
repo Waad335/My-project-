@@ -4,19 +4,16 @@ import { CategoryGrid } from "@/components/home/category-grid";
 import { ProductSection } from "@/components/home/product-section";
 import { WhyDodana } from "@/components/home/why-dodana";
 import { InstagramSection } from "@/components/home/instagram-section";
-import { getNewArrivals, getBestSellers, getFeaturedProducts } from "@/lib/queries";
+import { WhatsAppCta } from "@/components/home/whatsapp-cta";
+import { getNewArrivals, getBestSellers } from "@/lib/queries";
 
 export default async function HomePage() {
   const t = await getTranslations("sections");
-  const [newArrivals, bestSellers, featured] = await Promise.all([
-    getNewArrivals(8),
-    getBestSellers(8),
-    getFeaturedProducts(4),
-  ]);
+  const [newArrivals, bestSellers] = await Promise.all([getNewArrivals(8), getBestSellers(8)]);
 
   return (
     <>
-      <Hero />
+      <Hero collageProducts={newArrivals.slice(0, 3)} />
       <CategoryGrid />
       <ProductSection
         title={t("newDrop")}
@@ -25,16 +22,10 @@ export default async function HomePage() {
         viewAllHref="/new-arrivals"
         tone="blush"
       />
-      <ProductSection title={t("newArrivals")} products={newArrivals} viewAllHref="/new-arrivals" />
-      <ProductSection
-        title={t("bestSellers")}
-        products={bestSellers}
-        viewAllHref="/best-sellers"
-        tone="blush"
-      />
-      <ProductSection title={t("featured")} products={featured} />
+      <ProductSection title={t("bestSellers")} products={bestSellers} viewAllHref="/best-sellers" />
       <WhyDodana />
       <InstagramSection />
+      <WhatsAppCta />
     </>
   );
 }

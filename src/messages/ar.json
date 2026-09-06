@@ -18,18 +18,21 @@
     "faq": "الأسئلة الشائعة",
     "contact": "تواصلي معنا",
     "cart": "السلة",
+    "wishlist": "المفضلة",
     "search": "ابحثي عن منتج",
     "trackOrder": "تتبعي طلبك"
   },
   "hero": {
-    "eyebrow": "DODANA",
+    "eyebrow": "DODANA 🎀",
     "titleAr": "لقيناها عشانك، قبل ما تدوري 💗",
     "titleEn": "Good taste, already found.",
-    "subtitle": "منتجات عناية بالبشرة والشعر، عطور، إكسسوارات وشنط — مختارة بعناية، ولقيناها عشانك قبل ما تدوري عليها.",
-    "cta": "تسوقي الآن"
+    "subtitle": "منتجات عناية بالبشرة والشعر، عطور، إكسسوارات وشنط — مختارة بعناية، تستاهل تكون في سلتك.",
+    "cta": "تسوقي الجديد 🎀",
+    "ctaSecondary": "استكشفي الفئات"
   },
   "sections": {
     "shopByCategory": "تسوقي حسب الفئة",
+    "shopNow": "تسوقي الآن",
     "newArrivals": "وصل حديثًا",
     "bestSellers": "الأكثر مبيعًا",
     "featured": "منتجات مميزة",
@@ -37,7 +40,10 @@
     "newDropSubtitle": "وصل جديد، قبل ما الكل ياخد باله.",
     "whyDodana": "ليه دودانا؟",
     "instagram": "تابعينا",
-    "instagramSubtitle": "@dodana.girls على إنستجرام",
+    "instagramHandle": "@dodana.girls",
+    "instagramSubtitle": "شوفي آخر اللقطات عندنا 🎀",
+    "followCta": "تابعينا على إنستجرام",
+    "instagramEmpty": "أحدث لقطاتنا من إنستجرام هتظهر هنا قريبًا.",
     "youMayAlsoLike": "قد يعجبك أيضًا",
     "relatedProducts": "منتجات ذات صلة",
     "reviews": "آراء العميلات",
@@ -77,6 +83,8 @@
     "bestSeller": "الأكثر مبيعًا",
     "sale": "خصم",
     "off": "خصم",
+    "addToWishlist": "أضيفي للمفضلة",
+    "removeFromWishlist": "إزالة من المفضلة",
     "reviewsCount": "{count} تقييم",
     "noReviewsYet": "لا توجد تقييمات بعد.",
     "demoReviewBadge": "تقييم تجريبي — للعرض فقط"
@@ -99,6 +107,13 @@
     "promoInvalid": "هذا الكود غير صالح أو منتهي الصلاحية.",
     "remove": "إزالة",
     "each": "للقطعة"
+  },
+  "wishlist": {
+    "title": "المفضلة",
+    "empty": "مفضلتك فاضية.",
+    "emptyBody": "دوسي على القلب على أي حاجة تعجبك عشان تتحفظلك هنا.",
+    "continueShopping": "أكملي التسوق",
+    "remove": "إزالة"
   },
   "checkout": {
     "title": "إتمام الطلب",
@@ -134,6 +149,11 @@
     "backHome": "العودة للرئيسية",
     "continueShopping": "أكملي التسوق"
   },
+  "whatsappCta": {
+    "title": "محتارة تختاري إيه؟",
+    "subtitle": "كلمي بنات دودانا 💗",
+    "button": "تواصلي على واتساب"
+  },
   "footer": {
     "about": "دودانا هي الصحبة اللي عندها ذوق — بنلاقيلك الحاجات الحلوة قبل ما تدوري عليها.",
     "shop": "تسوقي",
@@ -147,6 +167,11 @@
     "rights": "جميع الحقوق محفوظة.",
     "whatsappOrder": "اطلبي عبر واتساب",
     "whatsappGroup": "انضمي لجروب الواتساب"
+  },
+  "search": {
+    "placeholder": "دوري على عناية بالبشرة، شعر، عطور…",
+    "resultsFor": "نتائج البحث عن \"{query}\"",
+    "prompt": "ابدئي الكتابة عشان تبحثي في دودانا."
   },
   "common": {
     "egp": "جنيه",

@@ -18,18 +18,21 @@
     "faq": "FAQ",
     "contact": "Contact",
     "cart": "Cart",
+    "wishlist": "Wishlist",
     "search": "Search products",
     "trackOrder": "Track Order"
   },
   "hero": {
-    "eyebrow": "DODANA",
+    "eyebrow": "DODANA 🎀",
     "titleAr": "لقيناها عشانك، قبل ما تدوري 💗",
     "titleEn": "Good taste, already found.",
-    "subtitle": "Curated skincare, haircare, perfumes, accessories & bags — the cute finds you were about to go looking for.",
-    "cta": "Shop Now"
+    "subtitle": "Curated skincare, haircare, perfumes, accessories & bags — cute finds worth adding to your cart.",
+    "cta": "Shop the Drop 🎀",
+    "ctaSecondary": "Explore Categories"
   },
   "sections": {
     "shopByCategory": "Shop by Category",
+    "shopNow": "Shop now",
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
     "featured": "Featured Products",
@@ -37,7 +40,10 @@
     "newDropSubtitle": "Fresh in, before everyone else finds out.",
     "whyDodana": "Why DODANA",
     "instagram": "Follow the Boutique",
-    "instagramSubtitle": "@dodana.girls on Instagram",
+    "instagramHandle": "@dodana.girls",
+    "instagramSubtitle": "See what we're finding lately 🎀",
+    "followCta": "Follow us on Instagram",
+    "instagramEmpty": "Our latest Instagram posts will appear here soon.",
     "youMayAlsoLike": "You May Also Like",
     "relatedProducts": "Related Products",
     "reviews": "Customer Reviews",
@@ -77,6 +83,8 @@
     "bestSeller": "Best Seller",
     "sale": "Sale",
     "off": "OFF",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist",
     "reviewsCount": "{count} reviews",
     "noReviewsYet": "No reviews yet.",
     "demoReviewBadge": "Demo review — for preview only"
@@ -99,6 +107,13 @@
     "promoInvalid": "This code isn't valid or has expired.",
     "remove": "Remove",
     "each": "each"
+  },
+  "wishlist": {
+    "title": "Your Wishlist",
+    "empty": "Your wishlist is empty.",
+    "emptyBody": "Tap the heart on anything you love to save it here.",
+    "continueShopping": "Continue Shopping",
+    "remove": "Remove"
   },
   "checkout": {
     "title": "Checkout",
@@ -134,6 +149,11 @@
     "backHome": "Back to Home",
     "continueShopping": "Continue Shopping"
   },
+  "whatsappCta": {
+    "title": "Need help choosing?",
+    "subtitle": "Talk to DODANA Girls 💗",
+    "button": "Chat on WhatsApp"
+  },
   "footer": {
     "about": "DODANA is the friend with taste — we find the cute things before you go looking for them.",
     "shop": "Shop",
@@ -147,6 +167,11 @@
     "rights": "All rights reserved.",
     "whatsappOrder": "Order via WhatsApp",
     "whatsappGroup": "Join our WhatsApp Group"
+  },
+  "search": {
+    "placeholder": "Search skincare, haircare, perfumes…",
+    "resultsFor": "Results for \"{query}\"",
+    "prompt": "Start typing to search DODANA."
   },
   "common": {
     "egp": "EGP",

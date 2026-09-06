@@ -29,11 +29,12 @@ export async function InstagramSection() {
           href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-gold-500 hover:text-gold-600"
+          className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-500 hover:text-gold-600"
         >
           <Instagram size={15} />
-          {t("instagramSubtitle")}
+          {t("instagramHandle")}
         </a>
+        <p className="mt-1 text-sm text-mocha-500">{t("instagramSubtitle")}</p>
         <SparkleDivider className="mt-4" />
 
         {posts.length > 0 ? (
@@ -66,9 +67,9 @@ export async function InstagramSection() {
         ) : (
           <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-mocha-700/15 px-6 py-12">
             <Instagram size={28} className="text-blush-300" />
-            <p className="text-sm text-mocha-500">Our latest Instagram posts will appear here soon.</p>
+            <p className="text-sm text-mocha-500">{t("instagramEmpty")}</p>
             <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gold-500 hover:text-gold-600">
-              {t("instagram")}
+              {t("followCta")}
             </a>
           </div>
         )}

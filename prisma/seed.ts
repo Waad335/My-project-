@@ -59,7 +59,7 @@ async function main() {
       whatsappNumber: process.env.WHATSAPP_NUMBER || "201000000000",
       whatsappGroupUrl: "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn",
       instagramUrl: "https://www.instagram.com/dodana.girls/",
-      tiktokUrl: "https://tiktok.com/@dodana",
+      tiktokUrl: "https://www.tiktok.com/@dodana352",
       codEnabled: true,
       onlinePaymentEnabled: false,
       announcementEn: "Good taste, already found. Free returns exceptions apply — see policy.",
