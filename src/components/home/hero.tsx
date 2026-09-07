@@ -1,12 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations, getLocale } from "next-intl/server";
-import { DodanaImage } from "@/components/ui/dodana-image";
-import type { ProductCardData } from "@/lib/serialize";
 
-export async function Hero({ collageProducts = [] }: { collageProducts?: ProductCardData[] }) {
+export async function Hero() {
   const t = await getTranslations("hero");
   const locale = await getLocale();
-  const [featured] = collageProducts;
 
   return (
     <section className="relative overflow-hidden bg-ivory">
@@ -32,16 +30,15 @@ export async function Hero({ collageProducts = [] }: { collageProducts?: Product
           </div>
         </div>
 
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-sm lg:max-w-md">
+        <div className="relative mx-auto aspect-square w-full max-w-sm lg:max-w-md">
           <div className="relative h-full w-full overflow-hidden rounded-card shadow-soft-lg">
-            <DodanaImage
-              src={featured?.image ?? null}
-              alt={featured ? (locale === "ar" ? featured.nameAr : featured.nameEn) : "DODANA"}
+            <Image
+              src="/hero/hero-visual.png"
+              alt="DODANA — curated skincare, perfumes, accessories and bags"
               fill
               priority
-              showWordmark
               sizes="(max-width: 1024px) 80vw, 40vw"
-              className="object-cover"
+              className="object-cover object-right"
             />
           </div>
         </div>

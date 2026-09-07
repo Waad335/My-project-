@@ -13,7 +13,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero collageProducts={newArrivals.slice(0, 1)} />
+      <Hero />
       <CategoryGrid />
       <ProductSection
         title={t("newDrop")}
