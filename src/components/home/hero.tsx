@@ -8,15 +8,15 @@ export async function Hero() {
   const isRtl = locale === "ar";
 
   return (
-    <section className="relative flex min-h-[68vh] w-full items-center overflow-hidden sm:min-h-[75vh] lg:min-h-[85vh]">
-      <div className="absolute inset-0">
+    <section className="relative flex min-h-[68vh] w-full items-start overflow-hidden sm:min-h-[75vh] sm:items-center lg:min-h-[85vh]">
+      <div className="absolute inset-0 bg-blush-50">
         <Image
           src="/hero/hero-visual.png"
           alt="DODANA — curated skincare, perfumes, accessories and bags"
           fill
           priority
           sizes="100vw"
-          className={`object-cover object-[58%_60%] sm:object-[75%_55%] lg:object-[78%_center] ${isRtl ? "scale-x-[-1]" : ""}`}
+          className={`object-contain object-bottom sm:object-center ${isRtl ? "scale-x-[-1]" : ""}`}
         />
         {/* Light wash so the copy stays legible over the photo — always on the
             side the text renders on (locale "start"), never a dark/muddy tint. */}
