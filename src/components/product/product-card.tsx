@@ -55,10 +55,19 @@ export function ProductCard({ product }: { product: ProductCardData }) {
     push(t("addedToCart"), "success");
   }
 
+  const isOnSale = Boolean(product.oldPrice && product.oldPrice > product.effectivePrice);
+  const badge = isOnSale
+    ? { className: "badge-sale", label: t("sale") }
+    : product.isBestSeller
+      ? { className: "badge-best", label: t("bestSeller") }
+      : product.isNewArrival
+        ? { className: "badge-new", label: t("new") }
+        : null;
+
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block overflow-hidden rounded-card border border-mocha-700/5 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
+      className="group block overflow-hidden rounded-card border border-mocha-700/8 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-ivory-200">
         <DodanaImage
@@ -70,13 +79,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        <div className="absolute start-2 top-2 flex flex-col gap-1.5">
-          {product.isNewArrival && <span className="badge-new">{t("new")}</span>}
-          {product.isBestSeller && <span className="badge-best">{t("bestSeller")}</span>}
-          {product.oldPrice && product.oldPrice > product.effectivePrice && (
-            <span className="badge-sale">{t("sale")}</span>
-          )}
-        </div>
+        {badge && (
+          <div className="absolute start-2 top-2">
+            <span className={badge.className}>{badge.label}</span>
+          </div>
+        )}
 
         <button
           type="button"

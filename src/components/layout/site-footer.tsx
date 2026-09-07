@@ -12,6 +12,7 @@ const WHATSAPP_GROUP_FALLBACK = "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjw
 export async function SiteFooter() {
   const t = await getTranslations("footer");
   const tNav = await getTranslations("nav");
+  const tHero = await getTranslations("hero");
   const locale = await getLocale();
   const settings = await getSiteSettings().catch(() => null);
 
@@ -23,7 +24,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-20 border-t border-mocha-700/8 bg-mocha-700 text-ivory">
-      <div className="container-dodana grid grid-cols-2 gap-x-8 gap-y-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="container-dodana grid grid-cols-2 gap-x-8 gap-y-10 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:py-20">
         <div className="col-span-2 lg:col-span-1">
           <div className="mb-3 flex items-center gap-1.5">
             <span className="font-heading text-2xl">DODANA</span>
@@ -32,7 +33,7 @@ export async function SiteFooter() {
           <p className="max-w-xs text-sm leading-relaxed text-ivory/70">{t("about")}</p>
           <GoldHairline className="my-4" />
           <p className="font-heading italic text-blush-300">
-            {locale === "ar" ? "لقيناها عشانك، قبل ما تدوري 💗" : "Good taste, already found."}
+            {locale === "ar" ? tHero("titleAr") : tHero("titleEn")}
           </p>
         </div>
 

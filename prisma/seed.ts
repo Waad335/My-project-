@@ -63,7 +63,7 @@ async function main() {
       codEnabled: true,
       onlinePaymentEnabled: false,
       announcementEn: "Good taste, already found. Free returns exceptions apply — see policy.",
-      announcementAr: "لقيناها عشانك، قبل ما تدوري 💗",
+      announcementAr: "ذوق راقٍ بانتظارك. تُطبّق استثناءات على الاسترجاع المجاني — راجعي السياسة.",
       returnsPolicyEn: `Because of hygiene, opened skincare, haircare, and perfume products cannot be returned or exchanged once received.
 
 If your item arrives damaged, defective, or incorrect, contact us within 48 hours of delivery with photos of the item and packaging, and we will arrange a replacement or refund as required by applicable consumer protection law.

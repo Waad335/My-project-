@@ -13,34 +13,32 @@ export async function CategoryGrid() {
   });
 
   return (
-    <section id="categories" className="container-dodana scroll-mt-20 py-16">
-      <div className="mb-10 text-center">
-        <h2 className="font-heading text-3xl text-mocha-700">{t("shopByCategory")}</h2>
+    <section id="categories" className="container-dodana scroll-mt-20 py-16 lg:py-24">
+      <div className="mb-10 text-center lg:mb-14">
+        <h2 className="font-heading text-3xl text-mocha-700 sm:text-4xl">{t("shopByCategory")}</h2>
         <SparkleDivider className="mt-3" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {categories.map((cat) => (
           <Link
             key={cat.id}
             href={`/category/${cat.slug}`}
-            className="group flex flex-col overflow-hidden rounded-card border border-mocha-700/5 bg-white shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
+            className="group relative block aspect-[4/5] overflow-hidden rounded-card"
           >
-            <div className="relative aspect-square w-full overflow-hidden bg-ivory-200">
-              <DodanaImage
-                src={cat.image}
-                alt={locale === "ar" ? cat.nameAr : cat.nameEn}
-                fill
-                sizes="(max-width: 640px) 45vw, 200px"
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-            </div>
-            <div className="flex flex-col items-center gap-0.5 px-2 py-3 text-center">
-              <span className="flex items-center gap-1.5 font-heading text-sm text-mocha-700 sm:text-base">
-                <span aria-hidden="true">{cat.emoji}</span>
+            <DodanaImage
+              src={cat.image}
+              alt={locale === "ar" ? cat.nameAr : cat.nameEn}
+              fill
+              sizes="(max-width: 640px) 45vw, 220px"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-mocha-900/70 via-mocha-900/10 to-transparent transition-opacity duration-300 group-hover:from-mocha-900/80" />
+            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-4">
+              <span className="font-heading text-base text-ivory sm:text-lg">
                 {locale === "ar" ? cat.nameAr : cat.nameEn}
               </span>
-              <span className="flex items-center gap-1 text-xs font-medium text-gold-500 transition group-hover:gap-1.5">
+              <span className="flex max-h-0 items-center gap-1 overflow-hidden text-xs font-medium text-gold-200 opacity-0 transition-all duration-300 group-hover:max-h-5 group-hover:opacity-100">
                 {t("shopNow")} <span aria-hidden="true">→</span>
               </span>
             </div>

@@ -2,7 +2,7 @@
   "brand": {
     "name": "DODANA",
     "tagline": "Good taste, already found.",
-    "taglineAr": "لقيناها عشانك، قبل ما تدوري 💗"
+    "taglineAr": "ذوق راقٍ بانتظارك"
   },
   "nav": {
     "home": "الرئيسية",
@@ -23,11 +23,11 @@
     "trackOrder": "تتبعي طلبك"
   },
   "hero": {
-    "eyebrow": "DODANA 🎀",
-    "titleAr": "لقيناها عشانك، قبل ما تدوري 💗",
+    "titleAr": "ذوق راقٍ بانتظارك",
     "titleEn": "Good taste, already found.",
-    "subtitle": "منتجات عناية بالبشرة والشعر، عطور، إكسسوارات وشنط — مختارة بعناية، تستاهل تكون في سلتك.",
-    "cta": "تسوقي الجديد 🎀",
+    "subtitle": "وجهتك المفضلة للقطع الجميلة، الأساسيات اليومية، والتفاصيل الصغيرة اللي تستاهل تكون في سلتك.",
+    "categoriesLine": "العناية بالبشرة • العناية بالشعر • العطور • إكسسوارات • شنط",
+    "cta": "تسوقي الجديد",
     "ctaSecondary": "استكشفي الفئات"
   },
   "sections": {
@@ -41,7 +41,7 @@
     "whyDodana": "ليه دودانا؟",
     "instagram": "تابعينا",
     "instagramHandle": "@dodana.girls",
-    "instagramSubtitle": "شوفي آخر اللقطات عندنا 🎀",
+    "instagramSubtitle": "شوفي آخر اللقطات عندنا.",
     "followCta": "تابعينا على إنستجرام",
     "instagramEmpty": "أحدث لقطاتنا من إنستجرام هتظهر هنا قريبًا.",
     "youMayAlsoLike": "قد يعجبك أيضًا",

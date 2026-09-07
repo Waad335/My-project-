@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s | DODANA",
   },
   description:
-    "DODANA — curated skincare, haircare, perfumes, accessories and bags. لقيناها عشانك، قبل ما تدوري.",
+    "DODANA — curated skincare, haircare, perfumes, accessories and bags, delivered across Egypt.",
   openGraph: {
     type: "website",
     siteName: "DODANA",
