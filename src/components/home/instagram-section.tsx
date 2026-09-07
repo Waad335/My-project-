@@ -22,9 +22,9 @@ export async function InstagramSection() {
     .catch(() => []);
 
   return (
-    <section className="py-16">
+    <section className="py-16 lg:py-24">
       <div className="container-dodana text-center">
-        <h2 className="font-heading text-3xl text-mocha-700">{t("instagram")}</h2>
+        <h2 className="font-heading text-3xl text-mocha-700 sm:text-4xl">{t("instagram")}</h2>
         <a
           href={instagramUrl}
           target="_blank"
@@ -47,7 +47,7 @@ export async function InstagramSection() {
                   href={post.permalink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative aspect-square overflow-hidden rounded-2xl bg-blush-100"
+                  className="group relative aspect-square overflow-hidden rounded-card bg-blush-100"
                 >
                   <DodanaImage
                     src={imageUrl}
@@ -65,10 +65,12 @@ export async function InstagramSection() {
             })}
           </div>
         ) : (
-          <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-mocha-700/15 px-6 py-12">
-            <Instagram size={28} className="text-blush-300" />
+          <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-4 rounded-card bg-blush-50 px-8 py-14">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-blush-400 shadow-soft">
+              <Instagram size={24} strokeWidth={1.5} />
+            </div>
             <p className="text-sm text-mocha-500">{t("instagramEmpty")}</p>
-            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gold-500 hover:text-gold-600">
+            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary text-sm">
               {t("followCta")}
             </a>
           </div>

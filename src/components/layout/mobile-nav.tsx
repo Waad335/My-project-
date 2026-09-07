@@ -17,6 +17,7 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
   const locale = useLocale();
   const t = useTranslations("nav");
+  const tHero = useTranslations("hero");
 
   return (
     <div className="lg:hidden">
@@ -98,7 +99,7 @@ export function MobileNav({
                   </a>
                 </div>
                 <p className="text-center font-heading italic text-blush-400">
-                  {locale === "ar" ? "لقيناها عشانك 💗" : "Good taste, already found."}
+                  {locale === "ar" ? tHero("titleAr") : tHero("titleEn")}
                 </p>
               </div>
             </div>

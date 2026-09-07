@@ -14,24 +14,19 @@ export async function WhyDodana() {
   ] as const;
 
   return (
-    <section className="bg-mocha-700 py-16 text-ivory">
+    <section className="bg-mocha-700 py-16 text-ivory lg:py-24">
       <div className="container-dodana">
-        <div className="mb-10 text-center">
-          <h2 className="font-heading text-3xl">{t("whyDodana")}</h2>
+        <div className="mb-10 text-center lg:mb-14">
+          <h2 className="font-heading text-3xl sm:text-4xl">{t("whyDodana")}</h2>
           <SparkleDivider className="mt-3 opacity-80" />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:divide-x lg:divide-ivory/10">
           {items.map((item) => (
-            <div
-              key={item.titleKey}
-              className="flex flex-col items-center gap-3 rounded-card border border-ivory/10 bg-ivory/5 p-6 text-center transition hover:bg-ivory/10"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/20 text-gold-300">
-                <item.icon size={22} />
-              </div>
+            <div key={item.titleKey} className="flex flex-col items-center gap-2.5 px-4 text-center">
+              <item.icon size={22} className="text-gold-300" strokeWidth={1.5} />
               <h3 className="font-heading text-lg">{w(item.titleKey)}</h3>
-              <p className="text-sm text-ivory/70">{w(item.bodyKey)}</p>
+              <p className="max-w-[15rem] text-sm leading-relaxed text-ivory/65">{w(item.bodyKey)}</p>
             </div>
           ))}
         </div>

@@ -2,7 +2,7 @@
   "brand": {
     "name": "DODANA",
     "tagline": "Good taste, already found.",
-    "taglineAr": "لقيناها عشانك، قبل ما تدوري 💗"
+    "taglineAr": "ذوق راقٍ بانتظارك"
   },
   "nav": {
     "home": "Home",
@@ -23,11 +23,11 @@
     "trackOrder": "Track Order"
   },
   "hero": {
-    "eyebrow": "DODANA 🎀",
-    "titleAr": "لقيناها عشانك، قبل ما تدوري 💗",
+    "titleAr": "ذوق راقٍ بانتظارك",
     "titleEn": "Good taste, already found.",
-    "subtitle": "Curated skincare, haircare, perfumes, accessories & bags — cute finds worth adding to your cart.",
-    "cta": "Shop the Drop 🎀",
+    "subtitle": "Your go-to place for beautiful finds, everyday essentials, and little things worth adding to your cart.",
+    "categoriesLine": "Skincare • Haircare • Perfumes • Accessories • Bags",
+    "cta": "Shop the Drop",
     "ctaSecondary": "Explore Categories"
   },
   "sections": {
@@ -41,7 +41,7 @@
     "whyDodana": "Why DODANA",
     "instagram": "Follow the Boutique",
     "instagramHandle": "@dodana.girls",
-    "instagramSubtitle": "See what we're finding lately 🎀",
+    "instagramSubtitle": "See what we're finding lately.",
     "followCta": "Follow us on Instagram",
     "instagramEmpty": "Our latest Instagram posts will appear here soon.",
     "youMayAlsoLike": "You May Also Like",
