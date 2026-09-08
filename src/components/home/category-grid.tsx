@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
-import { SparkleDivider } from "@/components/icons/decorative";
+import { HeartIcon } from "@/components/icons/decorative";
 import { DodanaImage } from "@/components/ui/dodana-image";
 
 export async function CategoryGrid() {
@@ -16,7 +16,11 @@ export async function CategoryGrid() {
     <section id="categories" className="container-dodana scroll-mt-20 py-16 lg:py-24">
       <div className="mb-10 text-center lg:mb-14">
         <h2 className="font-heading text-3xl text-mocha-700 sm:text-4xl">{t("shopByCategory")}</h2>
-        <SparkleDivider className="mt-3" />
+        <div className="mt-3 flex items-center justify-center gap-3" aria-hidden="true">
+          <div className="h-px w-16 bg-gradient-to-r from-transparent via-mocha-700 to-transparent" />
+          <HeartIcon className="h-3.5 w-3.5 text-blush-400" />
+          <div className="h-px w-16 bg-gradient-to-r from-transparent via-mocha-700 to-transparent" />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
