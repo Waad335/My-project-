@@ -14,6 +14,6 @@
   <path d="M170 300 c0-10 8-16 15-10 c7-6 15 0 15 10 c0 9-15 18-15 18 s-15-9-15-18z" fill="#DB9A96"/>
   <text x="200" y="410" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#3A2620" letter-spacing="2">DODANA</text>
   <text x="200" y="436" text-anchor="middle" font-family="Georgia, serif" font-size="13" fill="#AD7F45" letter-spacing="4">ACCESSORIES</text>
-  <rect x="14" y="14" width="112" height="30" rx="15" fill="#3A2620" opacity="0.75"/>
-  <text x="70" y="34" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#FBF5EF">Sample image</text>
+  <rect x="14" y="14" width="112" height="30" rx="15" fill="#3A2620"/>
+  <text x="70" y="34" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#FFFFFF">Sample image</text>
 </svg>
