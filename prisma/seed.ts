@@ -109,27 +109,27 @@ Unopened, unused items in their original packaging may be considered for return 
 
   // --- Categories ----------------------------------------------------------
   const categoriesData = [
-    { slug: "skincare", nameEn: "Skincare", nameAr: "العناية بالبشرة", emoji: "🧴", image: "/placeholders/skincare.svg", sortOrder: 1, subs: [
+    { slug: "skincare", nameEn: "Skincare", nameAr: "العناية بالبشرة", emoji: "🧴", image: "/categories/skincare.jpg", sortOrder: 1, subs: [
       { slug: "cleansers", nameEn: "Cleansers", nameAr: "غسول الوجه" },
       { slug: "moisturizers", nameEn: "Moisturizers", nameAr: "مرطبات" },
       { slug: "serums", nameEn: "Serums", nameAr: "سيرومات" },
     ] },
-    { slug: "haircare", nameEn: "Haircare", nameAr: "العناية بالشعر", emoji: "🫧", image: "/placeholders/haircare.svg", sortOrder: 2, subs: [
+    { slug: "haircare", nameEn: "Haircare", nameAr: "العناية بالشعر", emoji: "🫧", image: "/categories/haircare.jpg", sortOrder: 2, subs: [
       { slug: "shampoo", nameEn: "Shampoo & Conditioner", nameAr: "شامبو وبلسم" },
       { slug: "hair-oils", nameEn: "Hair Oils", nameAr: "زيوت الشعر" },
       { slug: "styling", nameEn: "Styling", nameAr: "تصفيف الشعر" },
     ] },
-    { slug: "perfumes", nameEn: "Perfumes", nameAr: "العطور", emoji: "🌸", image: "/placeholders/perfumes.svg", sortOrder: 3, subs: [
+    { slug: "perfumes", nameEn: "Perfumes", nameAr: "العطور", emoji: "🌸", image: "/categories/perfumes.jpg", sortOrder: 3, subs: [
       { slug: "eau-de-parfum", nameEn: "Eau de Parfum", nameAr: "أو دو بارفان" },
       { slug: "body-mist", nameEn: "Body Mist", nameAr: "بودي ميست" },
       { slug: "musk", nameEn: "Musk", nameAr: "مسك" },
     ] },
-    { slug: "accessories", nameEn: "Accessories", nameAr: "إكسسوارات", emoji: "💎", image: "/placeholders/accessories.svg", sortOrder: 4, subs: [
+    { slug: "accessories", nameEn: "Accessories", nameAr: "إكسسوارات", emoji: "💎", image: "/categories/accessories.jpg", sortOrder: 4, subs: [
       { slug: "necklaces", nameEn: "Necklaces", nameAr: "قلادات" },
       { slug: "earrings", nameEn: "Earrings", nameAr: "أقراط" },
       { slug: "hair-accessories", nameEn: "Hair Accessories", nameAr: "إكسسوارات شعر" },
     ] },
-    { slug: "bags", nameEn: "Bags", nameAr: "شنط", emoji: "👜", image: "/placeholders/bags.svg", sortOrder: 5, subs: [
+    { slug: "bags", nameEn: "Bags", nameAr: "شنط", emoji: "👜", image: "/categories/bags.jpg", sortOrder: 5, subs: [
       { slug: "totes", nameEn: "Totes", nameAr: "شنط توتس" },
       { slug: "crossbody", nameEn: "Crossbody Bags", nameAr: "شنط كروس" },
       { slug: "pouches", nameEn: "Pouches", nameAr: "شنط صغيرة" },
