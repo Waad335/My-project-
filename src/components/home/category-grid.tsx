@@ -24,30 +24,34 @@ export async function CategoryGrid() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
-        {categories.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/category/${cat.slug}`}
-            className="group relative block aspect-[4/5] overflow-hidden rounded-card"
-          >
-            <DodanaImage
-              src={cat.image}
-              alt={locale === "ar" ? cat.nameAr : cat.nameEn}
-              fill
-              sizes="(max-width: 640px) 45vw, 220px"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-mocha-900/70 via-mocha-900/10 to-transparent transition-opacity duration-300 group-hover:from-mocha-900/80" />
-            <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-4">
-              <span className="font-heading text-base text-ivory sm:text-lg">
-                {locale === "ar" ? cat.nameAr : cat.nameEn}
-              </span>
-              <span className="flex max-h-0 items-center gap-1 overflow-hidden text-xs font-medium text-gold-200 opacity-0 transition-all duration-300 group-hover:max-h-5 group-hover:opacity-100">
-                {t("shopNow")} <span aria-hidden="true">→</span>
-              </span>
-            </div>
-          </Link>
-        ))}
+        {categories.map((cat) => {
+          const isPlaceholder = cat.image?.startsWith("/placeholders/");
+          return (
+            <Link
+              key={cat.id}
+              href={`/category/${cat.slug}`}
+              className="group relative block aspect-[4/5] overflow-hidden rounded-card"
+            >
+              <DodanaImage
+                src={isPlaceholder ? `${cat.image}?v=2` : cat.image}
+                unoptimized={isPlaceholder}
+                alt={locale === "ar" ? cat.nameAr : cat.nameEn}
+                fill
+                sizes="(max-width: 640px) 45vw, 220px"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-mocha-900/70 via-mocha-900/10 to-transparent transition-opacity duration-300 group-hover:from-mocha-900/80" />
+              <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-4">
+                <span className="font-heading text-base text-ivory sm:text-lg">
+                  {locale === "ar" ? cat.nameAr : cat.nameEn}
+                </span>
+                <span className="flex max-h-0 items-center gap-1 overflow-hidden text-xs font-medium text-gold-200 opacity-0 transition-all duration-300 group-hover:max-h-5 group-hover:opacity-100">
+                  {t("shopNow")} <span aria-hidden="true">→</span>
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
