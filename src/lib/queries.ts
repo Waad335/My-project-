@@ -39,6 +39,19 @@ export async function getNewArrivals(limit = 8): Promise<ProductCardData[]> {
   return products.map(serializeProductCard);
 }
 
+// Fallback pool for homepage sections when a flag-based list (New Drop,
+// Best Sellers) has nothing yet — any active product, newest first, with
+// no isFeatured/isBestSeller/isNewArrival requirement.
+export async function getLatestProducts(limit = 8): Promise<ProductCardData[]> {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    include: cardInclude,
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+  return products.map(serializeProductCard);
+}
+
 export async function getCategoryBySlug(slug: string) {
   return prisma.category.findUnique({
     where: { slug },
