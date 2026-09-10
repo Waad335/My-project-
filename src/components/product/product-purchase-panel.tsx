@@ -86,7 +86,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetailData }
               : "bg-green-50 text-green-600"
         )}
       >
-        {outOfStock ? t("outOfStock") : stock < 10 ? t("lowStock") : t("inStock")}
+        {outOfStock ? t("outOfStock") : stock < 10 ? t("lowStockCount", { count: stock }) : t("inStock")}
       </p>
 
       {colorVariants.length > 0 && (

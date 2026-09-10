@@ -125,6 +125,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           </div>
         )}
         <PriceTag price={product.effectivePrice} oldPrice={product.oldPrice} size="sm" />
+        {!outOfStock && product.stock < 10 && (
+          <p className="mt-1 text-[11px] font-medium text-gold-600">{t("lowStockCount", { count: product.stock })}</p>
+        )}
       </div>
     </Link>
   );

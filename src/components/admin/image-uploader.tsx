@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { Upload, X, Link2 } from "lucide-react";
+import { DodanaImage } from "@/components/ui/dodana-image";
 
 export type ImageEntry = { url: string; altEn?: string | null; altAr?: string | null };
 
@@ -50,7 +50,7 @@ export function ImageUploader({ images, onChange }: { images: ImageEntry[]; onCh
       <div className="mb-3 flex flex-wrap gap-3">
         {images.map((img, i) => (
           <div key={img.url + i} className="relative h-20 w-20 overflow-hidden rounded-xl border border-mocha-700/10">
-            <Image src={img.url} alt="" fill sizes="80px" className="object-cover" />
+            <DodanaImage src={img.url} alt="" fill sizes="80px" className="object-cover" />
             <button
               type="button"
               onClick={() => removeAt(i)}
