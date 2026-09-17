@@ -21,7 +21,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const toggleWishlist = useWishlistStore((s) => s.toggle);
 
   const name = locale === "ar" ? product.nameAr : product.nameEn;
-  const outOfStock = product.availability === "OUT_OF_STOCK" || product.stock === 0;
+  const outOfStock = product.trackStock && (product.availability === "OUT_OF_STOCK" || product.stock === 0);
 
   function handleToggleWishlist(e: React.MouseEvent) {
     e.preventDefault();
@@ -125,7 +125,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           </div>
         )}
         <PriceTag price={product.effectivePrice} oldPrice={product.oldPrice} size="sm" />
-        {!outOfStock && product.stock < 10 && (
+        {product.trackStock && !outOfStock && product.stock < 10 && (
           <p className="mt-1 text-[11px] font-medium text-gold-600">{t("lowStockCount", { count: product.stock })}</p>
         )}
       </div>

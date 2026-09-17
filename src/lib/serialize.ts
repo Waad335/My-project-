@@ -24,6 +24,7 @@ export type ProductCardData = {
   isFeatured: boolean;
   availability: string;
   stock: number;
+  trackStock: boolean;
   ratingAvg: number;
   ratingCount: number;
   categorySlug: string;
@@ -54,6 +55,7 @@ export function serializeProductCard(product: ProductWithRelations): ProductCard
     isFeatured: product.isFeatured,
     availability: product.availability,
     stock: product.stock,
+    trackStock: product.trackStock,
     ratingAvg: toNumber(product.ratingAvg),
     ratingCount: product.ratingCount,
     categorySlug: product.category?.slug ?? "",

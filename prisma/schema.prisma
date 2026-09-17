@@ -102,6 +102,11 @@ model Product {
   oldPrice  Decimal? @db.Decimal(10, 2)
   salePrice Decimal? @db.Decimal(10, 2)
 
+  // When false, stock is not tracked for this product: it is always treated
+  // as available (no out-of-stock/low-stock derivation, no checkout stock
+  // validation, no stock decrement on order) and no quantity is stored or
+  // shown anywhere — for made-to-order items with no fixed inventory.
+  trackStock   Boolean            @default(true)
   stock        Int                @default(0)
   availability AvailabilityStatus @default(IN_STOCK)
 

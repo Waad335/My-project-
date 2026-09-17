@@ -14,6 +14,7 @@ type Row = {
   categoryName: string;
   priceLabel: string;
   stock: number;
+  trackStock: boolean;
   availability: string;
   isActive: boolean;
   isFeatured: boolean;
@@ -80,7 +81,7 @@ export function ProductsTable({ rows }: { rows: Row[] }) {
                 </td>
                 <td className="px-4 py-3 text-mocha-600">{row.categoryName}</td>
                 <td className="px-4 py-3 text-mocha-700">{row.priceLabel}</td>
-                <td className="px-4 py-3 text-mocha-600">{row.stock}</td>
+                <td className="px-4 py-3 text-mocha-600">{row.trackStock ? row.stock : "Always available"}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-1">
                     {row.isFeatured && <span className="rounded-full bg-blush-100 px-2 py-0.5 text-[10px] text-blush-600">Featured</span>}

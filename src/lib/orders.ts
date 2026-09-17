@@ -44,6 +44,10 @@ export async function createOrderFromCheckout(input: CheckoutInput) {
     let variantLabel: string | null = null;
     let skuSnapshot = product.sku;
     let availableStock = product.stock;
+    // Variants are always stock-tracked; a base product can opt out via
+    // trackStock (made-to-order, no fixed inventory), which skips the
+    // quantity check below entirely.
+    let stockTracked = product.trackStock;
 
     if (item.variantId) {
       const variant = product.variants.find((v) => v.id === item.variantId);
@@ -52,9 +56,10 @@ export async function createOrderFromCheckout(input: CheckoutInput) {
       variantLabel = [variant.color, variant.size].filter(Boolean).join(" / ") || null;
       skuSnapshot = variant.sku;
       availableStock = variant.stock;
+      stockTracked = true;
     }
 
-    if (product.availability === "OUT_OF_STOCK" || availableStock < item.quantity) {
+    if (product.availability === "OUT_OF_STOCK" || (stockTracked && availableStock < item.quantity)) {
       throw new OrderCreationError(`${product.nameEn} is out of stock.`);
     }
 
@@ -147,7 +152,7 @@ export async function createOrderFromCheckout(input: CheckoutInput) {
           where: { id: item.variantId },
           data: { stock: { decrement: item.quantity } },
         });
-      } else {
+      } else if (productMap.get(item.productId)?.trackStock) {
         await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } },

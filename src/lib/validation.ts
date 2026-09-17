@@ -50,6 +50,7 @@ export const productSchema = z.object({
   oldPrice: z.number().positive().optional().nullable(),
   salePrice: z.number().positive().optional().nullable(),
   stock: z.number().int().min(0),
+  trackStock: z.boolean().optional(),
   availability: z.enum(["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK", "DISCONTINUED"]),
   isFeatured: z.boolean().optional(),
   isBestSeller: z.boolean().optional(),
