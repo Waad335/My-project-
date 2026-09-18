@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { Instagram, Music2, MessageCircle } from "lucide-react";
-import { NAV_CATEGORIES } from "@/lib/categories-nav";
+import { NAV_LABEL_OVERRIDE } from "@/lib/categories-nav";
+import { getNavCategories } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/settings";
 import { HeartIcon, GoldHairline } from "@/components/icons/decorative";
 
@@ -14,7 +15,10 @@ export async function SiteFooter() {
   const tNav = await getTranslations("nav");
   const tHero = await getTranslations("hero");
   const locale = await getLocale();
-  const settings = await getSiteSettings().catch(() => null);
+  const [settings, navCategories] = await Promise.all([
+    getSiteSettings().catch(() => null),
+    getNavCategories(),
+  ]);
 
   const followLinks = [
     { icon: Instagram, label: "Instagram", href: settings?.instagramUrl || INSTAGRAM_FALLBACK },
@@ -40,13 +44,23 @@ export async function SiteFooter() {
         <div>
           <h3 className="mb-3 font-heading text-sm uppercase tracking-wider text-gold-300">{t("shop")}</h3>
           <ul className="flex flex-col gap-2 text-sm text-ivory/75">
-            {NAV_CATEGORIES.map((cat) => (
-              <li key={cat.slug}>
-                <Link href={`/category/${cat.slug}`} className="transition hover:text-ivory">
-                  {tNav(cat.labelKey)}
-                </Link>
-              </li>
-            ))}
+            {navCategories.map((cat) => {
+              const override = NAV_LABEL_OVERRIDE[cat.slug];
+              const label = override
+                ? locale === "ar"
+                  ? override.ar
+                  : override.en
+                : locale === "ar"
+                  ? cat.nameAr
+                  : cat.nameEn;
+              return (
+                <li key={cat.id}>
+                  <Link href={`/category/${cat.slug}`} className="transition hover:text-ivory">
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
