@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { serializeProductCard, serializeProductDetail, type ProductCardData } from "@/lib/serialize";
 import { NAV_CATEGORY_SLUGS } from "@/lib/categories-nav";
@@ -74,7 +75,11 @@ export type NavCategory = {
 // database so admin edits (rename, add/remove a subcategory) show up with no
 // code change. Independent of Category.isActive, which only gates the
 // homepage "Shop by Category" grid.
-export async function getNavCategories(): Promise<NavCategory[]> {
+//
+// Wrapped in React's cache() because both the header and footer call this on
+// every page render — without it, that's two extra DB round-trips per
+// request instead of one shared/deduplicated call.
+export const getNavCategories = cache(async (): Promise<NavCategory[]> => {
   const categories = await prisma.category.findMany({
     where: { slug: { in: [...NAV_CATEGORY_SLUGS] } },
     select: {
@@ -91,7 +96,7 @@ export async function getNavCategories(): Promise<NavCategory[]> {
   });
   const bySlug = new Map(categories.map((c) => [c.slug, c]));
   return NAV_CATEGORY_SLUGS.map((slug) => bySlug.get(slug)).filter((c): c is NavCategory => Boolean(c));
-}
+});
 
 export type CategoryProductFilters = {
   subcategorySlug?: string;
