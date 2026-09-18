@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { serializeProductCard, serializeProductDetail, type ProductCardData } from "@/lib/serialize";
+import { NAV_CATEGORY_SLUGS } from "@/lib/categories-nav";
 
 const cardInclude = {
   images: true,
@@ -57,6 +58,39 @@ export async function getCategoryBySlug(slug: string) {
     where: { slug },
     include: { subcategories: { where: { isActive: true }, orderBy: { sortOrder: "asc" } } },
   });
+}
+
+export type NavCategory = {
+  id: string;
+  slug: string;
+  nameEn: string;
+  nameAr: string;
+  subcategories: { id: string; slug: string; nameEn: string; nameAr: string }[];
+};
+
+// Backs the main storefront navigation (header dropdowns, mobile accordion,
+// footer "Shop" links) — the specific categories/order are pinned by
+// NAV_CATEGORY_SLUGS, but names and subcategories always come live from the
+// database so admin edits (rename, add/remove a subcategory) show up with no
+// code change. Independent of Category.isActive, which only gates the
+// homepage "Shop by Category" grid.
+export async function getNavCategories(): Promise<NavCategory[]> {
+  const categories = await prisma.category.findMany({
+    where: { slug: { in: [...NAV_CATEGORY_SLUGS] } },
+    select: {
+      id: true,
+      slug: true,
+      nameEn: true,
+      nameAr: true,
+      subcategories: {
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, slug: true, nameEn: true, nameAr: true },
+      },
+    },
+  });
+  const bySlug = new Map(categories.map((c) => [c.slug, c]));
+  return NAV_CATEGORY_SLUGS.map((slug) => bySlug.get(slug)).filter((c): c is NavCategory => Boolean(c));
 }
 
 export type CategoryProductFilters = {

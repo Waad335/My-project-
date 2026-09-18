@@ -4,19 +4,24 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { Menu, X, Instagram, MessageCircle, Heart } from "lucide-react";
-import { NAV_CATEGORIES } from "@/lib/categories-nav";
+import { Menu, X, Instagram, MessageCircle, Heart, ChevronDown } from "lucide-react";
+import { NAV_LABEL_OVERRIDE } from "@/lib/categories-nav";
+import type { NavCategory } from "@/lib/queries";
 
 export function MobileNav({
+  navCategories,
   instagramUrl,
   whatsappGroupUrl,
 }: {
+  navCategories: NavCategory[];
   instagramUrl: string;
   whatsappGroupUrl: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
   const locale = useLocale();
   const t = useTranslations("nav");
+  const tc = useTranslations("common");
   const tHero = useTranslations("hero");
 
   return (
@@ -45,17 +50,53 @@ export function MobileNav({
                 <Link href="/" onClick={() => setOpen(false)} className="rounded-xl px-3 py-3 text-sm font-medium hover:bg-white">
                   {t("home")}
                 </Link>
-                {NAV_CATEGORIES.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/category/${cat.slug}`}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-medium hover:bg-white"
-                  >
-                    <span aria-hidden="true">{cat.emoji}</span>
-                    {t(cat.labelKey)}
-                  </Link>
-                ))}
+                {navCategories.map((cat) => {
+                  const override = NAV_LABEL_OVERRIDE[cat.slug];
+                  const label = override
+                    ? locale === "ar"
+                      ? override.ar
+                      : override.en
+                    : locale === "ar"
+                      ? cat.nameAr
+                      : cat.nameEn;
+                  const expanded = expandedSlug === cat.slug;
+                  return (
+                    <div key={cat.id}>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedSlug(expanded ? null : cat.slug)}
+                        className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-medium hover:bg-white"
+                        aria-expanded={expanded}
+                      >
+                        {label}
+                        {cat.subcategories.length > 0 && (
+                          <ChevronDown size={16} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
+                        )}
+                      </button>
+                      {expanded && (
+                        <div className="flex flex-col gap-0.5 ps-4">
+                          <Link
+                            href={`/category/${cat.slug}`}
+                            onClick={() => setOpen(false)}
+                            className="rounded-xl px-3 py-2 text-xs font-semibold text-gold-600 hover:bg-white"
+                          >
+                            {tc("viewAll")} {label}
+                          </Link>
+                          {cat.subcategories.map((sub) => (
+                            <Link
+                              key={sub.id}
+                              href={`/category/${cat.slug}?sub=${sub.slug}`}
+                              onClick={() => setOpen(false)}
+                              className="rounded-xl px-3 py-2 text-xs text-mocha-500 hover:bg-white"
+                            >
+                              {locale === "ar" ? sub.nameAr : sub.nameEn}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 <Link href="/new-arrivals" onClick={() => setOpen(false)} className="rounded-xl px-3 py-3 text-sm font-medium hover:bg-white">
                   {t("newArrivals")}
                 </Link>

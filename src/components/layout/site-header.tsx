@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
-import { NAV_CATEGORIES } from "@/lib/categories-nav";
+import { NAV_LABEL_OVERRIDE } from "@/lib/categories-nav";
+import { getNavCategories } from "@/lib/queries";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { CategoryNavItem } from "@/components/layout/category-nav-item";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { CartIconButton } from "@/components/layout/cart-icon-button";
 import { WishlistIconButton } from "@/components/layout/wishlist-icon-button";
@@ -12,7 +14,10 @@ import { HeartIcon } from "@/components/icons/decorative";
 export async function SiteHeader() {
   const t = await getTranslations("nav");
   const locale = await getLocale();
-  const settings = await getSiteSettings().catch(() => null);
+  const [settings, navCategories] = await Promise.all([
+    getSiteSettings().catch(() => null),
+    getNavCategories(),
+  ]);
   const announcement = locale === "ar" ? settings?.announcementAr : settings?.announcementEn;
 
   return (
@@ -25,6 +30,7 @@ export async function SiteHeader() {
       <div className="container-dodana flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-2 lg:hidden">
           <MobileNav
+            navCategories={navCategories}
             instagramUrl={settings?.instagramUrl || "https://www.instagram.com/dodana.girls/"}
             whatsappGroupUrl={settings?.whatsappGroupUrl || "https://chat.whatsapp.com/C1S3FiRHR655kXmq3gvjwn"}
           />
@@ -39,15 +45,11 @@ export async function SiteHeader() {
           <Link href="/" className="text-sm font-medium text-mocha-600 transition hover:text-mocha-800">
             {t("home")}
           </Link>
-          {NAV_CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/category/${cat.slug}`}
-              className="text-sm font-medium text-mocha-600 transition hover:text-mocha-800"
-            >
-              {t(cat.labelKey)}
-            </Link>
-          ))}
+          {navCategories.map((cat) => {
+            const override = NAV_LABEL_OVERRIDE[cat.slug];
+            const label = override ? (locale === "ar" ? override.ar : override.en) : locale === "ar" ? cat.nameAr : cat.nameEn;
+            return <CategoryNavItem key={cat.id} category={cat} label={label} />;
+          })}
         </nav>
 
         <div className="flex items-center gap-0.5 sm:gap-1">
