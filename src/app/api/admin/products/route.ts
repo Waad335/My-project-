@@ -38,8 +38,14 @@ export async function POST(request: Request) {
   }
   const data = parsed.data;
 
-  const availability =
-    data.stock === 0 ? "OUT_OF_STOCK" : data.stock < 10 ? "LOW_STOCK" : data.availability;
+  const trackStock = data.trackStock ?? true;
+  const availability = !trackStock
+    ? "IN_STOCK"
+    : data.stock === 0
+      ? "OUT_OF_STOCK"
+      : data.stock < 10
+        ? "LOW_STOCK"
+        : data.availability;
 
   try {
     const product = await prisma.product.create({
@@ -59,7 +65,8 @@ export async function POST(request: Request) {
         price: data.price,
         oldPrice: data.oldPrice || null,
         salePrice: data.salePrice || null,
-        stock: data.stock,
+        stock: trackStock ? data.stock : 0,
+        trackStock,
         availability,
         isFeatured: Boolean(data.isFeatured),
         isBestSeller: Boolean(data.isBestSeller),

@@ -20,6 +20,7 @@ export default async function AdminProductsPage() {
     price: toNumber(p.price),
     priceLabel: formatEGP(toNumber(p.salePrice ?? p.price)),
     stock: p.stock,
+    trackStock: p.trackStock,
     availability: p.availability,
     isActive: p.isActive,
     isFeatured: p.isFeatured,

@@ -26,6 +26,7 @@ export type ProductFormValues = {
   oldPrice: number | "";
   salePrice: number | "";
   stock: number;
+  trackStock: boolean;
   availability: "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK" | "DISCONTINUED";
   isFeatured: boolean;
   isBestSeller: boolean;
@@ -70,6 +71,7 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
       oldPrice: values.oldPrice === "" ? null : Number(values.oldPrice),
       salePrice: values.salePrice === "" ? null : Number(values.salePrice),
       stock: Number(values.stock),
+      trackStock: values.trackStock,
       availability: values.availability,
       isFeatured: values.isFeatured,
       isBestSeller: values.isBestSeller,
@@ -208,20 +210,45 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
             <label className="label-field">Sale Price</label>
             <input type="number" step="0.01" min="0" className="input-field" value={values.salePrice} onChange={(e) => update("salePrice", e.target.value === "" ? "" : Number(e.target.value))} />
           </div>
-          <div>
-            <label className="label-field">Stock Qty</label>
-            <input required type="number" min="0" className="input-field" value={values.stock} onChange={(e) => update("stock", Number(e.target.value))} />
-          </div>
-          <div className="col-span-2 sm:col-span-4">
-            <label className="label-field">Availability</label>
-            <select className="input-field max-w-xs" value={values.availability} onChange={(e) => update("availability", e.target.value as ProductFormValues["availability"])}>
-              <option value="IN_STOCK">In Stock</option>
-              <option value="LOW_STOCK">Low Stock</option>
-              <option value="OUT_OF_STOCK">Out of Stock</option>
-              <option value="DISCONTINUED">Discontinued</option>
-            </select>
-          </div>
+          {values.trackStock ? (
+            <div>
+              <label className="label-field">Stock Qty</label>
+              <input required type="number" min="0" className="input-field" value={values.stock} onChange={(e) => update("stock", Number(e.target.value))} />
+            </div>
+          ) : (
+            <div>
+              <label className="label-field">Stock Qty</label>
+              <p className="input-field flex items-center text-mocha-400">Always available</p>
+            </div>
+          )}
+          {values.trackStock && (
+            <div className="col-span-2 sm:col-span-4">
+              <label className="label-field">Availability</label>
+              <select className="input-field max-w-xs" value={values.availability} onChange={(e) => update("availability", e.target.value as ProductFormValues["availability"])}>
+                <option value="IN_STOCK">In Stock</option>
+                <option value="LOW_STOCK">Low Stock</option>
+                <option value="OUT_OF_STOCK">Out of Stock</option>
+                <option value="DISCONTINUED">Discontinued</option>
+              </select>
+            </div>
+          )}
         </div>
+
+        <label className="mt-4 flex w-fit items-center gap-2 text-sm text-mocha-600">
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-mocha-700/30"
+            checked={values.trackStock}
+            onChange={(e) => update("trackStock", e.target.checked)}
+          />
+          Track stock quantity
+        </label>
+        {!values.trackStock && (
+          <p className="mt-1 text-xs text-mocha-400">
+            No quantity is tracked or shown for this product — it always displays as available on the storefront
+            until you set it Inactive. For made-to-order items with no fixed inventory.
+          </p>
+        )}
 
         <div className="mt-4 flex flex-wrap gap-4">
           {([

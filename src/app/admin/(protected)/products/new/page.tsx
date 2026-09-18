@@ -24,6 +24,7 @@ export default async function NewProductPage() {
     oldPrice: "",
     salePrice: "",
     stock: 0,
+    trackStock: true,
     availability: "IN_STOCK",
     isFeatured: false,
     isBestSeller: false,

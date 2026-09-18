@@ -26,7 +26,11 @@ export function ProductPurchasePanel({ product }: { product: ProductDetailData }
   const selectedVariant = product.variants.find((v) => v.id === selectedVariantId) ?? null;
   const unitPrice = product.effectivePrice + (selectedVariant?.priceDelta ?? 0);
   const stock = selectedVariant ? selectedVariant.stock : product.stock;
-  const outOfStock = product.availability === "OUT_OF_STOCK" || stock === 0;
+  // Variants are always stock-tracked; a base product can opt out via trackStock
+  // (made-to-order items with no fixed inventory) so it's always available with
+  // no quantity ever shown.
+  const stockTracked = selectedVariant ? true : product.trackStock;
+  const outOfStock = stockTracked && (product.availability === "OUT_OF_STOCK" || stock === 0);
 
   const colorVariants = useMemo(
     () => product.variants.filter((v) => v.color && !v.size),
@@ -81,12 +85,12 @@ export function ProductPurchasePanel({ product }: { product: ProductDetailData }
           "w-fit rounded-full px-3 py-1 text-xs font-medium",
           outOfStock
             ? "bg-red-50 text-red-500"
-            : stock < 10
+            : stockTracked && stock < 10
               ? "bg-gold-100 text-gold-600"
               : "bg-green-50 text-green-600"
         )}
       >
-        {outOfStock ? t("outOfStock") : stock < 10 ? t("lowStockCount", { count: stock }) : t("inStock")}
+        {outOfStock ? t("outOfStock") : stockTracked && stock < 10 ? t("lowStockCount", { count: stock }) : t("inStock")}
       </p>
 
       {colorVariants.length > 0 && (

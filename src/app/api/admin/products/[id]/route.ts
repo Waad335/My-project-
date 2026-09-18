@@ -25,8 +25,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     return NextResponse.json({ error: "Invalid product data", issues: parsed.error.flatten() }, { status: 400 });
   }
   const data = parsed.data;
-  const availability =
-    data.stock === 0 ? "OUT_OF_STOCK" : data.stock < 10 ? "LOW_STOCK" : data.availability;
+  const trackStock = data.trackStock ?? true;
+  const availability = !trackStock
+    ? "IN_STOCK"
+    : data.stock === 0
+      ? "OUT_OF_STOCK"
+      : data.stock < 10
+        ? "LOW_STOCK"
+        : data.availability;
 
   try {
     const product = await prisma.$transaction(async (tx) => {
@@ -51,7 +57,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
           price: data.price,
           oldPrice: data.oldPrice || null,
           salePrice: data.salePrice || null,
-          stock: data.stock,
+          stock: trackStock ? data.stock : 0,
+          trackStock,
           availability,
           isFeatured: Boolean(data.isFeatured),
           isBestSeller: Boolean(data.isBestSeller),
