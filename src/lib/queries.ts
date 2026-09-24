@@ -154,6 +154,91 @@ export const getActiveCategories = cache(async (): Promise<ActiveCategory[]> => 
   return categories.map(({ _count, ...c }) => ({ ...c, productCount: _count.products }));
 });
 
+// ── Boutique showcase (hero + editorial) ─────────────────────────────────
+// Real imagery only: product photos from the catalog, topped up with
+// DODANA's own category photography. Never generic/stock or invented items.
+
+export type ShowcaseItem = {
+  id: string;
+  kind: "product" | "category";
+  image: string;
+  nameEn: string;
+  nameAr: string;
+  href: string;
+  // A real .glb of this exact product, when one has been uploaded.
+  modelUrl: string | null;
+};
+
+const SHOWCASE_CATEGORY_ORDER = ["perfumes", "skincare", "bags", "accessories", "haircare"];
+const isRealImage = (url: string | null | undefined): url is string => Boolean(url) && !url!.startsWith("/placeholders/");
+
+export const getShowcaseItems = cache(async (count = 3): Promise<ShowcaseItem[]> => {
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({
+      where: { isActive: true, images: { some: {} } },
+      orderBy: [{ isFeatured: "desc" }, { isBestSeller: "desc" }, { createdAt: "desc" }],
+      take: 40,
+      select: {
+        id: true,
+        slug: true,
+        nameEn: true,
+        nameAr: true,
+        model3dUrl: true,
+        category: { select: { slug: true } },
+        images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true } },
+      },
+    }),
+    getActiveCategories(),
+  ]);
+
+  // One product per category first (so the stage mixes perfume, skincare,
+  // bags, accessories), then any remaining real product photos.
+  const withImages = products.filter((p) => isRealImage(p.images[0]?.url));
+  const rank = (slug: string) => {
+    const i = SHOWCASE_CATEGORY_ORDER.indexOf(slug);
+    return i === -1 ? SHOWCASE_CATEGORY_ORDER.length : i;
+  };
+  const picked: typeof withImages = [];
+  const seenCategories = new Set<string>();
+  for (const p of [...withImages].sort((a, b) => rank(a.category.slug) - rank(b.category.slug))) {
+    if (picked.length >= count) break;
+    if (seenCategories.has(p.category.slug)) continue;
+    seenCategories.add(p.category.slug);
+    picked.push(p);
+  }
+  for (const p of withImages) {
+    if (picked.length >= count) break;
+    if (!picked.includes(p)) picked.push(p);
+  }
+
+  const items: ShowcaseItem[] = picked.map((p) => ({
+    id: p.id,
+    kind: "product",
+    image: p.images[0]!.url,
+    nameEn: p.nameEn,
+    nameAr: p.nameAr,
+    href: `/product/${p.slug}`,
+    modelUrl: p.model3dUrl,
+  }));
+
+  const categoryPhotos = categories
+    .filter((c) => isRealImage(c.image))
+    .sort((a, b) => rank(a.slug) - rank(b.slug));
+  for (const c of categoryPhotos) {
+    if (items.length >= count) break;
+    items.push({
+      id: c.id,
+      kind: "category",
+      image: c.image!,
+      nameEn: c.nameEn,
+      nameAr: c.nameAr,
+      href: `/category/${c.slug}`,
+      modelUrl: null,
+    });
+  }
+  return items;
+});
+
 export type CategoryProductFilters = {
   subcategorySlug?: string;
   sort?: "newest" | "price-asc" | "price-desc" | "rating";

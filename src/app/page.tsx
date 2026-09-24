@@ -1,9 +1,9 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Hero } from "@/components/home/hero";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { SectionHeading } from "@/components/home/section-heading";
 import { ProductRail } from "@/components/home/product-rail";
-import { Showcase3D } from "@/components/home/showcase-3d";
+import { ShowcaseEditorial } from "@/components/home/showcase-editorial";
 import { NewArrivalsGrid } from "@/components/home/new-arrivals-grid";
 import { ComingSoonSection } from "@/components/home/coming-soon-section";
 import { WhyDodana } from "@/components/home/why-dodana";
@@ -16,11 +16,16 @@ import {
   getFeaturedProducts,
   getLatestProducts,
   getNewArrivalsByCategory,
+  getShowcaseItems,
 } from "@/lib/queries";
 
 export default async function HomePage() {
   const t = await getTranslations("home");
-  const categories = await getActiveCategories();
+  const locale = await getLocale();
+  const [categories, showcasePool] = await Promise.all([getActiveCategories(), getShowcaseItems(6)]);
+  // The hero shows the first three pieces; the editorial prefers the next
+  // ones so the same photos don't repeat back to back.
+  const editorialItems = [...showcasePool.slice(3), ...showcasePool.slice(0, 3)].slice(0, 3);
 
   // Featured is flag-driven; while nothing is flagged yet, fall back to best
   // sellers and then the newest pieces so the showcase never sits empty.
@@ -33,7 +38,6 @@ export default async function HomePage() {
   if (featured.length < 4) featured = await getLatestProducts(10);
 
   const catalogIsEmpty = featured.length === 0 && newArrivals.length === 0;
-  const hasPerfumes = categories.some((c) => c.slug === "perfumes");
 
   return (
     <>
@@ -57,14 +61,16 @@ export default async function HomePage() {
         </section>
       )}
 
-      <Showcase3D
-        eyebrow={t("showcaseEyebrow")}
-        title={t("showcaseTitle")}
-        lines={[t("showcaseLine1"), t("showcaseLine2"), t("showcaseLine3")]}
-        cta={{ href: hasPerfumes ? "/category/perfumes" : "/shop", label: hasPerfumes ? t("showcaseCta") : t("shopEverything") }}
-        fallbackImage="/categories/perfumes.jpg"
-        fallbackAlt={t("showcaseImageAlt")}
-      />
+      {editorialItems.length > 0 && (
+        <ShowcaseEditorial
+          eyebrow={t("showcaseEyebrow")}
+          title={t("showcaseTitle")}
+          lines={[t("showcaseLine1"), t("showcaseLine2"), t("showcaseLine3")]}
+          cta={{ href: "/shop", label: t("shopEverything") }}
+          items={editorialItems}
+          locale={locale}
+        />
+      )}
 
       {newArrivals.length > 0 && (
         <section aria-labelledby="new-arrivals-title" className="container-dodana py-20 lg:py-28">

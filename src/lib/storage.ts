@@ -32,7 +32,10 @@ function getSupabaseAdminClient() {
 }
 
 async function persistImageBuffer(buffer: Buffer, contentType: string): Promise<string> {
-  const filename = `${randomUUID()}.${extensionFor(contentType)}`;
+  return persistBuffer(buffer, contentType, `${randomUUID()}.${extensionFor(contentType)}`);
+}
+
+async function persistBuffer(buffer: Buffer, contentType: string, filename: string): Promise<string> {
   const supabase = getSupabaseAdminClient();
 
   if (supabase) {
@@ -40,20 +43,20 @@ async function persistImageBuffer(buffer: Buffer, contentType: string): Promise<
       contentType,
       upsert: false,
     });
-    if (error) throw new Error(`Image upload failed: ${error.message}`);
+    if (error) throw new Error(`Upload failed: ${error.message}`);
     return supabase.storage.from(SUPABASE_STORAGE_BUCKET).getPublicUrl(filename).data.publicUrl;
   }
 
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "Image storage is not configured for production. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY " +
-        "(see README 'Supabase Storage' section) — or paste an image URL instead of uploading a file."
+      "File storage is not configured for production. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY " +
+        "(see README 'Supabase Storage' section) — or paste a file URL instead of uploading."
     );
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(path.join(uploadDir, filename), buffer);
+  const target = path.join(process.cwd(), "public", "uploads", filename);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(target, buffer);
   return `/uploads/${filename}`;
 }
 
@@ -107,4 +110,22 @@ export async function saveImageFromUrl(remoteUrl: string): Promise<string | null
   } catch {
     return null;
   }
+}
+
+const MAX_MODEL_SIZE_BYTES = 15 * 1024 * 1024;
+
+/**
+ * Stores a product 3D model. Only binary glTF (.glb) is accepted — a single
+ * self-contained file — and it's verified by its "glTF" magic header rather
+ * than trusting the browser-reported MIME type (often application/octet-stream).
+ */
+export async function saveUploadedModel(file: File): Promise<string> {
+  if (!/\.glb$/i.test(file.name)) throw new Error("Upload a .glb file (binary glTF).");
+  if (file.size > MAX_MODEL_SIZE_BYTES) throw new Error("3D model is too large (max 15MB).");
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (buffer.byteLength < 12 || buffer.subarray(0, 4).toString("ascii") !== "glTF") {
+    throw new Error("That file isn't a valid .glb model.");
+  }
+  return persistBuffer(buffer, "model/gltf-binary", `models/${randomUUID()}.glb`);
 }

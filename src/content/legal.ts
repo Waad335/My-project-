@@ -137,7 +137,7 @@ export const TERMS: Record<"en" | "ar", LegalDocument> = {
       {
         heading: "Product information",
         body: [
-          "We do our best to show every product accurately. Colours can look slightly different depending on your screen. Where a product offers a 3D view, it is an illustrative preview — the product photos show the exact item.",
+          "We do our best to show every product accurately. Colours can look slightly different depending on your screen. Where a product offers a 3D view, its colours can also vary slightly by screen — the product photos show the exact item.",
         ],
       },
       {
@@ -181,7 +181,7 @@ export const TERMS: Record<"en" | "ar", LegalDocument> = {
       {
         heading: "معلومات المنتجات",
         body: [
-          "بنحاول نعرض كل منتج بدقة. الألوان ممكن تختلف شوية حسب الشاشة. ولو المنتج عليه عرض ثلاثي الأبعاد، فده عرض توضيحي — وصور المنتج هي اللي بتوضح القطعة بالظبط.",
+          "بنحاول نعرض كل منتج بدقة. الألوان ممكن تختلف شوية حسب الشاشة. ولو المنتج عليه عرض ثلاثي الأبعاد، ألوانه كمان ممكن تختلف شوية حسب الشاشة — وصور المنتج هي اللي بتوضح القطعة بالظبط.",
         ],
       },
       {

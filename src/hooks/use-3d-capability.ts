@@ -24,7 +24,9 @@ function detectWebGL(): boolean {
 
 // Decides whether to mount WebGL at all, and how much to render: phones and
 // low-power devices get fewer objects, no transmission and lower DPR.
-export function use3DCapability(): Capability {
+// `wideOnly`: callers that never use WebGL on phones/tablets skip the probe
+// there entirely (creating a GL context isn't free on mobile).
+export function use3DCapability({ wideOnly = false }: { wideOnly?: boolean } = {}): Capability {
   const [cap, setCap] = useState<Capability>({ webgl: null, quality: "low", layout: "wide" });
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function use3DCapability(): Capability {
       const weak =
         (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4 || Boolean(nav.connection?.saveData);
       setCap({
-        webgl: detectWebGL(),
+        webgl: wideOnly && compact.matches ? false : detectWebGL(),
         quality: phone || weak ? "low" : "high",
         layout: compact.matches ? "compact" : "wide",
       });
@@ -45,7 +47,7 @@ export function use3DCapability(): Capability {
     evaluate();
     compact.addEventListener("change", evaluate);
     return () => compact.removeEventListener("change", evaluate);
-  }, []);
+  }, [wideOnly]);
 
   return cap;
 }

@@ -27,6 +27,7 @@ export type ProductFormValues = {
   salePrice: number | "";
   stock: number;
   trackStock: boolean;
+  model3dUrl: string;
   availability: "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK" | "DISCONTINUED";
   isFeatured: boolean;
   isBestSeller: boolean;
@@ -72,6 +73,7 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
       salePrice: values.salePrice === "" ? null : Number(values.salePrice),
       stock: Number(values.stock),
       trackStock: values.trackStock,
+      model3dUrl: values.model3dUrl.trim(),
       availability: values.availability,
       isFeatured: values.isFeatured,
       isBestSeller: values.isBestSeller,
@@ -272,6 +274,15 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
       </section>
 
       <section className="card-surface p-5">
+        <h2 className="mb-1 font-heading text-lg text-mocha-700">3D Model (optional)</h2>
+        <p className="mb-4 text-xs text-mocha-400">
+          Only add a real 3D model of this exact product (.glb, max 15MB). The storefront shows a &ldquo;3D View&rdquo;
+          button only when a model is set — otherwise customers see the product photos.
+        </p>
+        <ModelField value={values.model3dUrl} onChange={(url) => update("model3dUrl", url)} />
+      </section>
+
+      <section className="card-surface p-5">
         <h2 className="mb-1 font-heading text-lg text-mocha-700">Variants</h2>
         <p className="mb-4 text-xs text-mocha-400">Optional. Leave empty for a simple product with no color/size options.</p>
         <VariantEditor variants={values.variants} onChange={(variants) => update("variants", variants)} baseSku={values.sku} />
@@ -297,4 +308,67 @@ function DiscountHint({ price, oldPrice }: { price: number; oldPrice: number | "
   if (oldPrice === "" || !oldPrice || !price || oldPrice <= price) return null;
   const pct = Math.round(((oldPrice - price) / oldPrice) * 100);
   return <p className="mt-1 text-xs font-medium text-gold-600">Shows as −{pct}% off on the storefront</p>;
+}
+
+function ModelField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function upload(file: File) {
+    setUploading(true);
+    setError(null);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("kind", "model");
+      const res = await fetch("/api/admin/upload", { method: "POST", body });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      onChange(data.url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <label className="flex-1">
+          <span className="sr-only">3D model URL</span>
+          {/* text, not type="url": uploaded models are site-relative paths
+              (/uploads/…) that the browser's URL validation would reject. */}
+          <input
+            type="text"
+            inputMode="url"
+            spellCheck={false}
+            className="input-field"
+            placeholder="https://…/product.glb"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        </label>
+        <label className={`btn-secondary cursor-pointer ${uploading ? "pointer-events-none opacity-60" : ""}`}>
+          {uploading ? "Uploading…" : "Upload .glb"}
+          <input
+            type="file"
+            accept=".glb,model/gltf-binary"
+            className="sr-only"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void upload(file);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {value && (
+          <button type="button" className="btn-secondary" onClick={() => onChange("")}>
+            Remove
+          </button>
+        )}
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  );
 }

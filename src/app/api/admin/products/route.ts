@@ -67,6 +67,7 @@ export async function POST(request: Request) {
         salePrice: data.salePrice || null,
         stock: trackStock ? data.stock : 0,
         trackStock,
+        model3dUrl: data.model3dUrl || null,
         availability,
         isFeatured: Boolean(data.isFeatured),
         isBestSeller: Boolean(data.isBestSeller),

@@ -25,6 +25,7 @@ export default async function NewProductPage() {
     salePrice: "",
     stock: 0,
     trackStock: true,
+    model3dUrl: "",
     availability: "IN_STOCK",
     isFeatured: false,
     isBestSeller: false,

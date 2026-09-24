@@ -56,6 +56,17 @@ export const productSchema = z.object({
   isBestSeller: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   isActive: z.boolean().optional(),
+  // A real .glb model of this exact product: an https URL or a path served by
+  // this site (/uploads/…, /models/…). Empty clears it.
+  model3dUrl: z
+    .string()
+    .trim()
+    .max(1000)
+    .refine((v) => v === "" || /^(https:\/\/[^\s]+|\/(uploads|models)\/[^\s]+)\.glb(\?[^\s]*)?$/i.test(v), {
+      message: "3D model must be a .glb file URL (https://… or /uploads/…)",
+    })
+    .optional()
+    .nullable(),
   images: z
     .array(
       z.object({

@@ -12,8 +12,8 @@ import { ProductTabs } from "@/components/product/product-tabs";
 import { ReviewsList } from "@/components/product/reviews-list";
 import { ProductRail } from "@/components/home/product-rail";
 import { SectionHeading } from "@/components/home/section-heading";
-import { modelKindForProduct } from "@/components/3d/model-kind";
 import { SITE_URL } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const product = await getProductBySlug(params.slug);
@@ -52,7 +52,13 @@ export default async function ProductPage({ params }: { params: { slug: string }
   const description = ar ? product.descriptionAr : product.descriptionEn;
   const ingredients = ar ? product.ingredientsAr : product.ingredientsEn;
   const warnings = ar ? product.warningsAr : product.warningsEn;
-  const modelKind = modelKindForProduct(product.categorySlug, product.subcategorySlug);
+  const settings = await getSiteSettings().catch(() => null);
+  const paymentNote =
+    settings?.codEnabled && settings?.onlinePaymentEnabled
+      ? t("paymentBoth")
+      : settings?.onlinePaymentEnabled
+        ? t("paymentCard")
+        : t("paymentCod");
   const outOfStock = product.trackStock && (product.availability === "OUT_OF_STOCK" || product.stock === 0);
 
   const colors = Array.from(new Set(product.variants.map((v) => v.color).filter(Boolean)));
@@ -64,7 +70,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
     ...(sizes.length ? ([[t("size"), sizes.join(", ")]] as [string, string][]) : []),
     [t("availability"), outOfStock ? t("outOfStock") : t("inStock")],
     [t("sku"), product.sku],
-    [t("origin"), t("originValue")],
   ];
 
   const tabs = [
@@ -194,7 +199,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
             alt: (ar ? img.altAr : img.altEn) || name,
           }))}
           fallbackAlt={name}
-          overlay={modelKind ? <Product3DViewer kind={modelKind} productName={name} /> : undefined}
+          // "3D View" only exists when a real model of this product was uploaded.
+          overlay={product.model3dUrl ? <Product3DViewer modelUrl={product.model3dUrl} productName={name} /> : undefined}
         />
         <div className="flex flex-col gap-8">
           <ProductPurchasePanel product={product} />
@@ -222,7 +228,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
               <ShieldCheck size={18} className="mt-0.5 shrink-0 text-gold-500" aria-hidden="true" />
               <div>
                 <p className="font-medium text-mocha-700">{t("secureTitle")}</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-mocha-500">{t("secureBody")}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-mocha-500">{paymentNote}</p>
               </div>
             </li>
           </ul>

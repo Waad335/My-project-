@@ -73,6 +73,7 @@ export function serializeProductCard(product: ProductWithRelations): ProductCard
 }
 
 export type ProductDetailData = ProductCardData & {
+  model3dUrl: string | null;
   subcategoryNameEn: string | null;
   subcategoryNameAr: string | null;
   descriptionEn: string;
@@ -106,6 +107,7 @@ export function serializeProductDetail(product: ProductWithRelations): ProductDe
   const base = serializeProductCard(product);
   return {
     ...base,
+    model3dUrl: product.model3dUrl,
     subcategoryNameEn: product.subcategory?.nameEn ?? null,
     subcategoryNameAr: product.subcategory?.nameAr ?? null,
     descriptionEn: product.descriptionEn,

@@ -118,6 +118,11 @@ model Product {
   ratingAvg   Decimal @default(0) @db.Decimal(2, 1)
   ratingCount Int     @default(0)
 
+  // Optional real 3D model of this exact product (a single-file .glb). The
+  // storefront's "3D VIEW" only appears when this is set — products without
+  // one are presented with their photos instead.
+  model3dUrl String?
+
   images           ProductImage[]
   variants         ProductVariant[]
   reviews          Review[]

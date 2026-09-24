@@ -99,6 +99,14 @@ const config: Config = {
           "30%": { opacity: "1" },
           "100%": { transform: "translateY(200%)", opacity: "0" },
         },
+        "float-slow": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        "loader-sweep": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(250%)" },
+        },
         "glow-pulse": {
           "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
           "50%": { opacity: "0.8", transform: "scale(1.04)" },
@@ -110,6 +118,8 @@ const config: Config = {
         shimmer: "shimmer 2.5s linear infinite",
         "scroll-cue": "scroll-cue 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite",
         "glow-pulse": "glow-pulse 6s ease-in-out infinite",
+        "float-slow": "float-slow 7s ease-in-out infinite",
+        "loader-sweep": "loader-sweep 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite",
       },
       maxWidth: {
         "8xl": "90rem",

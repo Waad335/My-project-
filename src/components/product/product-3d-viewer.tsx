@@ -7,7 +7,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Box, Minus, Plus, RotateCcw, Pause, Play, X } from "lucide-react";
 import { CanvasErrorBoundary } from "@/components/3d/CanvasErrorBoundary";
-import type { ModelKind } from "@/components/3d/model-kind";
 import type { ViewerAction, ViewerCommand } from "@/components/3d/ProductViewerScene";
 import { use3DCapability } from "@/hooks/use-3d-capability";
 import { cn } from "@/lib/utils";
@@ -21,7 +20,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 // "3D VIEW" trigger + full-screen modal with an interactive, illustrative
 // model: drag to rotate, scroll/pinch to zoom, preset angles.
-export function Product3DViewer({ kind, productName }: { kind: ModelKind; productName: string }) {
+export function Product3DViewer({ modelUrl, productName }: { modelUrl: string; productName: string }) {
   const t = useTranslations("viewer");
   const reducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
@@ -136,7 +135,7 @@ export function Product3DViewer({ kind, productName }: { kind: ModelKind; produc
                           aria-label={t("canvasLabel")}
                           role="img"
                         >
-                          <ProductViewerScene kind={kind} quality={quality} autoRotate={autoRotate} command={command} />
+                          <ProductViewerScene modelUrl={modelUrl} loadingLabel={t("loadingModel")} quality={quality} autoRotate={autoRotate} command={command} />
                         </div>
                       </CanvasErrorBoundary>
                     ) : (

@@ -1,20 +1,21 @@
 "use client";
 
-import { Suspense, useEffect, useLayoutEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, OrbitControls } from "@react-three/drei";
+import { ContactShadows, Html, OrbitControls, useProgress } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { StudioLighting } from "@/components/3d/Lighting";
-import { ProductModel } from "@/components/3d/ProductModel";
-import type { ModelKind } from "@/components/3d/model-kind";
+import { GlbModel } from "@/components/3d/GlbModel";
 import type { SceneQuality } from "@/components/3d/materials";
 
 export type ViewerAction = "front" | "side" | "back" | "top" | "zoom-in" | "zoom-out" | "reset";
 export type ViewerCommand = { id: number; action: ViewerAction } | null;
 
 type ProductViewerSceneProps = {
-  kind: ModelKind;
+  // The product's real 3D model (.glb).
+  modelUrl: string;
+  loadingLabel: string;
   quality: SceneQuality;
   autoRotate: boolean;
   command: ViewerCommand;
@@ -23,7 +24,7 @@ type ProductViewerSceneProps = {
 const DISTANCE = 5;
 const MIN_DISTANCE = 2.6;
 const MAX_DISTANCE = 8;
-// Models are normalised to this size so every kind frames the same way.
+// Models are normalised to this size so every product frames the same way.
 const TARGET_SIZE = 2.2;
 
 const VIEWS: Record<"front" | "side" | "back" | "top", THREE.Vector3> = {
@@ -35,16 +36,16 @@ const VIEWS: Record<"front" | "side" | "back" | "top", THREE.Vector3> = {
 
 // Interactive single-product stage: drag to rotate, wheel/pinch to zoom,
 // plus programmatic angle presets driven from the surrounding UI.
-export default function ProductViewerScene({ kind, quality, autoRotate, command }: ProductViewerSceneProps) {
+export default function ProductViewerScene({ modelUrl, loadingLabel, quality, autoRotate, command }: ProductViewerSceneProps) {
   return (
     <Canvas
       dpr={quality === "high" ? [1, 2] : [1, 1.5]}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       camera={{ position: VIEWS.front.toArray(), fov: 35 }}
     >
-      <Suspense fallback={null}>
+      <Suspense fallback={<ModelLoader label={loadingLabel} />}>
         <StudioLighting quality={quality} />
-        <NormalizedModel kind={kind} quality={quality} />
+        <GlbModel url={modelUrl} size={TARGET_SIZE} align="center" />
         <ContactShadows
           position={[0, -TARGET_SIZE / 2 - 0.02, 0]}
           opacity={0.3}
@@ -60,33 +61,18 @@ export default function ProductViewerScene({ kind, quality, autoRotate, command 
   );
 }
 
-// Centres the model on the origin and scales it to a common size.
-function NormalizedModel({ kind, quality }: { kind: ModelKind; quality: SceneQuality }) {
-  const outer = useRef<THREE.Group>(null);
-  const inner = useRef<THREE.Group>(null);
-  const invalidate = useThree((s) => s.invalidate);
-
-  useLayoutEffect(() => {
-    const o = outer.current;
-    const i = inner.current;
-    if (!o || !i) return;
-    o.scale.setScalar(1);
-    i.position.set(0, 0, 0);
-    const box = new THREE.Box3().setFromObject(i);
-    if (box.isEmpty()) return;
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    i.position.set(-center.x, -center.y, -center.z);
-    o.scale.setScalar(TARGET_SIZE / Math.max(size.x, size.y, size.z));
-    invalidate();
-  }, [kind, quality, invalidate]);
-
+// Shown inside the canvas while the model downloads.
+function ModelLoader({ label }: { label: string }) {
+  const progress = useProgress((st) => st.progress);
   return (
-    <group ref={outer}>
-      <group ref={inner}>
-        <ProductModel kind={kind} quality={quality} />
-      </group>
-    </group>
+    <Html center>
+      <div className="flex flex-col items-center gap-2" role="status">
+        <span className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.28em] text-mocha-600">{label}</span>
+        <span className="relative block h-px w-28 overflow-hidden bg-gold-400/25">
+          <span className="absolute inset-y-0 start-0 bg-gold-500 transition-[width] duration-300" style={{ width: `${Math.max(6, progress)}%` }} />
+        </span>
+      </div>
+    </Html>
   );
 }
 

@@ -33,6 +33,7 @@ export default async function EditProductPage({ params }: { params: { id: string
     salePrice: product.salePrice ? toNumber(product.salePrice) : "",
     stock: product.stock,
     trackStock: product.trackStock,
+    model3dUrl: product.model3dUrl ?? "",
     availability: product.availability,
     isFeatured: product.isFeatured,
     isBestSeller: product.isBestSeller,

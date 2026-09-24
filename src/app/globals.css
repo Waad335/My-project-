@@ -5,6 +5,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Framer Motion's scroll tracking measures offsets against the document
+       scroller; a positioned root keeps those measurements exact. */
+    position: relative;
   }
 
   body {

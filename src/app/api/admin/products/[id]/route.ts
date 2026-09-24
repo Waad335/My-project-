@@ -59,6 +59,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
           salePrice: data.salePrice || null,
           stock: trackStock ? data.stock : 0,
           trackStock,
+          // Omitted = unchanged; empty string = remove the model.
+          model3dUrl: data.model3dUrl === undefined ? undefined : data.model3dUrl || null,
           availability,
           isFeatured: Boolean(data.isFeatured),
           isBestSeller: Boolean(data.isBestSeller),
