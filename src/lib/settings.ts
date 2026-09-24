@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 
 const DEFAULT_RETURNS_POLICY_EN = `Because of hygiene, opened skincare, haircare, and perfume products cannot be returned or exchanged once received.
@@ -12,7 +13,9 @@ const DEFAULT_RETURNS_POLICY_AR = `لأسباب تتعلق بالنظافة، ل
 
 المنتجات غير المفتوحة وغير المستخدمة وبتغليفها الأصلي قد يُنظر في استرجاعها خلال 3 أيام من الاستلام حسب تقديرنا — يرجى التواصل معنا أولًا قبل إرسال أي منتج.`;
 
-export async function getSiteSettings() {
+// cache(): the root layout, header, footer and several pages all read
+// settings during one render — deduplicate to a single query per request.
+export const getSiteSettings = cache(async () => {
   const settings = await prisma.siteSettings.findUnique({ where: { id: "settings" } });
   if (settings) return settings;
 
@@ -24,4 +27,4 @@ export async function getSiteSettings() {
       returnsPolicyAr: DEFAULT_RETURNS_POLICY_AR,
     },
   });
-}
+});

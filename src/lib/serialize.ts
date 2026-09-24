@@ -17,6 +17,8 @@ export type ProductCardData = {
   salePrice: number | null;
   effectivePrice: number;
   image: string | null;
+  // Second gallery image, crossfaded in on hover where available.
+  hoverImage: string | null;
   imageAltEn: string | null;
   imageAltAr: string | null;
   isNewArrival: boolean;
@@ -30,12 +32,15 @@ export type ProductCardData = {
   categorySlug: string;
   categoryNameEn: string;
   categoryNameAr: string;
+  subcategorySlug: string | null;
+  createdAt: string;
 };
 
 export function serializeProductCard(product: ProductWithRelations): ProductCardData {
   const price = toNumber(product.price);
   const salePrice = product.salePrice ? toNumber(product.salePrice) : null;
-  const cover = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder)[0];
+  const sortedImages = [...product.images].sort((a, b) => a.sortOrder - b.sortOrder);
+  const cover = sortedImages[0];
 
   return {
     id: product.id,
@@ -48,6 +53,7 @@ export function serializeProductCard(product: ProductWithRelations): ProductCard
     salePrice,
     effectivePrice: salePrice ?? price,
     image: cover?.url ?? null,
+    hoverImage: sortedImages[1]?.url ?? null,
     imageAltEn: cover?.altEn ?? null,
     imageAltAr: cover?.altAr ?? null,
     isNewArrival: product.isNewArrival,
@@ -61,10 +67,14 @@ export function serializeProductCard(product: ProductWithRelations): ProductCard
     categorySlug: product.category?.slug ?? "",
     categoryNameEn: product.category?.nameEn ?? "",
     categoryNameAr: product.category?.nameAr ?? "",
+    subcategorySlug: product.subcategory?.slug ?? null,
+    createdAt: product.createdAt.toISOString(),
   };
 }
 
 export type ProductDetailData = ProductCardData & {
+  subcategoryNameEn: string | null;
+  subcategoryNameAr: string | null;
   descriptionEn: string;
   descriptionAr: string;
   ingredientsEn: string | null;
@@ -96,6 +106,8 @@ export function serializeProductDetail(product: ProductWithRelations): ProductDe
   const base = serializeProductCard(product);
   return {
     ...base,
+    subcategoryNameEn: product.subcategory?.nameEn ?? null,
+    subcategoryNameAr: product.subcategory?.nameAr ?? null,
     descriptionEn: product.descriptionEn,
     descriptionAr: product.descriptionAr,
     ingredientsEn: product.ingredientsEn,

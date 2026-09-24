@@ -205,6 +205,7 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
           <div>
             <label className="label-field">Old Price</label>
             <input type="number" step="0.01" min="0" className="input-field" value={values.oldPrice} onChange={(e) => update("oldPrice", e.target.value === "" ? "" : Number(e.target.value))} />
+            <DiscountHint price={values.salePrice === "" ? values.price : values.salePrice} oldPrice={values.oldPrice} />
           </div>
           <div>
             <label className="label-field">Sale Price</label>
@@ -288,4 +289,12 @@ export function ProductForm({ categories, initial }: { categories: Category[]; i
       </div>
     </form>
   );
+}
+
+// Live preview of the discount badge the storefront derives from the
+// selling price (sale price if set, else price) versus the old price.
+function DiscountHint({ price, oldPrice }: { price: number; oldPrice: number | "" }) {
+  if (oldPrice === "" || !oldPrice || !price || oldPrice <= price) return null;
+  const pct = Math.round(((oldPrice - price) / oldPrice) * 100);
+  return <p className="mt-1 text-xs font-medium text-gold-600">Shows as −{pct}% off on the storefront</p>;
 }

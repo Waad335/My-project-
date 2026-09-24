@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShoppingCart, Clock, Banknote, AlertTriangle } from "lucide-react";
+import { ShoppingCart, Clock, Banknote, AlertTriangle, Package, Users, Mail } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatEGP, toNumber } from "@/lib/utils";
 import { StatCard } from "@/components/admin/stat-card";
@@ -7,11 +7,29 @@ import { StatCard } from "@/components/admin/stat-card";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [totalOrders, pendingOrders, paidOrdersAgg, lowStockCount, recentOrders] = await Promise.all([
+  const [
+    totalOrders,
+    pendingOrders,
+    paidOrdersAgg,
+    lowStockCount,
+    activeProducts,
+    totalProducts,
+    accounts,
+    guestPhones,
+    subscribers,
+    recentOrders,
+  ] = await Promise.all([
     prisma.order.count(),
     prisma.order.count({ where: { status: { in: ["PENDING", "PAYMENT_PENDING"] } } }),
     prisma.order.aggregate({ where: { paymentStatus: "PAID" }, _sum: { total: true } }),
-    prisma.product.count({ where: { isActive: true, stock: { lt: 10 } } }),
+    // Products with "no fixed inventory" (trackStock = false) never count as low stock.
+    prisma.product.count({ where: { isActive: true, trackStock: true, stock: { lt: 10 } } }),
+    prisma.product.count({ where: { isActive: true } }),
+    prisma.product.count(),
+    prisma.user.count(),
+    // Checkout customers are stored per order, so count distinct phone numbers.
+    prisma.customer.groupBy({ by: ["phone"] }).then((rows) => rows.length),
+    prisma.newsletterSubscriber.count(),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       take: 8,
@@ -24,10 +42,15 @@ export default async function AdminDashboardPage() {
       <h1 className="mb-6 font-heading text-2xl text-mocha-700">Dashboard</h1>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Orders" value={String(totalOrders)} icon={ShoppingCart} />
-        <StatCard label="Pending Orders" value={String(pendingOrders)} icon={Clock} />
+        <StatCard label="Orders" value={String(totalOrders)} icon={ShoppingCart} hint={`${pendingOrders} pending`} />
         <StatCard label="Revenue (Paid)" value={formatEGP(toNumber(paidOrdersAgg._sum.total))} icon={Banknote} />
+        <StatCard label="Products" value={String(activeProducts)} icon={Package} hint={`${totalProducts} total · ${activeProducts} live`} />
+        <StatCard label="Customers (buyers)" value={String(guestPhones)} icon={Users} hint={`${accounts} registered accounts`} />
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCard label="Pending Orders" value={String(pendingOrders)} icon={Clock} tone={pendingOrders > 0 ? "warning" : "default"} />
         <StatCard label="Low Stock Products" value={String(lowStockCount)} icon={AlertTriangle} tone={lowStockCount > 0 ? "warning" : "default"} />
+        <StatCard label="Newsletter Subscribers" value={String(subscribers)} icon={Mail} />
       </div>
 
       <div className="card-surface mt-8 overflow-x-auto">

@@ -39,7 +39,7 @@ export function WishlistPageContent() {
         <SparkleDivider className="mt-4" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
         {items.map((item) => {
           const name = locale === "ar" ? item.nameAr : item.nameEn;
           return (

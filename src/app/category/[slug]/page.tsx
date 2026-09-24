@@ -58,7 +58,7 @@ export default async function CategoryPage({
       {products.length === 0 ? (
         <p className="py-20 text-center text-mocha-400">{t("noResults")}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

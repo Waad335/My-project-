@@ -142,3 +142,49 @@ export const siteSettingsSchema = z.object({
   returnsPolicyEn: z.string().trim().min(1),
   returnsPolicyAr: z.string().trim().min(1),
 });
+
+// ── Customer accounts ─────────────────────────────────────────────────────
+// Error messages are translation keys (resolved in the "account" namespace).
+const accountEmail = z.string().trim().toLowerCase().email("invalidEmail").max(254);
+const accountPassword = z.string().min(8, "passwordTooShort").max(128, "passwordTooLong");
+const accountPhone = z
+  .string()
+  .trim()
+  .regex(/^01[0-25]\d{8}$/, "invalidPhone")
+  .optional()
+  .or(z.literal(""));
+
+export const registerSchema = z.object({
+  name: z.string().trim().min(2, "nameTooShort").max(100),
+  email: accountEmail,
+  phone: accountPhone,
+  password: accountPassword,
+});
+
+export const loginSchema = z.object({
+  email: accountEmail,
+  password: z.string().min(1, "passwordRequired").max(128),
+});
+
+export const forgotPasswordSchema = z.object({ email: accountEmail });
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(20).max(200),
+    password: accountPassword,
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, { message: "passwordsDontMatch", path: ["confirm"] });
+
+export const profileSchema = z.object({
+  name: z.string().trim().min(2, "nameTooShort").max(100),
+  phone: accountPhone,
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "passwordRequired").max(128),
+    newPassword: accountPassword,
+    confirm: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirm, { message: "passwordsDontMatch", path: ["confirm"] });

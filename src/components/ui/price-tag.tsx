@@ -7,10 +7,12 @@ export function PriceTag({
   price,
   oldPrice,
   size = "md",
+  showDiscount = true,
 }: {
   price: number;
   oldPrice?: number | null;
   size?: "sm" | "md" | "lg";
+  showDiscount?: boolean;
 }) {
   const locale = useLocale();
   const t = useTranslations("product");
@@ -28,7 +30,7 @@ export function PriceTag({
       {oldPrice && oldPrice > price && (
         <span className="text-sm text-mocha-400 line-through">{formatEGP(oldPrice, locale)}</span>
       )}
-      {discount && (
+      {showDiscount && discount && (
         <span className="rounded-full bg-blush-100 px-2 py-0.5 text-[11px] font-semibold text-blush-500">
           -{discount}% {t("off")}
         </span>

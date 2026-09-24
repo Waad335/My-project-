@@ -14,6 +14,7 @@ import {
   LogOut,
   ExternalLink,
   Instagram,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeartIcon } from "@/components/icons/decorative";
@@ -23,6 +24,7 @@ const NAV = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/shipping", label: "Shipping", icon: Truck },
   { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
   { href: "/admin/instagram", label: "Instagram", icon: Instagram },

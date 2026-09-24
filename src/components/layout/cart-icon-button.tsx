@@ -3,8 +3,10 @@
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function CartIconButton() {
+  const t = useTranslations("nav");
   const openDrawer = useCartStore((s) => s.openDrawer);
   const count = useCartStore((s) => s.count());
   const [mounted, setMounted] = useState(false);
@@ -15,7 +17,7 @@ export function CartIconButton() {
     <button
       type="button"
       onClick={openDrawer}
-      aria-label="Open cart"
+      aria-label={mounted && count > 0 ? `${t("cart")} (${count})` : t("cart")}
       className="relative flex h-10 w-10 items-center justify-center rounded-full text-mocha-700 transition hover:bg-mocha-700/5"
     >
       <ShoppingBag size={20} />

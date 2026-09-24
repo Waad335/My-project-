@@ -37,6 +37,12 @@
     background-color: #db9a96;
     color: #fff;
   }
+
+  :focus-visible {
+    outline: 2px solid #c79a5e;
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
 }
 
 @layer components {
@@ -82,6 +88,66 @@
 
   .badge-best {
     @apply rounded-full bg-gold-400 px-2.5 py-1 text-[11px] font-semibold text-mocha-800;
+  }
+
+  /* Small uppercase kicker above headings. Letter-spacing and uppercase are
+     dropped in RTL — tracking breaks Arabic glyph joining. */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.28em] text-gold-600;
+  }
+  [dir="rtl"] .eyebrow {
+    @apply text-xs normal-case tracking-normal;
+  }
+
+  .section-title {
+    @apply text-balance font-heading text-3xl leading-[1.12] text-mocha-700 sm:text-4xl lg:text-[2.75rem];
+  }
+
+  .link-underline {
+    @apply relative inline-flex items-center gap-1.5 after:absolute after:-bottom-0.5 after:start-0 after:h-px after:w-full after:origin-left after:scale-x-100 after:bg-current after:transition-transform after:duration-500 after:ease-luxe hover:after:scale-x-0;
+  }
+
+  /* Desktop primary navigation: small tracked capitals with a hairline
+     underline that draws in on hover / for the current section. */
+  .nav-link {
+    @apply relative py-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-mocha-600 transition-colors duration-300 after:absolute after:bottom-0.5 after:start-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-500 after:ease-luxe hover:text-mocha-800 hover:after:scale-x-100 rtl:after:origin-right;
+  }
+  [dir="rtl"] .nav-link {
+    @apply text-sm normal-case tracking-normal;
+  }
+
+  /* The DODANA wordmark always renders in the brand serif, including in
+     Arabic where body text switches to Cairo. */
+  .wordmark {
+    font-family: var(--font-fraunces), Georgia, serif;
+    letter-spacing: 0.06em;
+  }
+  [dir="rtl"] .wordmark {
+    font-family: var(--font-fraunces), Georgia, serif;
+  }
+
+  .skip-link {
+    @apply fixed start-4 top-3 z-[100] -translate-y-24 rounded-full bg-mocha-700 px-5 py-2.5 text-sm font-semibold text-ivory transition-transform focus:translate-y-0;
+  }
+
+  .studio-backdrop {
+    background:
+      radial-gradient(60% 55% at 70% 45%, rgba(245, 222, 220, 0.9) 0%, rgba(245, 222, 220, 0) 70%),
+      radial-gradient(45% 40% at 20% 80%, rgba(240, 226, 204, 0.8) 0%, rgba(240, 226, 204, 0) 70%),
+      linear-gradient(180deg, #fbf5ef 0%, #f7efe8 55%, #f3e6db 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
