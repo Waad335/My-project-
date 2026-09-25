@@ -28,6 +28,16 @@ export function ProductGallery({
   const reduced = useReducedMotion();
   const [[active, direction], setActive] = useState<[number, number]>([0, 0]);
   const [viewerOpen, setViewerOpen] = useState(false);
+  // Where keyboard focus returns when the viewer closes: the visible "open
+  // full screen" button (also used when the photo itself was clicked), or the
+  // gallery region when it was opened with Enter on the region.
+  const openButton = useRef<HTMLButtonElement>(null);
+  const region = useRef<HTMLDivElement>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
+  function openViewer(from: HTMLElement | null) {
+    returnFocus.current = from;
+    setViewerOpen(true);
+  }
   const count = images.length;
   const current = images[active] ?? images[0];
 
@@ -80,10 +90,14 @@ export function ProductGallery({
         aria-roledescription="carousel"
         aria-label={tp("gallery")}
         tabIndex={0}
+        ref={region}
         onKeyDown={(e) => {
+          // Only when the region itself has focus — keys pressed on the arrow
+          // or full-screen buttons inside it bubble up here too.
+          if (e.target !== e.currentTarget) return;
           if (e.key === "ArrowRight") go(rtl ? -1 : 1);
           if (e.key === "ArrowLeft") go(rtl ? 1 : -1);
-          if (e.key === "Enter") setViewerOpen(true);
+          if (e.key === "Enter") openViewer(region.current);
         }}
         onPointerMove={(e) => {
           if (reduced || e.pointerType !== "mouse") return;
@@ -124,7 +138,7 @@ export function ProductGallery({
                   dragged.current = false;
                   return;
                 }
-                setViewerOpen(true);
+                openViewer(openButton.current);
               }}
               className="absolute inset-0 cursor-zoom-in"
               aria-label={t("openViewer")}
@@ -163,8 +177,9 @@ export function ProductGallery({
               </span>
             )}
             <button
+              ref={openButton}
               type="button"
-              onClick={() => setViewerOpen(true)}
+              onClick={() => openViewer(openButton.current)}
               aria-label={t("openViewer")}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-ivory/90 text-mocha-700 shadow-soft backdrop-blur transition hover:bg-white"
             >
@@ -181,6 +196,7 @@ export function ProductGallery({
             index={active}
             onIndexChange={select}
             onClose={() => setViewerOpen(false)}
+            returnFocusTo={returnFocus}
           />
         )}
       </AnimatePresence>

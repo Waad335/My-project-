@@ -31,7 +31,7 @@ export function PriceTag({
         <span className="text-sm text-mocha-400 line-through">{formatEGP(oldPrice, locale)}</span>
       )}
       {showDiscount && discount && (
-        <span className="rounded-full bg-blush-100 px-2 py-0.5 text-[11px] font-semibold text-blush-500">
+        <span className="rounded-full bg-blush-100 px-2 py-0.5 text-[11px] font-semibold text-blush-600">
           -{discount}% {t("off")}
         </span>
       )}

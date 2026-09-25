@@ -12,13 +12,21 @@ type Capability = {
   layout: SceneLayout;
 };
 
+// Probes for WebGL with a throwaway canvas, then releases that context right
+// away: browsers cap live WebGL contexts (~16) and a leaked probe context
+// would hold GPU memory for the life of the page.
 function detectWebGL(): boolean {
+  let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
   try {
     const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+    canvas.width = 1;
+    canvas.height = 1;
+    gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
     return Boolean(gl);
   } catch {
     return false;
+  } finally {
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
   }
 }
 

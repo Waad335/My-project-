@@ -97,7 +97,7 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-ivory/10">
-        <div className="container-dodana flex flex-col items-center justify-between gap-3 py-6 text-xs text-ivory/50 sm:flex-row">
+        <div className="container-dodana flex flex-col items-center justify-between gap-3 py-6 text-xs text-ivory/60 sm:flex-row">
           <p>
             © {new Date().getFullYear()} DODANA. {t("rights")}
           </p>

@@ -81,8 +81,9 @@
     @apply mb-1.5 block text-sm font-medium text-mocha-600;
   }
 
+  /* blush-600 keeps white text above WCAG AA (6.2:1) at badge size. */
   .badge-sale {
-    @apply rounded-full bg-blush-400 px-2.5 py-1 text-[11px] font-semibold text-white;
+    @apply rounded-full bg-blush-600 px-2.5 py-1 text-[11px] font-semibold text-white;
   }
 
   .badge-new {

@@ -12,12 +12,14 @@ export function RatingStars({
 }) {
   const rounded = Math.round(rating * 2) / 2;
   return (
-    <div className={cn("flex items-center gap-0.5", className)} aria-label={`${rating} out of 5 stars`}>
+    // role="img" so the label is a valid accessible name for the star group.
+    <div role="img" className={cn("flex items-center gap-0.5", className)} aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((i) => {
         const filled = i <= rounded;
         return (
           <Star
             key={i}
+            aria-hidden="true"
             size={size}
             className={filled ? "fill-gold-400 text-gold-400" : "fill-transparent text-mocha-700/20"}
           />

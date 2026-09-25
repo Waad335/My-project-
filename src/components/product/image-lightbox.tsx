@@ -21,11 +21,14 @@ export function ImageLightbox({
   index,
   onIndexChange,
   onClose,
+  returnFocusTo,
 }: {
   images: Img[];
   index: number;
   onIndexChange: (i: number) => void;
   onClose: () => void;
+  // The control that opened the viewer; focus goes back to it on close.
+  returnFocusTo?: React.RefObject<HTMLElement | null>;
 }) {
   const t = useTranslations("viewer");
   const [mounted, setMounted] = useState(false);
@@ -85,11 +88,30 @@ export function ImageLightbox({
     [count, index, onIndexChange, scale, x, y]
   );
 
-  // Keyboard, scroll lock, focus trap.
+  // Mount/unmount only: lock page scroll, and on close give keyboard focus
+  // back to the control that opened the viewer (falling back to whatever
+  // had focus when it opened, if that element is still on the page).
   useEffect(() => {
+    const openedFrom = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    closeButton.current?.focus();
+    const returnRef = returnFocusTo;
+    return () => {
+      document.body.style.overflow = overflow;
+      const target = returnRef?.current ?? (openedFrom?.isConnected ? openedFrom : null);
+      target?.focus({ preventScroll: true });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Move focus into the dialog once the portal has rendered.
+  useEffect(() => {
+    if (mounted) closeButton.current?.focus();
+  }, [mounted]);
+
+  // Keyboard shortcuts + focus trap (re-bound as the image changes; never
+  // moves focus by itself).
+  useEffect(() => {
     const rtl = document.documentElement.dir === "rtl";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -113,10 +135,7 @@ export function ImageLightbox({
       }
     };
     document.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = overflow;
-      document.removeEventListener("keydown", onKey);
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [go, onClose, reset, zoomTo, scale]);
 
   // Wheel zoom around the cursor (non-passive so the page doesn't scroll).
