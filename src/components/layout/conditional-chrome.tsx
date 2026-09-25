@@ -6,8 +6,10 @@ export function ConditionalChrome({
   header,
   footer,
   whatsapp,
+  skipLabel,
   children,
 }: {
+  skipLabel: string;
   header: React.ReactNode;
   footer: React.ReactNode;
   whatsapp: React.ReactNode;
@@ -20,8 +22,13 @@ export function ConditionalChrome({
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        {skipLabel}
+      </a>
       {header}
-      <main className="min-h-[60vh]">{children}</main>
+      <main id="main-content" tabIndex={-1} className="min-h-[60vh] focus:outline-none">
+        {children}
+      </main>
       {footer}
       {whatsapp}
     </>

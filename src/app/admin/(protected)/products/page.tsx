@@ -3,10 +3,14 @@ import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatEGP, toNumber } from "@/lib/utils";
 import { ProductsTable } from "@/components/admin/products-table";
+import { requireAdminPage } from "@/lib/admin-guard";
+import { can } from "@/lib/admin-permissions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
+  const admin = await requireAdminPage("products.view");
+  const canManage = can(admin.role, "products.manage");
   const products = await prisma.product.findMany({
     include: { category: true, images: { orderBy: { sortOrder: "asc" }, take: 1 } },
     orderBy: { createdAt: "desc" },
@@ -33,12 +37,14 @@ export default async function AdminProductsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-heading text-2xl text-mocha-700">Products</h1>
-        <Link href="/admin/products/new" className="btn-primary">
-          <Plus size={16} />
-          Add Product
-        </Link>
+        {canManage && (
+          <Link href="/admin/products/new" className="btn-primary">
+            <Plus size={16} />
+            Add Product
+          </Link>
+        )}
       </div>
-      <ProductsTable rows={rows} />
+      <ProductsTable rows={rows} canManage={canManage} />
     </div>
   );
 }

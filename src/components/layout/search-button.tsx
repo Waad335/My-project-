@@ -71,7 +71,7 @@ export function SearchButton() {
     <>
       <button
         type="button"
-        aria-label="Search"
+        aria-label={tc("search")}
         onClick={() => setOpen(true)}
         className="flex h-10 w-10 items-center justify-center rounded-full text-mocha-700 transition hover:bg-mocha-700/5"
       >

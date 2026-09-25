@@ -23,7 +23,8 @@ type Row = {
   image: string | null;
 };
 
-export function ProductsTable({ rows }: { rows: Row[] }) {
+// canManage: show edit/delete (products.manage). The API enforces it too.
+export function ProductsTable({ rows, canManage }: { rows: Row[]; canManage: boolean }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -62,7 +63,7 @@ export function ProductsTable({ rows }: { rows: Row[] }) {
               <th className="px-4 py-3 text-start font-medium">Stock</th>
               <th className="px-4 py-3 text-start font-medium">Flags</th>
               <th className="px-4 py-3 text-start font-medium">Status</th>
-              <th className="px-4 py-3 text-end font-medium">Actions</th>
+              {canManage && <th className="px-4 py-3 text-end font-medium">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -96,35 +97,37 @@ export function ProductsTable({ rows }: { rows: Row[] }) {
                       !row.isActive
                         ? "bg-mocha-100 text-mocha-500"
                         : row.availability === "OUT_OF_STOCK"
-                          ? "bg-red-50 text-red-500"
+                          ? "bg-red-50 text-red-700"
                           : row.availability === "LOW_STOCK"
                             ? "bg-gold-50 text-gold-600"
-                            : "bg-green-50 text-green-600"
+                            : "bg-green-50 text-green-700"
                     )}
                   >
                     {!row.isActive ? "Inactive" : row.availability.replace("_", " ")}
                   </span>
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    <Link href={`/admin/products/${row.id}`} className="rounded-full p-2 text-mocha-500 hover:bg-mocha-700/5" aria-label="Edit">
-                      <Pencil size={15} />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(row.id)}
-                      disabled={busyId === row.id}
-                      className="rounded-full p-2 text-red-400 hover:bg-red-50"
-                      aria-label="Delete"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                </td>
+                {canManage && (
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link href={`/admin/products/${row.id}`} className="rounded-full p-2 text-mocha-500 hover:bg-mocha-700/5" aria-label="Edit">
+                        <Pencil size={15} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(row.id)}
+                        disabled={busyId === row.id}
+                        className="rounded-full p-2 text-red-400 hover:bg-red-50"
+                        aria-label="Delete"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-mocha-400">
+                <td colSpan={canManage ? 7 : 6} className="px-4 py-10 text-center text-mocha-400">
                   No products found.
                 </td>
               </tr>

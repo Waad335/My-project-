@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { buildAuthorizeUrl, isInstagramConfigured } from "@/lib/instagram/client";
 import { IG_OAUTH_STATE_COOKIE } from "@/lib/instagram/constants";
 
 export async function GET() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   if (!isInstagramConfigured()) {

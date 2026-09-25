@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { categorySchema } from "@/lib/validation";
 import { z } from "zod";
@@ -9,7 +9,7 @@ const createSchema = categorySchema.extend({
 });
 
 export async function GET() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("categories.manage");
   if (response) return response;
 
   const categories = await prisma.category.findMany({
@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("categories.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

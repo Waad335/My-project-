@@ -1,35 +1,37 @@
 import { getTranslations } from "next-intl/server";
-import { Sparkles, Heart as HeartLucide, Truck, MousePointerClick } from "lucide-react";
-import { SparkleDivider } from "@/components/icons/decorative";
+import { Reveal } from "@/components/motion/reveal";
 
+// Editorial trust row — numbered statements on a hairline grid rather than
+// an icon grid.
 export async function WhyDodana() {
-  const t = await getTranslations("sections");
-  const w = await getTranslations("why");
-
+  const t = await getTranslations("home");
   const items = [
-    { icon: Sparkles, titleKey: "curatedTitle", bodyKey: "curatedBody" },
-    { icon: HeartLucide, titleKey: "trendyTitle", bodyKey: "trendyBody" },
-    { icon: Truck, titleKey: "deliveryTitle", bodyKey: "deliveryBody" },
-    { icon: MousePointerClick, titleKey: "easyTitle", bodyKey: "easyBody" },
-  ] as const;
+    { title: t("whyCuratedTitle"), body: t("whyCuratedBody") },
+    { title: t("whyQualityTitle"), body: t("whyQualityBody") },
+    { title: t("whySaudiTitle"), body: t("whySaudiBody") },
+    { title: t("whyDeliveryTitle"), body: t("whyDeliveryBody") },
+  ];
 
   return (
-    <section className="bg-mocha-700 py-16 text-ivory lg:py-24">
+    <section aria-labelledby="why-title" className="border-y border-mocha-700/8 bg-ivory-50 py-20 lg:py-28">
       <div className="container-dodana">
-        <div className="mb-10 text-center lg:mb-14">
-          <h2 className="font-heading text-3xl sm:text-4xl">{t("whyDodana")}</h2>
-          <SparkleDivider className="mt-3 opacity-80" />
-        </div>
-
-        <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:divide-x lg:divide-ivory/10">
-          {items.map((item) => (
-            <div key={item.titleKey} className="flex flex-col items-center gap-2.5 px-4 text-center">
-              <item.icon size={22} className="text-gold-300" strokeWidth={1.5} />
-              <h3 className="font-heading text-lg">{w(item.titleKey)}</h3>
-              <p className="max-w-[15rem] text-sm leading-relaxed text-ivory/65">{w(item.bodyKey)}</p>
-            </div>
+        <Reveal className="mb-12 flex flex-col gap-3 lg:mb-16">
+          <p className="eyebrow">{t("whyEyebrow")}</p>
+          <h2 id="why-title" className="section-title max-w-xl">
+            {t("whyTitle")}
+          </h2>
+        </Reveal>
+        <ol className="grid gap-px overflow-hidden rounded-card border border-mocha-700/8 bg-mocha-700/8 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, i) => (
+            <li key={item.title} className="bg-ivory-50">
+              <Reveal delay={i * 0.08} className="flex h-full flex-col gap-4 p-7 lg:p-8">
+                <span className="font-heading text-sm text-gold-600">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="font-heading text-2xl leading-tight text-mocha-700">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-mocha-600">{item.body}</p>
+              </Reveal>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

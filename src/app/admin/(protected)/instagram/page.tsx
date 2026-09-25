@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { isInstagramConfigured } from "@/lib/instagram/client";
 import { serializeImport } from "@/lib/instagram/sync";
 import { InstagramManager } from "@/components/admin/instagram-manager";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default async function AdminInstagramPage({
 }: {
   searchParams: { ig_connected?: string; ig_error?: string };
 }) {
+  await requireAdminPage("instagram.manage");
   const [connection, imports] = await Promise.all([
     prisma.instagramConnection.findUnique({ where: { id: "instagram" } }),
     prisma.instagramImport.findMany({ orderBy: { createdAt: "desc" } }),

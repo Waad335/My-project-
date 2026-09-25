@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { shippingZoneSchema } from "@/lib/validation";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("shipping.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);
@@ -16,7 +16,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("shipping.manage");
   if (response) return response;
 
   await prisma.shippingZone.delete({ where: { id: params.id } });

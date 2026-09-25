@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { siteSettingsSchema } from "@/lib/validation";
 import { getSiteSettings } from "@/lib/settings";
 
 export async function GET() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("settings.manage");
   if (response) return response;
   const settings = await getSiteSettings();
   return NextResponse.json({ settings });
 }
 
 export async function PATCH(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("settings.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

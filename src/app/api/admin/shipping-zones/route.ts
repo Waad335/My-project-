@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { shippingZoneSchema } from "@/lib/validation";
 
 export async function GET() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("shipping.manage");
   if (response) return response;
   const zones = await prisma.shippingZone.findMany({ orderBy: { governorate: "asc" } });
   return NextResponse.json({ zones });
 }
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("shipping.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

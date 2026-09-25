@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/utils";
 import { ShippingZonesManager } from "@/components/admin/shipping-zones-manager";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminShippingPage() {
+  await requireAdminPage("shipping.manage");
   const zones = await prisma.shippingZone.findMany({ orderBy: { governorate: "asc" } });
 
   return (

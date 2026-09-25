@@ -22,11 +22,14 @@ export function CheckoutForm({
   codEnabled,
   onlinePaymentEnabled,
   freeShippingThreshold,
+  prefill,
 }: {
   zones: Zone[];
   codEnabled: boolean;
   onlinePaymentEnabled: boolean;
   freeShippingThreshold: number | null;
+  // Signed-in customers: their saved details, pre-filled (still editable).
+  prefill?: { name: string; email: string; phone: string | null } | null;
 }) {
   const locale = useLocale();
   const t = useTranslations("checkout");
@@ -40,11 +43,11 @@ export function CheckoutForm({
   const discount = appliedPromo?.discountAmount ?? 0;
 
   const [form, setForm] = useState({
-    name: "",
-    phone: "",
+    name: prefill?.name ?? "",
+    phone: prefill?.phone ?? "",
     whatsapp: "",
     whatsappSame: true,
-    email: "",
+    email: prefill?.email ?? "",
     governorate: "",
     city: "",
     address: "",
@@ -73,7 +76,8 @@ export function CheckoutForm({
   function validate(): boolean {
     const next: Record<string, string> = {};
     if (form.name.trim().length < 2) next.name = t("required");
-    if (!/^01[0-25]\d{8}$/.test(form.phone.trim())) next.phone = t("required");
+    if (!/^01[0-25]\d{8}$/.test(form.phone.trim())) next.phone = form.phone.trim() ? t("invalidPhone") : t("required");
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) next.email = t("invalidEmail");
     if (!form.governorate) next.governorate = t("required");
     if (form.city.trim().length < 2) next.city = t("required");
     if (form.address.trim().length < 5) next.address = t("required");
@@ -133,11 +137,22 @@ export function CheckoutForm({
           <h2 className="mb-4 font-heading text-lg text-mocha-700">{t("customerInfo")}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t("name")} error={errors.name}>
-              <input className="input-field" value={form.name} onChange={(e) => update("name", e.target.value)} />
+              <input
+                className="input-field"
+                autoComplete="name"
+                aria-invalid={Boolean(errors.name)}
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+              />
             </Field>
             <Field label={t("phone")} error={errors.phone}>
               <input
                 className="input-field"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                dir="ltr"
+                aria-invalid={Boolean(errors.phone)}
                 placeholder="01xxxxxxxxx"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
@@ -159,10 +174,13 @@ export function CheckoutForm({
                 </Field>
               )}
             </div>
-            <Field label={t("email")} className="sm:col-span-2">
+            <Field label={t("email")} error={errors.email} className="sm:col-span-2">
               <input
                 type="email"
                 className="input-field"
+                autoComplete="email"
+                dir="ltr"
+                aria-invalid={Boolean(errors.email)}
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
               />
@@ -328,11 +346,17 @@ function Field({
   children: React.ReactNode;
   className?: string;
 }) {
+  // Wrapping <label> associates the text with its input/select/textarea for
+  // assistive tech without needing ids.
   return (
-    <div className={className}>
-      <label className="label-field">{label}</label>
+    <label className={`block ${className}`}>
+      <span className="label-field">{label}</span>
       {children}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-    </div>
+      {error && (
+        <span role="alert" className="mt-1 block text-xs font-medium text-blush-600">
+          {error}
+        </span>
+      )}
+    </label>
   );
 }

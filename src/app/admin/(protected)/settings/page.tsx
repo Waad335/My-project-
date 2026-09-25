@@ -4,10 +4,12 @@ import { getSiteSettings } from "@/lib/settings";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/utils";
 import { SettingsForm } from "@/components/admin/settings-form";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
+  await requireAdminPage("settings.manage");
   const [settings, connection] = await Promise.all([
     getSiteSettings(),
     prisma.instagramConnection.findUnique({ where: { id: "instagram" } }),

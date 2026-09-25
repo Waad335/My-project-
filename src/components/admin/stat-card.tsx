@@ -5,11 +5,13 @@ export function StatCard({
   value,
   icon: Icon,
   tone = "default",
+  hint,
 }: {
   label: string;
   value: string;
   icon: LucideIcon;
   tone?: "default" | "warning";
+  hint?: string;
 }) {
   return (
     <div className="card-surface flex items-center gap-4 p-5">
@@ -23,6 +25,7 @@ export function StatCard({
       <div>
         <p className="text-xs text-mocha-400">{label}</p>
         <p className="font-heading text-xl text-mocha-700">{value}</p>
+        {hint && <p className="mt-0.5 text-[11px] text-mocha-400">{hint}</p>}
       </div>
     </div>
   );

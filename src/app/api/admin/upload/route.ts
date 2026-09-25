@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
-import { saveUploadedImage } from "@/lib/storage";
+import { requireAdminPermission } from "@/lib/admin-guard";
+import { saveUploadedImage, saveUploadedModel } from "@/lib/storage";
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.manage");
   if (response) return response;
 
   const formData = await request.formData();
@@ -13,7 +13,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const url = await saveUploadedImage(file);
+    // kind=model uploads a product's .glb 3D model; anything else is an image.
+    const url = formData.get("kind") === "model" ? await saveUploadedModel(file) : await saveUploadedImage(file);
     return NextResponse.json({ url });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Upload failed";

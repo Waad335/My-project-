@@ -5,6 +5,7 @@ import { getPaymentProvider } from "@/lib/payments";
 import { getSiteSettings } from "@/lib/settings";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/utils";
+import { getCurrentCustomer } from "@/lib/customer-auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -25,7 +26,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const order = await createOrderFromCheckout(parsed.data);
+    // Signed-in customers get the order attached to their account.
+    const account = await getCurrentCustomer();
+    const order = await createOrderFromCheckout(parsed.data, { userId: account?.id ?? null });
 
     if (parsed.data.paymentMethod === "PAYMOB") {
       const provider = getPaymentProvider("PAYMOB");

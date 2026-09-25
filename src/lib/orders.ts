@@ -12,7 +12,7 @@ export class OrderCreationError extends Error {}
  * the database — the client only supplies product/variant ids and
  * quantities, so nothing about the total can be tampered with in the browser.
  */
-export async function createOrderFromCheckout(input: CheckoutInput) {
+export async function createOrderFromCheckout(input: CheckoutInput, options: { userId?: string | null } = {}) {
   const productIds = [...new Set(input.items.map((i) => i.productId))];
   const products = await prisma.product.findMany({
     where: { id: { in: productIds } },
@@ -126,6 +126,7 @@ export async function createOrderFromCheckout(input: CheckoutInput) {
       data: {
         orderNumber,
         customerId: customer.id,
+        userId: options.userId ?? null,
         status: "PENDING",
         paymentStatus: "UNPAID",
         paymentProvider: input.paymentMethod,

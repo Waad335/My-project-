@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 
 export async function POST() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   await prisma.instagramConnection.upsert({

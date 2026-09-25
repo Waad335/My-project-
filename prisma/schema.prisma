@@ -118,12 +118,19 @@ model Product {
   ratingAvg   Decimal @default(0) @db.Decimal(2, 1)
   ratingCount Int     @default(0)
 
+  // Optional real 3D model of this exact product (a single-file .glb). The
+  // storefront's "3D VIEW" only appears when this is set — products without
+  // one are presented with their photos instead.
+  model3dUrl String?
+
   images           ProductImage[]
   variants         ProductVariant[]
   reviews          Review[]
   orderItems       OrderItem[]
   cartEntries      CartItemSnapshot[]
   instagramImports InstagramImport[]
+  wishlistItems    WishlistItem[]
+  cartItems        CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -239,6 +246,10 @@ model Order {
   orderNumber String   @unique
   customerId  String
   customer    Customer @relation(fields: [customerId], references: [id])
+  // Set only when the order was placed while signed in to a customer
+  // account; guest checkout leaves it null.
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   status          OrderStatus         @default(PENDING)
   paymentStatus   PaymentStatus       @default(UNPAID)
@@ -269,6 +280,7 @@ model Order {
   updatedAt DateTime @updatedAt
 
   @@index([customerId])
+  @@index([userId])
   @@index([status])
   @@index([paymentStatus])
   @@map("orders")
@@ -450,4 +462,84 @@ model InstagramImport {
 
   @@index([status])
   @@map("instagram_imports")
+}
+
+// ---------------------------------------------------------------------------
+// Customer accounts
+// ---------------------------------------------------------------------------
+
+// Storefront shopper accounts. Deliberately separate from AdminUser and from
+// the admin NextAuth session: customers sign in with their own signed cookie
+// (src/lib/customer-auth.ts), so a customer session can never satisfy an
+// admin route check.
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  phone          String?
+  // Bumped on every password change/reset; embedded in the session token so
+  // older sessions stop validating immediately.
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  orders        Order[]
+  wishlistItems WishlistItem[]
+  cartItems     CartItem[]
+  resetTokens   PasswordResetToken[]
+
+  @@map("users")
+}
+
+// Only a SHA-256 hash of the emailed token is stored.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("wishlist")
+}
+
+// Server-side copy of a signed-in shopper's cart, so it follows them across
+// devices. Guests keep using the client-side (localStorage) cart only.
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("cart_items")
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  locale    String   @default("en")
+  createdAt DateTime @default(now())
+
+  @@map("newsletter_subscribers")
 }

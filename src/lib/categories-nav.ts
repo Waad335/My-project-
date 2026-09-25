@@ -12,3 +12,9 @@ export const NAV_CATEGORY_SLUGS = ["women", "kids", "curve-plus-size", "home", "
 export const NAV_LABEL_OVERRIDE: Record<string, { en: string; ar: string }> = {
   home: { en: "Home & Living", ar: "المنزل والمعيشة" },
 };
+
+export function navCategoryLabel(cat: { slug: string; nameEn: string; nameAr: string }, locale: string): string {
+  const override = NAV_LABEL_OVERRIDE[cat.slug];
+  if (override) return locale === "ar" ? override.ar : override.en;
+  return locale === "ar" ? cat.nameAr : cat.nameEn;
+}

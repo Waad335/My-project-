@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { slugify, toNumber } from "@/lib/utils";
 
 const publishSchema = z.object({ stock: z.number().int().min(0) });
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

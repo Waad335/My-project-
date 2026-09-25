@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { exchangeCodeForToken, exchangeForLongLivedToken, fetchProfile } from "@/lib/instagram/client";
 import { IG_OAUTH_STATE_COOKIE } from "@/lib/instagram/constants";
@@ -10,13 +9,11 @@ import { IG_OAUTH_STATE_COOKIE } from "@/lib/instagram/constants";
  * access on Instagram's own login page. This is a top-level GET navigation
  * back to our own domain, so the admin's existing session cookie is present
  * (SameSite=Lax allows this) — protected the same way every other
- * /api/admin/* route is, via middleware + this session check.
+ * /api/admin/* route is, via middleware + the instagram.manage guard.
  */
 export async function GET(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
+  const { response: denied } = await requireAdminPermission("instagram.manage");
+  if (denied) return denied;
 
   const url = new URL(request.url);
   const code = url.searchParams.get("code");

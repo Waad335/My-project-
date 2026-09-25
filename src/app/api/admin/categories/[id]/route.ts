@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { categorySchema } from "@/lib/validation";
 import { z } from "zod";
@@ -11,7 +11,7 @@ const updateSchema = categorySchema.extend({
 });
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("categories.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);
@@ -57,7 +57,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("categories.manage");
   if (response) return response;
 
   const productCount = await prisma.product.count({ where: { categoryId: params.id } });
