@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatEGP, toNumber } from "@/lib/utils";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ const STATUSES = [
 ];
 
 export default async function AdminOrdersPage({ searchParams }: { searchParams: { status?: string } }) {
+  await requireAdminPage("orders.view");
   const orders = await prisma.order.findMany({
     where: searchParams.status ? { status: searchParams.status as never } : undefined,
     include: { customer: true },

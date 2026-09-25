@@ -17,21 +17,24 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { can, type AdminRole, type Permission } from "@/lib/admin-permissions";
 import { HeartIcon } from "@/components/icons/decorative";
 
-const NAV = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/categories", label: "Categories", icon: FolderTree },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/shipping", label: "Shipping", icon: Truck },
-  { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag },
-  { href: "/admin/instagram", label: "Instagram", icon: Instagram },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+// Each entry is shown only to roles with its permission. Hiding links is a
+// convenience — access itself is enforced by middleware and server guards.
+const NAV: { href: string; label: string; icon: typeof LayoutDashboard; permission: Permission; exact?: boolean }[] = [
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, permission: "dashboard.view", exact: true },
+  { href: "/admin/products", label: "Products", icon: Package, permission: "products.view" },
+  { href: "/admin/categories", label: "Categories", icon: FolderTree, permission: "categories.manage" },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingCart, permission: "orders.view" },
+  { href: "/admin/customers", label: "Customers", icon: Users, permission: "customers.view" },
+  { href: "/admin/shipping", label: "Shipping", icon: Truck, permission: "shipping.manage" },
+  { href: "/admin/promo-codes", label: "Promo Codes", icon: Tag, permission: "promos.manage" },
+  { href: "/admin/instagram", label: "Instagram", icon: Instagram, permission: "instagram.manage" },
+  { href: "/admin/settings", label: "Settings", icon: Settings, permission: "settings.manage" },
 ];
 
-export function AdminSidebar({ adminName }: { adminName: string }) {
+export function AdminSidebar({ adminName, role }: { adminName: string; role: AdminRole }) {
   const pathname = usePathname();
 
   return (
@@ -42,7 +45,7 @@ export function AdminSidebar({ adminName }: { adminName: string }) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-3">
-        {NAV.map((item) => {
+        {NAV.filter((item) => can(role, item.permission)).map((item) => {
           const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
           return (
             <Link
@@ -75,7 +78,7 @@ export function AdminSidebar({ adminName }: { adminName: string }) {
           className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-mocha-500 hover:bg-mocha-700/5"
         >
           <LogOut size={16} />
-          Sign Out ({adminName})
+          Sign Out ({adminName}{role === "STAFF" ? " · Staff" : ""})
         </button>
       </div>
     </aside>

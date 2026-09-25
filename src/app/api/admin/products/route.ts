@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validation";
 
 export async function GET(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.view");
   if (response) return response;
 
   const { searchParams } = new URL(request.url);
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

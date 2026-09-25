@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { CategoryManager } from "@/components/admin/category-manager";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminCategoriesPage() {
+  await requireAdminPage("categories.manage");
   const categories = await prisma.category.findMany({
     include: { subcategories: true, _count: { select: { products: true } } },
     orderBy: { sortOrder: "asc" },

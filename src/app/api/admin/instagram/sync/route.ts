@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { refreshLongLivedToken } from "@/lib/instagram/client";
 import { syncInstagramMedia } from "@/lib/instagram/sync";
@@ -7,7 +7,7 @@ import { syncInstagramMedia } from "@/lib/instagram/sync";
 const REFRESH_WINDOW_MS = 5 * 24 * 60 * 60 * 1000; // refresh if expiring within 5 days
 
 export async function POST() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   const connection = await prisma.instagramConnection.findUnique({ where: { id: "instagram" } });

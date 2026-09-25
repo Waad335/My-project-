@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { ProductForm, type ProductFormValues } from "@/components/admin/product-form";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export default async function NewProductPage() {
+  await requireAdminPage("products.manage");
   const categories = await prisma.category.findMany({
     include: { subcategories: true },
     orderBy: { sortOrder: "asc" },

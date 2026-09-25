@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { promoCodeSchema } from "@/lib/validation";
 
 export async function GET() {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("promos.manage");
   if (response) return response;
   const promoCodes = await prisma.promoCode.findMany({ orderBy: { createdAt: "desc" } });
   return NextResponse.json({ promoCodes });
 }
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("promos.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);

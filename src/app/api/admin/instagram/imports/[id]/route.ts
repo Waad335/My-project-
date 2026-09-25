@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 
 const patchSchema = z.object({
@@ -10,7 +10,7 @@ const patchSchema = z.object({
 });
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);
@@ -38,7 +38,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("instagram.manage");
   if (response) return response;
 
   await prisma.instagramImport.delete({ where: { id: params.id } });

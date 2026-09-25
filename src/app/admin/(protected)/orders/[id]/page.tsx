@@ -2,15 +2,24 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatEGP, toNumber } from "@/lib/utils";
 import { OrderStatusUpdater } from "@/components/admin/order-status-updater";
+import { requireAdminPage } from "@/lib/admin-guard";
+import { allowedOrderStatuses, can } from "@/lib/admin-permissions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminOrderDetailPage({ params }: { params: { id: string } }) {
+  const admin = await requireAdminPage("orders.view");
   const order = await prisma.order.findUnique({
     where: { id: params.id },
     include: { customer: true, items: true, payments: true, promoCode: true },
   });
   if (!order) notFound();
+
+  // Delivery contact is shown to every role that can fulfil orders; the
+  // email address and payment provider references are not needed for that.
+  const showEmail = can(admin.role, "customers.email");
+  const showPaymentRefs = can(admin.role, "orders.finance");
+  const canUpdate = can(admin.role, "orders.fulfil");
 
   return (
     <div>
@@ -72,7 +81,7 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
               <Info label="Name" value={order.customer.name} />
               <Info label="Phone" value={order.customer.phone} />
               <Info label="WhatsApp" value={order.customer.whatsapp || order.customer.phone} />
-              <Info label="Email" value={order.customer.email || "—"} />
+              {showEmail && <Info label="Email" value={order.customer.email || "—"} />}
               <Info label="Governorate" value={order.shippingGovernorate} />
               <Info label="City / Area" value={order.shippingCity} />
               <Info label="Address" value={order.shippingAddress} className="sm:col-span-2" />
@@ -89,7 +98,8 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
                 {order.payments.map((p) => (
                   <div key={p.id} className="flex justify-between border-b border-mocha-700/5 py-1.5 last:border-0">
                     <span className="text-mocha-500">
-                      {p.provider} · {p.providerReference || "—"}
+                      {p.provider}
+                      {showPaymentRefs && <> · {p.providerReference || "—"}</>}
                     </span>
                     <span className="text-mocha-700">
                       {formatEGP(toNumber(p.amount))} · {p.status}
@@ -103,7 +113,16 @@ export default async function AdminOrderDetailPage({ params }: { params: { id: s
 
         <div className="card-surface h-fit p-5">
           <h2 className="mb-4 font-heading text-lg text-mocha-700">Status</h2>
-          <OrderStatusUpdater orderId={order.id} currentStatus={order.status} internalNotes={order.internalNotes || ""} />
+          {canUpdate ? (
+            <OrderStatusUpdater
+              orderId={order.id}
+              currentStatus={order.status}
+              statuses={allowedOrderStatuses(admin.role, order.status)}
+              internalNotes={order.internalNotes || ""}
+            />
+          ) : (
+            <p className="text-sm text-mocha-600">{order.status.replace(/_/g, " ")}</p>
+          )}
         </div>
       </div>
     </div>

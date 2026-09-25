@@ -2,8 +2,10 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/utils";
 import { ProductForm, type ProductFormValues } from "@/components/admin/product-form";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
+  await requireAdminPage("products.manage");
   const [product, categories] = await Promise.all([
     prisma.product.findUnique({
       where: { id: params.id },

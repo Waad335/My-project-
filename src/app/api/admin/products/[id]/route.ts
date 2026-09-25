@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validation";
 
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.view");
   if (response) return response;
 
   const product = await prisma.product.findUnique({
@@ -16,7 +16,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 }
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.manage");
   if (response) return response;
 
   const body = await request.json().catch(() => null);
@@ -93,7 +93,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 }
 
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.manage");
   if (response) return response;
 
   const hasOrderHistory = await prisma.orderItem.findFirst({ where: { productId: params.id } });

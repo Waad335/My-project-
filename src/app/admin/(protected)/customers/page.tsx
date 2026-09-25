@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatEGP, toNumber } from "@/lib/utils";
+import { requireAdminPage } from "@/lib/admin-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ const TABS = [
 type Tab = (typeof TABS)[number]["id"];
 
 export default async function AdminCustomersPage({ searchParams }: { searchParams: { tab?: string; q?: string } }) {
+  await requireAdminPage("customers.view");
   const tab: Tab = TABS.some((t) => t.id === searchParams.tab) ? (searchParams.tab as Tab) : "buyers";
   const q = (searchParams.q ?? "").trim().slice(0, 80);
   const dateFmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });

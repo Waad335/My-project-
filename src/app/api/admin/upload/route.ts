@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { requireAdminSession } from "@/lib/admin-guard";
+import { requireAdminPermission } from "@/lib/admin-guard";
 import { saveUploadedImage, saveUploadedModel } from "@/lib/storage";
 
 export async function POST(request: Request) {
-  const { response } = await requireAdminSession();
+  const { response } = await requireAdminPermission("products.manage");
   if (response) return response;
 
   const formData = await request.formData();
