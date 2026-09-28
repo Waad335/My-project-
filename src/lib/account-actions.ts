@@ -1,10 +1,8 @@
 "use server";
 
-import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import type { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import {
   clearCustomerSession,
@@ -12,17 +10,23 @@ import {
   getCurrentCustomer,
   safeNextPath,
 } from "@/lib/customer-auth";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
-import { passwordResetEmail, sendEmail } from "@/lib/email";
-import { SITE_URL } from "@/lib/site";
 import {
-  changePasswordSchema,
-  forgotPasswordSchema,
-  loginSchema,
-  profileSchema,
-  registerSchema,
-  resetPasswordSchema,
-} from "@/lib/validation";
+  BCRYPT_ROUNDS,
+  authenticateCustomer,
+  changeCustomerPassword,
+  fieldErrors,
+  hashToken,
+  registerCustomer,
+  requestPasswordReset,
+  updateCustomerProfile,
+  type AccountFailure,
+} from "@/lib/customer-accounts";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { resetPasswordSchema } from "@/lib/validation";
+
+// Website form actions for customer accounts. The account logic itself
+// lives in src/lib/customer-accounts.ts (shared with the mobile API); these
+// wrappers only read the form, set the session cookie and redirect.
 
 // Messages are translation keys in the "account" namespace.
 export type AccountFormState = {
@@ -31,74 +35,40 @@ export type AccountFormState = {
   fieldErrors?: Record<string, string>;
 };
 
-const BCRYPT_ROUNDS = 12;
-const RESET_TTL_MS = 60 * 60 * 1000;
-// Compared against when an email isn't registered, so a failed login takes
-// the same time either way (no account enumeration via timing).
-const DUMMY_HASH = "$2a$12$C6UzMDM.H6dfI/f/IKxGhuYx7p2J5E3Q6uGv2vYz7c1jQ0f0Qm1bK";
-
-function fieldErrors(error: ZodError): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const issue of error.issues) {
-    const key = String(issue.path[0] ?? "form");
-    if (!out[key]) out[key] = issue.message;
-  }
-  return out;
-}
-
-function hashToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}
-
 function field(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
 }
 
+function failure(result: AccountFailure): AccountFormState {
+  if (result.fieldErrors) return { status: "error", fieldErrors: result.fieldErrors };
+  return { status: "error", message: result.message };
+}
+
 export async function registerAction(_prev: AccountFormState, formData: FormData): Promise<AccountFormState> {
-  if (!rateLimit(`register:${clientIp()}`, 10, 60 * 60 * 1000)) return { status: "error", message: "tooManyAttempts" };
+  const result = await registerCustomer(
+    { ip: clientIp() },
+    {
+      name: field(formData, "name"),
+      email: field(formData, "email"),
+      phone: field(formData, "phone"),
+      password: field(formData, "password"),
+    }
+  );
+  if (!result.ok) return failure(result);
 
-  const parsed = registerSchema.safeParse({
-    name: field(formData, "name"),
-    email: field(formData, "email"),
-    phone: field(formData, "phone"),
-    password: field(formData, "password"),
-  });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
-
-  const existing = await prisma.user.findUnique({ where: { email: parsed.data.email }, select: { id: true } });
-  if (existing) return { status: "error", fieldErrors: { email: "emailInUse" } };
-
-  const user = await prisma.user.create({
-    data: {
-      email: parsed.data.email,
-      name: parsed.data.name,
-      phone: parsed.data.phone || null,
-      passwordHash: await bcrypt.hash(parsed.data.password, BCRYPT_ROUNDS),
-    },
-    select: { id: true, sessionVersion: true },
-  });
-  await createCustomerSession(user);
+  await createCustomerSession(result.value);
   redirect(safeNextPath(field(formData, "next")));
 }
 
 export async function loginAction(_prev: AccountFormState, formData: FormData): Promise<AccountFormState> {
-  const parsed = loginSchema.safeParse({ email: field(formData, "email"), password: field(formData, "password") });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
+  const result = await authenticateCustomer(
+    { ip: clientIp() },
+    { email: field(formData, "email"), password: field(formData, "password") }
+  );
+  if (!result.ok) return failure(result);
 
-  const ip = clientIp();
-  if (!rateLimit(`login:${ip}`, 20, 15 * 60 * 1000) || !rateLimit(`login:${ip}:${parsed.data.email}`, 8, 15 * 60 * 1000)) {
-    return { status: "error", message: "tooManyAttempts" };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: { id: true, passwordHash: true, sessionVersion: true },
-  });
-  const valid = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? DUMMY_HASH);
-  if (!user || !valid) return { status: "error", message: "invalidCredentials" };
-
-  await createCustomerSession(user);
+  await createCustomerSession(result.value);
   redirect(safeNextPath(field(formData, "next")));
 }
 
@@ -107,29 +77,11 @@ export async function logoutAction(): Promise<void> {
 }
 
 export async function forgotPasswordAction(_prev: AccountFormState, formData: FormData): Promise<AccountFormState> {
-  const parsed = forgotPasswordSchema.safeParse({ email: field(formData, "email") });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
-  if (!rateLimit(`forgot:${clientIp()}`, 5, 60 * 60 * 1000)) return { status: "error", message: "tooManyAttempts" };
-
-  const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: { id: true, name: true, email: true },
-  });
-
-  // Same response whether or not the address has an account.
-  if (user) {
-    const token = randomBytes(32).toString("base64url");
-    await prisma.$transaction([
-      prisma.passwordResetToken.deleteMany({ where: { userId: user.id, usedAt: null } }),
-      prisma.passwordResetToken.create({
-        data: { userId: user.id, tokenHash: hashToken(token), expiresAt: new Date(Date.now() + RESET_TTL_MS) },
-      }),
-    ]);
-    const locale = await getLocale();
-    const link = `${SITE_URL}/account/reset-password?token=${token}`;
-    const email = passwordResetEmail(link, user.name, locale);
-    await sendEmail({ to: user.email, ...email });
-  }
+  const result = await requestPasswordReset(
+    { ip: clientIp(), resolveLocale: () => getLocale() },
+    { email: field(formData, "email") }
+  );
+  if (!result.ok) return failure(result);
 
   return { status: "success", message: "resetEmailSent" };
 }
@@ -172,39 +124,24 @@ export async function updateProfileAction(_prev: AccountFormState, formData: For
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/account/login");
 
-  const parsed = profileSchema.safeParse({ name: field(formData, "name"), phone: field(formData, "phone") });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
+  const result = await updateCustomerProfile(customer.id, { name: field(formData, "name"), phone: field(formData, "phone") });
+  if (!result.ok) return failure(result);
 
-  await prisma.user.update({
-    where: { id: customer.id },
-    data: { name: parsed.data.name, phone: parsed.data.phone || null },
-  });
   return { status: "success", message: "profileSaved" };
 }
 
 export async function changePasswordAction(_prev: AccountFormState, formData: FormData): Promise<AccountFormState> {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/account/login");
-  if (!rateLimit(`change-password:${customer.id}`, 8, 15 * 60 * 1000)) return { status: "error", message: "tooManyAttempts" };
 
-  const parsed = changePasswordSchema.safeParse({
+  const result = await changeCustomerPassword(customer.id, {
     currentPassword: field(formData, "currentPassword"),
     newPassword: field(formData, "newPassword"),
     confirm: field(formData, "confirm"),
   });
-  if (!parsed.success) return { status: "error", fieldErrors: fieldErrors(parsed.error) };
+  if (!result.ok) return failure(result);
 
-  const user = await prisma.user.findUnique({ where: { id: customer.id }, select: { passwordHash: true } });
-  if (!user || !(await bcrypt.compare(parsed.data.currentPassword, user.passwordHash))) {
-    return { status: "error", fieldErrors: { currentPassword: "currentPasswordWrong" } };
-  }
-
-  const updated = await prisma.user.update({
-    where: { id: customer.id },
-    data: { passwordHash: await bcrypt.hash(parsed.data.newPassword, BCRYPT_ROUNDS), sessionVersion: { increment: 1 } },
-    select: { id: true, sessionVersion: true },
-  });
   // Other devices are signed out; this one gets a fresh session.
-  await createCustomerSession(updated);
+  await createCustomerSession(result.value);
   return { status: "success", message: "passwordChanged" };
 }

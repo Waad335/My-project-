@@ -1,24 +1,23 @@
 import { cache } from "react";
-import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
-import { SignJWT, jwtVerify } from "jose";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import {
+  CUSTOMER_SESSION_MAX_AGE_SECONDS,
+  WEB_SESSION_AUDIENCE,
+  signCustomerToken,
+  verifyCustomerToken,
+  type CustomerTokenClaims,
+} from "@/lib/customer-token";
 
 // Storefront customer sessions. Kept entirely separate from the admin
 // NextAuth session: different cookie, different (derived) signing key, and
 // explicit issuer/audience claims — the admin middleware only checks that a
 // NextAuth token exists, so customers must never be able to obtain one.
+// Token signing/verification lives in src/lib/customer-token.ts (shared
+// with the mobile app's bearer tokens, which use a different audience).
 export const CUSTOMER_COOKIE = "dodana_session";
-const ISSUER = "dodana-storefront";
-const AUDIENCE = "dodana-customer";
-const MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-
-function signingKey(): Uint8Array {
-  const secret = process.env.CUSTOMER_AUTH_SECRET || process.env.NEXTAUTH_SECRET;
-  if (!secret) throw new Error("CUSTOMER_AUTH_SECRET (or NEXTAUTH_SECRET) must be set for customer accounts.");
-  return new Uint8Array(createHash("sha256").update(`dodana-customer-session:${secret}`).digest());
-}
+const MAX_AGE_SECONDS = CUSTOMER_SESSION_MAX_AGE_SECONDS;
 
 export type CurrentCustomer = {
   id: string;
@@ -29,14 +28,7 @@ export type CurrentCustomer = {
 };
 
 export async function createCustomerSession(user: { id: string; sessionVersion: number }) {
-  const token = await new SignJWT({ sv: user.sessionVersion })
-    .setProtectedHeader({ alg: "HS256" })
-    .setSubject(user.id)
-    .setIssuer(ISSUER)
-    .setAudience(AUDIENCE)
-    .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
-    .sign(signingKey());
+  const token = await signCustomerToken(user, WEB_SESSION_AUDIENCE, MAX_AGE_SECONDS);
 
   cookies().set(CUSTOMER_COOKIE, token, {
     httpOnly: true,
@@ -58,25 +50,26 @@ export const getCurrentCustomer = cache(async (): Promise<CurrentCustomer | null
   const token = cookies().get(CUSTOMER_COOKIE)?.value;
   if (!token) return null;
 
-  try {
-    const { payload } = await jwtVerify(token, signingKey(), {
-      issuer: ISSUER,
-      audience: AUDIENCE,
-      algorithms: ["HS256"],
-    });
-    if (!payload.sub) return null;
+  const claims = await verifyCustomerToken(token, WEB_SESSION_AUDIENCE);
+  if (!claims) return null;
+  return customerForClaims(claims);
+});
 
+// The customer a verified token belongs to — null if the account no longer
+// exists or the token predates the latest password change/reset.
+export async function customerForClaims(claims: CustomerTokenClaims): Promise<CurrentCustomer | null> {
+  try {
     const user = await prisma.user.findUnique({
-      where: { id: payload.sub },
+      where: { id: claims.userId },
       select: { id: true, email: true, name: true, phone: true, createdAt: true, sessionVersion: true },
     });
-    if (!user || user.sessionVersion !== payload.sv) return null;
+    if (!user || user.sessionVersion !== claims.sessionVersion) return null;
 
     return { id: user.id, email: user.email, name: user.name, phone: user.phone, createdAt: user.createdAt };
   } catch {
     return null;
   }
-});
+}
 
 // Only same-site relative paths are accepted as post-login destinations, so
 // ?next= can't be used as an open redirect.

@@ -199,3 +199,8 @@ export const changePasswordSchema = z
     confirm: z.string(),
   })
   .refine((d) => d.newPassword === d.confirm, { message: "passwordsDontMatch", path: ["confirm"] });
+
+// Account deletion is confirmed with the current password.
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "passwordRequired").max(128),
+});
