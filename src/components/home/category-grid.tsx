@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
-import { getActiveCategories } from "@/lib/queries";
+import { getShopCategories } from "@/lib/queries";
 import { DodanaImage } from "@/components/ui/dodana-image";
 import { Reveal } from "@/components/motion/reveal";
 import { SectionHeading } from "@/components/home/section-heading";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 export async function CategoryGrid() {
   const t = await getTranslations("home");
   const locale = await getLocale();
-  const categories = await getActiveCategories();
+  const categories = await getShopCategories();
   if (categories.length === 0) return null;
 
   return (
@@ -27,11 +27,13 @@ export async function CategoryGrid() {
           const name = locale === "ar" ? cat.nameAr : cat.nameEn;
           const isPlaceholder = cat.image?.startsWith("/placeholders/");
           // Mobile: the first card leads full-width. Tablet: two wide cards,
-          // then three. Desktop: five equal columns.
+          // then three, then the rest in wide pairs. Desktop: five equal
+          // columns.
+          const wide = i === 1 || i >= 5;
           const span = cn(
             i === 0 && "col-span-2 md:col-span-3 lg:col-span-1",
-            i === 1 && "md:col-span-3 lg:col-span-1",
-            i > 1 && "md:col-span-2 lg:col-span-1"
+            wide && "md:col-span-3 lg:col-span-1",
+            i > 1 && !wide && "md:col-span-2 lg:col-span-1"
           );
           return (
             <li key={cat.id} className={span}>
@@ -40,7 +42,7 @@ export async function CategoryGrid() {
                   href={`/category/${cat.slug}`}
                   className={cn(
                     "group relative flex h-full flex-col justify-end overflow-hidden rounded-card bg-sand-100",
-                    i === 0 ? "aspect-[16/11] md:aspect-[4/3] lg:aspect-[3/4.3]" : i === 1 ? "aspect-[3/4] md:aspect-[4/3] lg:aspect-[3/4.3]" : "aspect-[3/4] lg:aspect-[3/4.3]"
+                    i === 0 ? "aspect-[16/11] md:aspect-[4/3] lg:aspect-[3/4.3]" : wide ? "aspect-[3/4] md:aspect-[4/3] lg:aspect-[3/4.3]" : "aspect-[3/4] lg:aspect-[3/4.3]"
                   )}
                 >
                   <DodanaImage

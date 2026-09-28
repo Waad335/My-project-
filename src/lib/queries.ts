@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { serializeProductCard, serializeProductDetail, type ProductCardData } from "@/lib/serialize";
-import { NAV_CATEGORY_SLUGS } from "@/lib/categories-nav";
+import { NAV_CATEGORY_SLUGS, SHOP_EXTRA_CATEGORIES, navCategoryLabel } from "@/lib/categories-nav";
 
 const cardInclude = {
   images: true,
@@ -152,6 +152,44 @@ export const getActiveCategories = cache(async (): Promise<ActiveCategory[]> => 
     },
   });
   return categories.map(({ _count, ...c }) => ({ ...c, productCount: _count.products }));
+});
+
+// The "Shop by category" cards (homepage grid + Categories menu): the active
+// shop categories, then the departments pinned by SHOP_EXTRA_CATEGORIES.
+export const getShopCategories = cache(async (): Promise<ActiveCategory[]> => {
+  const [active, extras] = await Promise.all([
+    getActiveCategories(),
+    prisma.category.findMany({
+      where: { slug: { in: SHOP_EXTRA_CATEGORIES.map((c) => c.slug) } },
+      select: {
+        id: true,
+        slug: true,
+        nameEn: true,
+        nameAr: true,
+        descriptionEn: true,
+        descriptionAr: true,
+        image: true,
+        _count: { select: { products: { where: { isActive: true } } } },
+      },
+    }),
+  ]);
+  const activeSlugs = new Set(active.map((c) => c.slug));
+  const bySlug = new Map(extras.map((c) => [c.slug, c]));
+  const added = SHOP_EXTRA_CATEGORIES.flatMap(({ slug, image }) => {
+    const c = bySlug.get(slug);
+    if (!c || activeSlugs.has(slug)) return [];
+    const { _count, ...rest } = c;
+    return [
+      {
+        ...rest,
+        nameEn: navCategoryLabel(c, "en"),
+        nameAr: navCategoryLabel(c, "ar"),
+        image: c.image ?? image,
+        productCount: _count.products,
+      },
+    ];
+  });
+  return [...active, ...added];
 });
 
 // ── Boutique showcase (hero + editorial) ─────────────────────────────────

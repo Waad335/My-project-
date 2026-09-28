@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
-import { getActiveCategories, getNavCategories } from "@/lib/queries";
+import { getNavCategories, getShopCategories } from "@/lib/queries";
 import { getCurrentCustomer } from "@/lib/customer-auth";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { CategoriesMenu } from "@/components/layout/categories-menu";
@@ -16,14 +16,14 @@ import { HeartIcon } from "@/components/icons/decorative";
 export async function SiteHeader() {
   const t = await getTranslations("nav");
   const locale = await getLocale();
-  const [settings, navCategories, activeCategories, customer] = await Promise.all([
+  const [settings, navCategories, cardCategories, customer] = await Promise.all([
     getSiteSettings().catch(() => null),
     getNavCategories(),
-    getActiveCategories(),
+    getShopCategories(),
     getCurrentCustomer(),
   ]);
   const announcement = locale === "ar" ? settings?.announcementAr : settings?.announcementEn;
-  const shopCategories = activeCategories.map(({ id, slug, nameEn, nameAr, image }) => ({ id, slug, nameEn, nameAr, image }));
+  const shopCategories = cardCategories.map(({ id, slug, nameEn, nameAr, image }) => ({ id, slug, nameEn, nameAr, image }));
   const primaryLinks = [
     { href: "/shop", label: t("shop") },
     { href: "/new-arrivals", label: t("newIn") },

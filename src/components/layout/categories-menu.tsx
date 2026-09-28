@@ -107,7 +107,10 @@ export function CategoriesMenu({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-x-0 top-full z-40 border-b border-mocha-700/8 bg-ivory shadow-soft-lg"
+            // Never taller than the screen: on short laptop screens the
+            // panel scrolls instead of running off the bottom (the header
+            // is sticky, so anything below the fold would be unreachable).
+            className="absolute inset-x-0 top-full z-40 max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain border-b border-mocha-700/8 bg-ivory shadow-soft-lg"
           >
             <div className="container-dodana grid grid-cols-[minmax(0,1fr)_19rem] gap-10 py-9 xl:grid-cols-[minmax(0,1fr)_22rem]">
               <div>
