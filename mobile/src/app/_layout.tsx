@@ -1,17 +1,24 @@
 import "@/i18n/polyfills";
 import { useEffect, useState } from "react";
+import { StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useTranslations } from "use-intl";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/api/query-client";
 import { useSessionStore } from "@/auth/session-store";
 import { applyLayoutDirection } from "@/i18n/direction";
-import { I18nProvider } from "@/i18n/I18nProvider";
+import { I18nProvider, useLocale } from "@/i18n/I18nProvider";
 import { useLocaleStore } from "@/i18n/locale-store";
-import { colors, fontAssets } from "@/theme";
+import { colors, fontAssets, textStyle } from "@/theme";
+
+// Screens opened straight from a link (dodana://product/…) still get the
+// tabs underneath, so the header's back button always has somewhere to go.
+export const unstable_settings = { initialRouteName: "(tabs)" };
 
 // Keep the splash screen up until fonts, language and layout direction are ready.
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -45,24 +52,46 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <I18nProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="dev/design-system"
-              options={{
-                headerShown: true,
-                title: "Design system",
-                headerTintColor: colors.text,
-                headerStyle: { backgroundColor: colors.background },
-              }}
-            />
-          </Stack>
-        </I18nProvider>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <I18nProvider>
+            <StatusBar style="dark" />
+            <AppStack />
+          </I18nProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+// Tabs, with category and product screens pushed on top (back button in
+// the header; it points the other way in Arabic).
+function AppStack() {
+  const locale = useLocale();
+  const t = useTranslations("app");
+  const heading = textStyle("subheading", locale);
+  const pushed = {
+    headerShown: true,
+    headerTintColor: colors.text,
+    headerStyle: { backgroundColor: colors.background },
+    headerShadowVisible: false,
+    headerBackButtonDisplayMode: "minimal",
+    // Not shown (minimal), but read out by VoiceOver in the app's language.
+    headerBackTitle: t("back"),
+    headerTitleAlign: "center",
+    headerTitleStyle: { fontFamily: heading.fontFamily, fontSize: 16 },
+  } as const;
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="category/[slug]" options={pushed} />
+      <Stack.Screen name="product/[slug]" options={pushed} />
+      <Stack.Screen name="dev/design-system" options={{ ...pushed, title: "Design system" }} />
+    </Stack>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});
