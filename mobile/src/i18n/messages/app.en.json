@@ -15,5 +15,24 @@
   "notFound": {
     "title": "We couldn't find that page.",
     "home": "Back to Home"
-  }
+  },
+  "filters": {
+    "price": "Price (EGP)",
+    "min": "Min",
+    "max": "Max",
+    "apply": "Show results",
+    "invalidRange": "The minimum price can’t be higher than the maximum."
+  },
+  "search": {
+    "seeAll": "See all results for “{query}”"
+  },
+  "rating": "{rating} out of 5 stars",
+  "gallery": {
+    "position": "{index} of {total}"
+  },
+  "close": "Close",
+  "viewer": {
+    "hint": "Pinch or double-tap to zoom · swipe for more photos"
+  },
+  "back": "Back"
 }
