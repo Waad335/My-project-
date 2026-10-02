@@ -42,7 +42,8 @@
         {
           "supportsRTL": true
         }
-      ]
+      ],
+      "expo-image"
     ]
   }
 }
