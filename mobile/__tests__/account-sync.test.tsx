@@ -3,7 +3,7 @@ import { act, render, waitFor } from "@testing-library/react-native";
 import type { MobileCustomer } from "@shared/api-types";
 import { ApiError } from "@/api/errors";
 import { useSessionStore } from "@/auth/session-store";
-import { SYNCED_ACCOUNT_KEY, useAccountSync } from "@/shopping/account-sync";
+import { signOutCustomer, SYNC_PENDING_KEY, SYNCED_ACCOUNT_KEY, useAccountSync } from "@/shopping/account-sync";
 import { useCartStore, type CartItem } from "@/shopping/cart-store";
 import { useWishlistStore, type WishlistItem } from "@/shopping/wishlist-store";
 
@@ -129,7 +129,7 @@ describe("account sync", () => {
     expect(mockApi.saveCart).not.toHaveBeenCalled();
   });
 
-  it("clears the phone's copy on sign-out without overwriting the account", async () => {
+  it("on sign-out saves the latest change to the account first, then clears the phone", async () => {
     await AsyncStorage.setItem(SYNCED_ACCOUNT_KEY, "c1");
     mockApi.getCart.mockResolvedValue({ cart: [line("p1")] });
     mockApi.getWishlist.mockResolvedValue({ wishlist: [piece("p1")] });
@@ -138,12 +138,125 @@ describe("account sync", () => {
     await signIn();
     await waitFor(() => expect(useCartStore.getState().items).toHaveLength(1));
 
-    await act(() => useSessionStore.getState().signOut());
+    // A change made just before signing out, still waiting for its save.
+    await act(async () => {
+      useCartStore.getState().addItem(line("last-minute"));
+    });
+    let result: { keptOnPhone: boolean } | undefined;
+    await act(async () => {
+      result = await signOutCustomer();
+    });
+    expect(result).toEqual({ keptOnPhone: false });
+    expect(mockApi.saveCart).toHaveBeenCalledWith([
+      { productId: "p1", variantId: null, quantity: 1 },
+      { productId: "last-minute", variantId: null, quantity: 1 },
+    ]);
+    expect(useSessionStore.getState()).toMatchObject({ status: "guest", ended: "signedOut" });
     expect(useCartStore.getState().items).toEqual([]);
     expect(useWishlistStore.getState().items).toEqual([]);
-    await waitFor(async () => expect(await AsyncStorage.getItem(SYNCED_ACCOUNT_KEY)).toBeNull());
+    expect(await AsyncStorage.getItem(SYNCED_ACCOUNT_KEY)).toBeNull();
+    // Clearing the phone never reaches the account.
+    const calls = mockApi.saveCart.mock.calls.length;
     await act(() => new Promise((resolve) => setTimeout(resolve, 1000)));
+    expect(mockApi.saveCart).toHaveBeenCalledTimes(calls);
+  });
+
+  it("keeps the items on the phone when the account was never reached, and never overwrites it", async () => {
+    useCartStore.setState({ items: [line("guest-piece")] });
+    mockApi.getCart.mockRejectedValue(new ApiError({ status: 0, code: "network" }));
+    mockApi.getWishlist.mockRejectedValue(new ApiError({ status: 0, code: "network" }));
+
+    await render(<Harness />);
+    await signIn();
+    await waitFor(() => expect(mockApi.getCart).toHaveBeenCalled());
+    let result: { keptOnPhone: boolean } | undefined;
+    await act(async () => {
+      result = await signOutCustomer();
+    });
+    expect(result).toEqual({ keptOnPhone: true });
     expect(mockApi.saveCart).not.toHaveBeenCalled();
-    expect(mockApi.saveWishlist).not.toHaveBeenCalled();
+    expect(useCartStore.getState().items.map((i) => i.productId)).toEqual(["guest-piece"]);
+  });
+
+  it("keeps the items on the phone when the last save fails at sign-out", async () => {
+    await AsyncStorage.setItem(SYNCED_ACCOUNT_KEY, "c1");
+    mockApi.getCart.mockResolvedValue({ cart: [line("p1")] });
+    mockApi.getWishlist.mockResolvedValue({ wishlist: [] });
+    await render(<Harness />);
+    await signIn();
+    await waitFor(() => expect(useCartStore.getState().items).toHaveLength(1));
+
+    mockApi.saveCart.mockRejectedValue(new ApiError({ status: 0, code: "network" }));
+    let result: { keptOnPhone: boolean } | undefined;
+    await act(async () => {
+      result = await signOutCustomer();
+    });
+    expect(result).toEqual({ keptOnPhone: true });
+    expect(useCartStore.getState().items.map((i) => i.productId)).toEqual(["p1"]);
+    expect(useSessionStore.getState().status).toBe("guest");
+  });
+
+  it("keeps the items on the phone when the session expires, and merges them at the next sign-in", async () => {
+    await AsyncStorage.setItem(SYNCED_ACCOUNT_KEY, "c1");
+    mockApi.getCart.mockResolvedValue({ cart: [line("p1")] });
+    mockApi.getWishlist.mockResolvedValue({ wishlist: [] });
+    await render(<Harness />);
+    await signIn();
+    await waitFor(() => expect(useCartStore.getState().items).toHaveLength(1));
+
+    await act(() => useSessionStore.getState().signOut("expired"));
+    expect(useCartStore.getState().items.map((i) => i.productId)).toEqual(["p1"]);
+    await waitFor(async () => expect(await AsyncStorage.getItem(SYNCED_ACCOUNT_KEY)).toBeNull());
+
+    // Signing in again merges (the marker was cleared), so nothing is replaced.
+    await act(async () => {
+      useCartStore.getState().addItem(line("added-while-signed-out"));
+    });
+    mockApi.getCart.mockResolvedValue({ cart: [line("p1")] });
+    await signIn();
+    await waitFor(() =>
+      expect(useCartStore.getState().items.map((i) => i.productId)).toEqual(["p1", "added-while-signed-out"])
+    );
+  });
+
+  it("merges instead of replacing at start-up when a save never reached the account", async () => {
+    await AsyncStorage.setItem(SYNCED_ACCOUNT_KEY, "c1");
+    await AsyncStorage.setItem(SYNC_PENDING_KEY, "c1");
+    useCartStore.setState({ items: [line("unsaved-offline-change")] });
+    mockApi.getCart.mockResolvedValue({ cart: [line("from-account")] });
+    mockApi.getWishlist.mockResolvedValue({ wishlist: [] });
+
+    await render(<Harness />);
+    await signIn();
+    await waitFor(() =>
+      expect(useCartStore.getState().items.map((i) => i.productId)).toEqual(["from-account", "unsaved-offline-change"])
+    );
+    await waitFor(() => expect(mockApi.saveCart).toHaveBeenCalled());
+    await waitFor(async () => expect(await AsyncStorage.getItem(SYNC_PENDING_KEY)).toBeNull());
+  });
+
+  it("marks a change as pending until the account confirms it", async () => {
+    await AsyncStorage.setItem(SYNCED_ACCOUNT_KEY, "c1");
+    mockApi.getCart.mockResolvedValue({ cart: [] });
+    mockApi.getWishlist.mockResolvedValue({ wishlist: [] });
+    await render(<Harness />);
+    await signIn();
+    await waitFor(() => expect(mockApi.getWishlist).toHaveBeenCalled());
+    await act(() => new Promise((resolve) => setTimeout(resolve, 20)));
+
+    mockApi.saveCart.mockRejectedValueOnce(new ApiError({ status: 0, code: "network" }));
+    await act(async () => {
+      useCartStore.getState().addItem(line("p1"));
+    });
+    await waitFor(async () => expect(await AsyncStorage.getItem(SYNC_PENDING_KEY)).toBe("c1"));
+    await waitFor(() => expect(mockApi.saveCart).toHaveBeenCalledTimes(1), { timeout: 2000 });
+    // The save failed: still pending.
+    expect(await AsyncStorage.getItem(SYNC_PENDING_KEY)).toBe("c1");
+
+    await act(async () => {
+      useCartStore.getState().updateQuantity("p1", null, 2);
+    });
+    await waitFor(() => expect(mockApi.saveCart).toHaveBeenCalledTimes(2), { timeout: 2000 });
+    await waitFor(async () => expect(await AsyncStorage.getItem(SYNC_PENDING_KEY)).toBeNull());
   });
 });

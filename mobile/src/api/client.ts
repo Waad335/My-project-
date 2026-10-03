@@ -20,8 +20,10 @@ export type ApiClientDeps = {
   config: ApiConfigResult;
   getToken: () => Promise<string | null>;
   getLocale: () => string;
-  // Called when a request sent with a token is rejected as unauthorized.
-  onUnauthorized?: () => void;
+  // Called when a signed-in request can't be made (no token) or the server
+  // rejects its token. Receives that token (null when there was none) so a
+  // late answer to an old session's request can't end a newer session.
+  onUnauthorized?: (rejectedToken: string | null) => void;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
 };
@@ -51,7 +53,11 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
     if (auth !== "none") {
       token = await deps.getToken();
       if (token) headers.Authorization = `Bearer ${token}`;
-      else if (auth === "required") throw new ApiError({ status: 401, code: "unauthorized" });
+      else if (auth === "required") {
+        // No token, or it expired on the phone: the session is over.
+        deps.onUnauthorized?.(null);
+        throw new ApiError({ status: 401, code: "unauthorized" });
+      }
     }
 
     let body: string | undefined;
@@ -89,7 +95,7 @@ export function createApiClient(deps: ApiClientDeps): ApiClient {
     const payload = await readJson(response);
 
     if (!response.ok) {
-      if (response.status === 401 && token) deps.onUnauthorized?.();
+      if (response.status === 401 && token) deps.onUnauthorized?.(token);
       if (isApiErrorBody(payload)) {
         throw new ApiError({
           status: response.status,

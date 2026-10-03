@@ -78,6 +78,18 @@ export async function getToken(now: number = Date.now()): Promise<string | null>
   return cache?.token ?? null;
 }
 
+// Whether a usable token is stored. An expired one is removed and reported
+// as "expired", so the app can tell the customer their session ended.
+export async function getTokenStatus(now: number = Date.now()): Promise<"none" | "valid" | "expired"> {
+  if (cache === undefined) cache = parse(await readRaw().catch(() => null));
+  if (!cache) return "none";
+  if (isExpired(cache, now)) {
+    await clearToken();
+    return "expired";
+  }
+  return "valid";
+}
+
 export async function clearToken(): Promise<void> {
   cache = null;
   await deleteRaw().catch(() => undefined);

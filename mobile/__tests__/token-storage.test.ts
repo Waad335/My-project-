@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { clearToken, getToken, resetTokenCacheForTests, saveToken } from "@/auth/token-storage";
+import { clearToken, getToken, getTokenStatus, resetTokenCacheForTests, saveToken } from "@/auth/token-storage";
 
 const mockSecureItems = new Map<string, string>();
 const mockSecureCalls: { op: string; key: string; options: unknown }[] = [];
@@ -52,6 +52,19 @@ describe("token storage", () => {
     await saveToken({ token: "old.token.value", expiresAt: past });
     expect(await getToken()).toBeNull();
     expect(mockSecureItems.size).toBe(0);
+  });
+
+  it("reports whether the stored token is usable, expired or missing", async () => {
+    expect(await getTokenStatus()).toBe("none");
+    await saveToken({ token: "valid", expiresAt: future });
+    expect(await getTokenStatus()).toBe("valid");
+    await saveToken({ token: "old", expiresAt: past });
+    resetTokenCacheForTests();
+    mockSecureItems.set("dodana.session", JSON.stringify({ token: "old", expiresAt: past }));
+    expect(await getTokenStatus()).toBe("expired");
+    // The expired token is removed from the secure store.
+    expect(mockSecureItems.has("dodana.session")).toBe(false);
+    expect(await getTokenStatus()).toBe("none");
   });
 
   it("treats an unreadable entry as signed out", async () => {

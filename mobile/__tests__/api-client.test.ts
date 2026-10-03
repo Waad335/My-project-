@@ -59,11 +59,15 @@ describe("createApiClient", () => {
   });
 
   it("checks out as a guest without a token, but refuses signed-in endpoints", async () => {
-    const { client, calls } = setup({ getToken: async () => null });
+    const { client, calls, onUnauthorized } = setup({ getToken: async () => null });
     await client.request("/checkout", { method: "POST", body: {}, auth: "optional" });
     expect(header(calls[0], "Authorization")).toBeUndefined();
+    expect(onUnauthorized).not.toHaveBeenCalled();
     await expect(client.request("/me", { auth: "required" })).rejects.toMatchObject({ status: 401, code: "unauthorized" });
     expect(calls).toHaveLength(1);
+    // No token (or one that ran out on the phone) ends the session.
+    expect(onUnauthorized).toHaveBeenCalledTimes(1);
+    expect(onUnauthorized).toHaveBeenCalledWith(null);
   });
 
   it("turns the API's error shape into an ApiError with the localized message and field codes", async () => {
@@ -84,6 +88,8 @@ describe("createApiClient", () => {
     const { client, onUnauthorized } = setup({}, () => jsonResponse(401, { error: { code: "unauthorized", message: "x" } }));
     await expect(client.request("/me", { auth: "required" })).rejects.toMatchObject({ status: 401 });
     expect(onUnauthorized).toHaveBeenCalledTimes(1);
+    // Says which token was rejected, so the session can ignore an old one.
+    expect(onUnauthorized).toHaveBeenCalledWith("app-token");
   });
 
   it("does not sign out for a 401 on a request sent without a token", async () => {

@@ -7,11 +7,13 @@ import { createEndpoints } from "./endpoints";
 export { apiConfig } from "./config";
 export { ApiError } from "./errors";
 
-let unauthorizedHandler: (() => void) | null = null;
+type UnauthorizedHandler = (rejectedToken: string | null) => void;
+
+let unauthorizedHandler: UnauthorizedHandler | null = null;
 
 // The session registers itself here so that a token the server rejects
 // (expired, revoked by a password change, account deleted) signs the app out.
-export function setUnauthorizedHandler(handler: (() => void) | null): void {
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
   unauthorizedHandler = handler;
 }
 
@@ -19,7 +21,7 @@ export const apiClient = createApiClient({
   config: apiConfig,
   getToken: () => getToken(),
   getLocale: () => useLocaleStore.getState().locale,
-  onUnauthorized: () => unauthorizedHandler?.(),
+  onUnauthorized: (rejectedToken) => unauthorizedHandler?.(rejectedToken),
 });
 
 export const api = createEndpoints(apiClient);
