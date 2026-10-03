@@ -71,7 +71,24 @@ describe("API contract", () => {
       "app/category/[slug].tsx",
       "app/product/[slug].tsx",
     ].map((file) => readFileSync(join(src, file), "utf8"));
-    const used = new Set(files.flatMap((source) => [...source.matchAll(/\bapi\.(\w+)/g)].map((m) => m[1])));
+    const used = new Set(files.flatMap((source) => [...source.matchAll(/\bapi\s*\.\s*(\w+)/g)].map((m) => m[1])));
     expect([...used].sort()).toEqual(["getCategories", "getCategory", "getHome", "getProduct", "getSettings", "listProducts", "searchSuggest"]);
+  });
+
+  it("the cart and wishlist only use the existing saved cart and wishlist endpoints", () => {
+    const src = join(__dirname, "..", "src");
+    const files = [
+      "shopping/account-sync.ts",
+      "shopping/cart-store.ts",
+      "shopping/wishlist-store.ts",
+      "shopping/storage.ts",
+      "components/shopping/AddToCart.tsx",
+      "components/shopping/WishlistButton.tsx",
+      "components/shopping/QuantityStepper.tsx",
+      "app/(tabs)/cart.tsx",
+      "app/(tabs)/wishlist.tsx",
+    ].map((file) => readFileSync(join(src, file), "utf8"));
+    const used = new Set(files.flatMap((source) => [...source.matchAll(/\bapi\s*\.\s*(\w+)/g)].map((m) => m[1])));
+    expect([...used].sort()).toEqual(["getCart", "getWishlist", "saveCart", "saveWishlist"]);
   });
 });

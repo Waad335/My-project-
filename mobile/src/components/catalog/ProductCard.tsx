@@ -8,14 +8,16 @@ import { AppText, PriceTag } from "@/components/ui";
 import { useLocale } from "@/i18n/I18nProvider";
 import { formatEGP } from "@/i18n/format";
 import { palette, radii, spacing } from "@/theme";
+import { WishlistButton } from "@/components/shopping/WishlistButton";
 import { ProductImage } from "./ProductImage";
 import { RatingStars } from "./RatingStars";
 
 type ProductCardProps = { product: ProductCardData; width: number };
 
 // The website's product tile for phones: photo with one badge, category,
-// name, rating, price and a low-stock note. Add-to-cart and the wishlist
-// heart arrive with the cart and wishlist (Phase 4).
+// name, rating, price and a low-stock note, with the wishlist heart in the
+// photo's top corner. Adding to the cart happens on the product screen,
+// where the colour or size is chosen.
 function ProductCardBase({ product, width }: ProductCardProps) {
   const t = useTranslations("product");
   const locale = useLocale();
@@ -28,55 +30,70 @@ function ProductCardBase({ product, width }: ProductCardProps) {
   const badgeLabel =
     badge?.kind === "sale" ? `-${badge.discount}%` : badge?.kind === "bestSeller" ? t("bestSeller") : badge?.kind === "new" ? t("new") : null;
 
+  // The heart sits beside the link, not inside it, so screen readers reach
+  // it as its own button.
   return (
-    <Pressable
-      accessibilityRole="link"
-      accessibilityLabel={`${name}, ${formatEGP(product.effectivePrice, locale)}${outOfStock ? `, ${t("outOfStock")}` : ""}`}
-      onPress={() => router.push({ pathname: "/product/[slug]", params: { slug: product.slug } })}
-      style={({ pressed }) => [{ width }, pressed && styles.pressed]}
-    >
-      <View>
-        <ProductImage
-          uri={product.image}
-          recyclingKey={product.id}
-          style={{ width, height: Math.round(width * 1.25), borderRadius: radii.card }}
-        />
-        {badge && badgeLabel ? (
-          <View style={[styles.badge, badgeStyles[badge.kind]]}>
-            <AppText variant="label" style={[styles.badgeText, { color: badgeText[badge.kind] }]}>
-              {badgeLabel}
-            </AppText>
-          </View>
-        ) : null}
-      </View>
-      <View style={styles.body}>
-        <AppText variant="label" color="highlightText" numberOfLines={1} style={locale === "en" && styles.eyebrow}>
-          {localized(locale, product.categoryNameEn, product.categoryNameAr)}
-        </AppText>
-        <AppText variant="heading" accessibilityRole="text" numberOfLines={2} style={locale === "ar" ? styles.nameAr : styles.name}>
-          {name}
-        </AppText>
-        {product.ratingCount > 0 ? (
-          <View style={styles.rating}>
-            <RatingStars rating={product.ratingAvg} size={12} />
-            <AppText variant="caption" color="textMuted" style={styles.ratingCount}>
-              ({product.ratingCount})
-            </AppText>
-          </View>
-        ) : null}
-        <PriceTag price={product.effectivePrice} oldPrice={product.oldPrice} size="sm" showDiscount={false} />
-        {lowStock ? (
-          <AppText variant="caption" color="highlightText">
-            {t("lowStockCount", { count: product.stock })}
+    <View style={{ width }}>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={`${name}, ${formatEGP(product.effectivePrice, locale)}${outOfStock ? `, ${t("outOfStock")}` : ""}`}
+        onPress={() => router.push({ pathname: "/product/[slug]", params: { slug: product.slug } })}
+        style={({ pressed }) => [pressed && styles.pressed]}
+      >
+        <View>
+          <ProductImage
+            uri={product.image}
+            recyclingKey={product.id}
+            style={{ width, height: Math.round(width * 1.25), borderRadius: radii.card }}
+          />
+          {badge && badgeLabel ? (
+            <View style={[styles.badge, badgeStyles[badge.kind]]}>
+              <AppText variant="label" style={[styles.badgeText, { color: badgeText[badge.kind] }]}>
+                {badgeLabel}
+              </AppText>
+            </View>
+          ) : null}
+        </View>
+        <View style={styles.body}>
+          <AppText variant="label" color="highlightText" numberOfLines={1} style={locale === "en" && styles.eyebrow}>
+            {localized(locale, product.categoryNameEn, product.categoryNameAr)}
           </AppText>
-        ) : null}
-        {outOfStock ? (
-          <AppText variant="caption" color="textMuted">
-            {t("outOfStock")}
+          <AppText variant="heading" accessibilityRole="text" numberOfLines={2} style={locale === "ar" ? styles.nameAr : styles.name}>
+            {name}
           </AppText>
-        ) : null}
-      </View>
-    </Pressable>
+          {product.ratingCount > 0 ? (
+            <View style={styles.rating}>
+              <RatingStars rating={product.ratingAvg} size={12} />
+              <AppText variant="caption" color="textMuted" style={styles.ratingCount}>
+                ({product.ratingCount})
+              </AppText>
+            </View>
+          ) : null}
+          <PriceTag price={product.effectivePrice} oldPrice={product.oldPrice} size="sm" showDiscount={false} />
+          {lowStock ? (
+            <AppText variant="caption" color="highlightText">
+              {t("lowStockCount", { count: product.stock })}
+            </AppText>
+          ) : null}
+          {outOfStock ? (
+            <AppText variant="caption" color="textMuted">
+              {t("outOfStock")}
+            </AppText>
+          ) : null}
+        </View>
+      </Pressable>
+      <WishlistButton
+        item={{
+          productId: product.id,
+          slug: product.slug,
+          nameEn: product.nameEn,
+          nameAr: product.nameAr,
+          image: product.image,
+          price: product.effectivePrice,
+        }}
+        style={styles.heart}
+      />
+    </View>
   );
 }
 
@@ -100,6 +117,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxs + 1,
   },
   badgeText: { fontSize: 11, letterSpacing: 0 },
+  heart: { position: "absolute", top: spacing.sm, end: spacing.sm },
   body: { paddingTop: spacing.md, gap: spacing.xs },
   eyebrow: { textTransform: "uppercase", letterSpacing: 1.6, fontSize: 10.5 },
   // The website sets card names in the heading face at 15px.

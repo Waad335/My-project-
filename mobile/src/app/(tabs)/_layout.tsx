@@ -4,6 +4,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Heart, Home, LayoutGrid, ShoppingBag, User, type LucideIcon } from "@/components/icons";
 import { useTranslations } from "use-intl";
 import { useLocale } from "@/i18n/I18nProvider";
+import { cartCount, tabBadge, useCartStore } from "@/shopping/cart-store";
+import { useWishlistStore } from "@/shopping/wishlist-store";
 import { colors, textStyle } from "@/theme";
 
 function tabIcon(Glyph: LucideIcon) {
@@ -19,6 +21,15 @@ export default function TabsLayout() {
   const locale = useLocale();
   const label = textStyle("label", locale);
   const insets = useSafeAreaInsets();
+  const cartItems = useCartStore((s) => cartCount(s.items));
+  const savedPieces = useWishlistStore((s) => s.items.length);
+  const badgeStyle = {
+    backgroundColor: colors.accentStrong,
+    color: colors.textInverse,
+    fontFamily: label.fontFamily,
+    fontSize: 10,
+    lineHeight: locale === "ar" ? 16 : 14,
+  };
 
   return (
     <Tabs
@@ -45,8 +56,14 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: t("home"), tabBarIcon: tabIcon(Home) }} />
       <Tabs.Screen name="shop" options={{ title: t("shop"), tabBarIcon: tabIcon(LayoutGrid) }} />
-      <Tabs.Screen name="wishlist" options={{ title: t("wishlist"), tabBarIcon: tabIcon(Heart) }} />
-      <Tabs.Screen name="cart" options={{ title: t("cart"), tabBarIcon: tabIcon(ShoppingBag) }} />
+      <Tabs.Screen
+        name="wishlist"
+        options={{ title: t("wishlist"), tabBarIcon: tabIcon(Heart), tabBarBadge: tabBadge(savedPieces), tabBarBadgeStyle: badgeStyle }}
+      />
+      <Tabs.Screen
+        name="cart"
+        options={{ title: t("cart"), tabBarIcon: tabIcon(ShoppingBag), tabBarBadge: tabBadge(cartItems), tabBarBadgeStyle: badgeStyle }}
+      />
       <Tabs.Screen name="account" options={{ title: t("account"), tabBarIcon: tabIcon(User) }} />
     </Tabs>
   );

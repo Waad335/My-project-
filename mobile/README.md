@@ -4,7 +4,7 @@ The Dodana app for Android and iPhone: phones only, English (default) and Arabic
 
 The app talks only to the website's mobile API (`/api/mobile/v1`, documented in [`../docs/mobile/API.md`](../docs/mobile/API.md)). It never connects to the database or to Supabase, and it contains no server secrets.
 
-## Status: Phase 3 (browsing)
+## Status: Phase 4 (cart and wishlist)
 
 | Area | State |
 |---|---|
@@ -12,7 +12,10 @@ The app talks only to the website's mobile API (`/api/mobile/v1`, documented in 
 | Shop | Search with suggestions while typing, category chips, sort and price filters, a two-column grid that loads 20 products at a time |
 | Category | Description, subcategory chips, the same grid and filters (newest first, as on the website) |
 | Product | Swipeable photos with a full-screen viewer (pinch or double-tap to zoom), price and stock for the chosen colour or size, delivery, returns and payment notes, description, details, ingredients, reviews and related pieces |
-| Wishlist, Cart, Account | Temporary "Coming soon" content. Adding to the cart or wishlist is not available yet |
+| Cart | Add to Cart on the product screen (quantity, chosen colour or size, stock limits). The Cart tab lists each piece with its photo, size/colour, price, quantity and remove, then the subtotal. Checkout arrives in Phase 6 |
+| Wishlist | A heart on every product card and on the product screen. The Wishlist tab shows the saved pieces, which open their product or can be removed |
+| Cart and wishlist storage | Kept on the phone for everyone, like the website keeps them in the browser. For a signed-in customer they are also saved to the account through `/me/cart` and `/me/wishlist` (`src/shopping/account-sync.ts`, ported from the website). Sign-in itself arrives in Phase 5 |
+| Account | Temporary "Coming soon" content |
 | Design system | Theme copied from the website's Tailwind colours; Fraunces, DM Sans and Cairo fonts; text, buttons, chips, fields, bottom sheet, cards, price tag, loading, empty and error states, icons |
 | Languages | English and Arabic using the website's own text files. Switching language restarts the app once to change the layout direction |
 | API | Typed client for every v1 endpoint; TanStack Query caching |
@@ -21,7 +24,7 @@ The app talks only to the website's mobile API (`/api/mobile/v1`, documented in 
 
 The browsing rules (badges, sale percentage, stock messages, colour/size choices, the details table) are ported from the website's components in `src/catalog/product-logic.ts`, and tests compare them with the website's source.
 
-Next phases: cart and wishlist (4), account (5), checkout with cash on delivery (6), quality (7) and store readiness (8).
+Next phases: account (5), checkout with cash on delivery (6), quality (7) and store readiness (8).
 
 ## Running it locally
 
@@ -67,8 +70,8 @@ The test suite also guards the project's rules:
 - **Security:** fails if any server-only variable name, database URL or service key appears anywhere in the app, or if the app reads any variable other than `EXPO_PUBLIC_API_URL`.
 - **Shared files:** fails if the app imports anything from the website except the English/Arabic text files and the API types file. The API types may only be imported with `import type`.
 - **Brand colours:** fails if the app's palette drifts from the website's `tailwind.config.ts`.
-- **API contract:** fails if the app calls any endpoint (path and HTTP method) that doesn't exist under `../src/app/api/mobile/v1`.
-- **Website parity:** fails if the sort options, low-stock threshold or sale-badge maths differ from the website's components.
+- **API contract:** fails if the app calls any endpoint (path and HTTP method) that doesn't exist under `../src/app/api/mobile/v1`, or if the cart and wishlist code uses anything but the saved cart and wishlist endpoints.
+- **Website parity:** fails if the sort options, low-stock threshold, sale-badge maths, cart quantity limits, the cart merge rule or the save delay differ from the website's code.
 
 Photos use `expo-image` (cached on the device). The full-screen photo viewer uses `react-native-gesture-handler` and `react-native-reanimated`, so zooming runs on the UI thread; they add roughly 2 MB to the JavaScript bundle.
 
@@ -108,4 +111,6 @@ This project is developed in an environment without iOS or Android simulators. B
 - Arabic digits in prices;
 - fonts, safe areas and the Android back button;
 - swiping the product photos and the full-screen viewer (pinch, double-tap, swipe) in both languages;
-- the filter sheet's price fields with the keyboard open, especially on Android.
+- the filter sheet's price fields with the keyboard open, especially on Android;
+- the cart and wishlist being kept after closing and reopening the app, and the counts on the tab icons;
+- saving the cart and wishlist to an account and merging them on another device (needs the Phase 5 sign-in screens).

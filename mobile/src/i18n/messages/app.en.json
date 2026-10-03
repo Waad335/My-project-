@@ -34,5 +34,13 @@
   "viewer": {
     "hint": "Pinch or double-tap to zoom · swipe for more photos"
   },
-  "back": "Back"
+  "back": "Back",
+  "cart": {
+    "maxReached": "You already have all the available pieces of this item in your cart.",
+    "checkoutSoon": "Checkout is coming soon."
+  },
+  "wishlist": {
+    "saved": "Saved to your wishlist",
+    "removed": "Removed from your wishlist"
+  }
 }

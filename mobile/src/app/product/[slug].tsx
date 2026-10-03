@@ -14,6 +14,7 @@ import { RatingStars } from "@/components/catalog/RatingStars";
 import { ReviewsList } from "@/components/catalog/ReviewsList";
 import { SectionHeading } from "@/components/catalog/SectionHeading";
 import { VariantPicker } from "@/components/catalog/VariantPicker";
+import { AddToCart } from "@/components/shopping/AddToCart";
 import { RotateCcw, ShieldCheck, Truck, type LucideIcon } from "@/components/icons";
 import { AppText, BottomSheet, Divider, ErrorState, Icon, PriceTag, Skeleton } from "@/components/ui";
 import { useLocale } from "@/i18n/I18nProvider";
@@ -22,7 +23,7 @@ import { colors, palette, radii, spacing } from "@/theme";
 // A product, laid out for phones: photos (tap to zoom), name, rating,
 // price and stock for the chosen colour/size, delivery, returns and payment
 // notes, then description, details, ingredients, reviews and related pieces.
-// Adding to the cart and wishlist arrives with the cart (Phase 4).
+// Add to Cart and the wishlist heart sit under the colour/size choice.
 export default function ProductScreen() {
   const { slug = "" } = useLocalSearchParams<{ slug: string }>();
   const product = useProduct(slug);
@@ -168,6 +169,8 @@ function ProductContent({ product, related, refreshing, onRefresh }: ProductCont
               <VariantPicker variants={product.variants} selectedId={variantId} onSelect={setVariantId} />
             </View>
           ) : null}
+
+          <AddToCart key={variantId ?? "base"} product={product} state={state} />
 
           <View style={styles.infoList}>
             <InfoRow icon={Truck} title={t("product.deliveryInfo")} body={t("product.deliveryInfoBody")} />
