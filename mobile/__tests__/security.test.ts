@@ -79,3 +79,33 @@ describe("mobile project secrets guard", () => {
     expect(ignore).toContain(".env*.local");
   });
 });
+
+describe("sign-in token handling", () => {
+  const SRC = join(ROOT, "src");
+  const sources = projectFiles(SRC).filter((f) => /\.(ts|tsx)$/.test(f));
+  const read = (file: string) => readFileSync(file, "utf8");
+  const where = (pattern: RegExp) => sources.filter((f) => pattern.test(read(f))).map((f) => relative(SRC, f));
+
+  it("keeps the token only in the Keychain/Keystore module", () => {
+    expect(where(/expo-secure-store/)).toEqual(["auth/token-storage.ts"]);
+    expect(where(/["']dodana\.session["']/)).toEqual(["auth/token-storage.ts"]);
+    // That module never touches ordinary storage.
+    const code = read(join(SRC, "auth/token-storage.ts")).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+    expect(code).not.toMatch(/async-storage|localStorage|sessionStorage/);
+  });
+
+  it("sends the token only from the API client, as a Bearer header", () => {
+    expect(where(/Authorization/)).toEqual(["api/client.ts"]);
+    expect(read(join(SRC, "api/client.ts"))).toContain("headers.Authorization = `Bearer ${token}`");
+  });
+
+  it("never logs, apart from a development-only translation warning", () => {
+    const logs = sources.flatMap((f) =>
+      read(f)
+        .split("\n")
+        .filter((line) => /console\./.test(line))
+        .map((line) => `${relative(SRC, f)}: ${line.trim()}`)
+    );
+    expect(logs).toEqual(["i18n/I18nProvider.tsx: if (__DEV__) console.warn(`[i18n] ${error.message}`);"]);
+  });
+});

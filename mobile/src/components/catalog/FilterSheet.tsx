@@ -89,6 +89,7 @@ export function FilterSheet({ visible, filters, defaultSort, onApply, onClose }:
             inputMode="numeric"
             placeholder="0"
             invalid={showError && !rangeValid}
+            containerStyle={styles.priceField}
           />
           <TextField
             label={t("app.filters.max")}
@@ -101,6 +102,7 @@ export function FilterSheet({ visible, filters, defaultSort, onApply, onClose }:
             inputMode="numeric"
             placeholder="—"
             invalid={showError && !rangeValid}
+            containerStyle={styles.priceField}
           />
         </View>
         {showError && !rangeValid ? (
@@ -117,5 +119,6 @@ const styles = StyleSheet.create({
   section: { gap: spacing.md },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   priceRow: { flexDirection: "row", gap: spacing.md },
+  priceField: { flex: 1 },
   footerButton: { flex: 1, alignSelf: "stretch", paddingHorizontal: spacing.md },
 });

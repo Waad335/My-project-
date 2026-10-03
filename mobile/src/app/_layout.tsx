@@ -1,6 +1,6 @@
 import "@/i18n/polyfills";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { AppState, StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -71,6 +71,14 @@ export default function RootLayout() {
 function AppStack() {
   // Saves a signed-in customer's cart and wishlist to their account.
   useAccountSync();
+  // Back in the foreground: notice an expired session, or confirm one that
+  // couldn't be checked at start-up (offline).
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (state) => {
+      if (state === "active") void useSessionStore.getState().revalidate();
+    });
+    return () => subscription.remove();
+  }, []);
   const locale = useLocale();
   const t = useTranslations("app");
   const heading = textStyle("subheading", locale);
@@ -90,6 +98,9 @@ function AppStack() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="category/[slug]" options={pushed} />
       <Stack.Screen name="product/[slug]" options={pushed} />
+      <Stack.Screen name="auth/sign-in" options={pushed} />
+      <Stack.Screen name="auth/register" options={pushed} />
+      <Stack.Screen name="auth/forgot-password" options={pushed} />
       <Stack.Screen name="dev/design-system" options={{ ...pushed, title: "Design system" }} />
     </Stack>
   );

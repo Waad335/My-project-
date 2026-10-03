@@ -91,4 +91,21 @@ describe("API contract", () => {
     const used = new Set(files.flatMap((source) => [...source.matchAll(/\bapi\s*\.\s*(\w+)/g)].map((m) => m[1])));
     expect([...used].sort()).toEqual(["getCart", "getWishlist", "saveCart", "saveWishlist"]);
   });
+
+  it("signing in and out only uses the existing account endpoints", () => {
+    const src = join(__dirname, "..", "src");
+    const files = [
+      "auth/session-store.ts",
+      "auth/token-storage.ts",
+      "auth/validation.ts",
+      "auth/form-errors.ts",
+      "app/auth/sign-in.tsx",
+      "app/auth/register.tsx",
+      "app/auth/forgot-password.tsx",
+      "app/(tabs)/account.tsx",
+      "components/auth/AuthShell.tsx",
+    ].map((file) => readFileSync(join(src, file), "utf8"));
+    const used = new Set(files.flatMap((source) => [...source.matchAll(/\bapi\s*\.\s*(\w+)/g)].map((m) => m[1])));
+    expect([...used].sort()).toEqual(["forgotPassword", "getMe", "login", "register"]);
+  });
 });

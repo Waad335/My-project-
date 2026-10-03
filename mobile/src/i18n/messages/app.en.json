@@ -42,5 +42,12 @@
   "wishlist": {
     "saved": "Saved to your wishlist",
     "removed": "Removed from your wishlist"
+  },
+  "auth": {
+    "sessionExpired": "Your session has ended. Please sign in again.",
+    "signedOut": "You're signed out.",
+    "offline": "You're signed in. We'll confirm your account when you're back online.",
+    "keptOnPhone": "We couldn't reach your account, so your cart and wishlist stay on this phone. They'll be added to your account the next time you sign in.",
+    "syncNote": "Anything in your cart and wishlist on this phone will be saved to your account."
   }
 }

@@ -1,18 +1,19 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Check, ChevronRight, Palette, User } from "@/components/icons";
+import { Check, ChevronRight, LogOut, Palette } from "@/components/icons";
 import { useTranslations } from "use-intl";
-import { ComingSoon } from "@/components/ComingSoon";
-import { AppText, Card, Divider, Icon, Screen } from "@/components/ui";
+import { useSessionStore } from "@/auth/session-store";
+import { AppText, Button, Card, Divider, FormMessage, Icon, Screen } from "@/components/ui";
+import { signOutCustomer } from "@/shopping/account-sync";
 import { localeNames, locales, type Locale } from "@/i18n/config";
 import { applyLayoutDirection } from "@/i18n/direction";
 import { useLocale } from "@/i18n/I18nProvider";
 import { useLocaleStore } from "@/i18n/locale-store";
 import { colors, minTouchTarget, radii, spacing } from "@/theme";
 
-// Account. Phase 5 adds sign-in, profile, orders and the full settings
-// screen; for now it holds the language choice.
+// Account: signing in, creating an account and signing out, and the
+// language choice.
 export default function AccountScreen() {
   const t = useTranslations();
   const router = useRouter();
@@ -31,7 +32,11 @@ export default function AccountScreen() {
 
   return (
     <Screen>
-      <AppText variant="title">{t("nav.account")}</AppText>
+      <AppText variant="title" accessibilityRole="header">
+        {t("nav.account")}
+      </AppText>
+
+      <AccountCard />
 
       <Card>
         <AppText variant="subheading">{t("common.language")}</AppText>
@@ -63,8 +68,6 @@ export default function AccountScreen() {
         </AppText>
       </Card>
 
-      <ComingSoon icon={User} />
-
       {__DEV__ ? (
         <Pressable
           accessibilityRole="link"
@@ -79,6 +82,74 @@ export default function AccountScreen() {
         </Pressable>
       ) : null}
     </Screen>
+  );
+}
+
+// Signed out: sign in or create an account. Signed in: who, and sign out.
+function AccountCard() {
+  const t = useTranslations();
+  const router = useRouter();
+  const status = useSessionStore((s) => s.status);
+  const customer = useSessionStore((s) => s.customer);
+  const verified = useSessionStore((s) => s.verified);
+  const ended = useSessionStore((s) => s.ended);
+  const [signingOut, setSigningOut] = useState(false);
+  const [keptOnPhone, setKeptOnPhone] = useState(false);
+
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    const result = await signOutCustomer();
+    setKeptOnPhone(result.keptOnPhone);
+    setSigningOut(false);
+  }
+
+  if (status === "unknown") {
+    return (
+      <Card>
+        <ActivityIndicator color={colors.textMuted} accessibilityLabel={t("common.loading")} />
+      </Card>
+    );
+  }
+
+  if (status === "signedIn") {
+    return (
+      <Card>
+        <AppText variant="heading">{customer ? t("account.hello", { name: customer.name }) : t("account.myAccount")}</AppText>
+        {customer ? (
+          <AppText variant="body" color="textMuted">
+            {customer.email}
+          </AppText>
+        ) : null}
+        {!verified ? <FormMessage tone="info" message={t("app.auth.offline")} /> : null}
+        <Button
+          label={signingOut ? t("account.signingOut") : t("account.signOut")}
+          variant="secondary"
+          loading={signingOut}
+          onPress={signOut}
+          icon={<Icon icon={LogOut} size={18} />}
+          fullWidth
+        />
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      {keptOnPhone ? (
+        <FormMessage tone="info" message={t("app.auth.keptOnPhone")} />
+      ) : ended === "expired" ? (
+        <FormMessage tone="info" message={t("app.auth.sessionExpired")} />
+      ) : ended === "signedOut" ? (
+        <FormMessage tone="success" message={t("app.auth.signedOut")} />
+      ) : null}
+      <AppText variant="heading">{t("account.signInTitle")}</AppText>
+      <AppText variant="body" color="textMuted">
+        {t("account.signInSubtitle")}
+      </AppText>
+      <Button label={t("account.signIn")} onPress={() => router.push("/auth/sign-in")} fullWidth />
+      <Button label={t("account.createAccount")} variant="secondary" onPress={() => router.push("/auth/register")} fullWidth />
+    </Card>
   );
 }
 
