@@ -12,6 +12,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/api/query-client";
 import { useSessionStore } from "@/auth/session-store";
 import { applyLayoutDirection } from "@/i18n/direction";
+import { useAccountSync } from "@/shopping/account-sync";
 import { I18nProvider, useLocale } from "@/i18n/I18nProvider";
 import { useLocaleStore } from "@/i18n/locale-store";
 import { colors, fontAssets, textStyle } from "@/theme";
@@ -68,6 +69,8 @@ export default function RootLayout() {
 // Tabs, with category and product screens pushed on top (back button in
 // the header; it points the other way in Arabic).
 function AppStack() {
+  // Saves a signed-in customer's cart and wishlist to their account.
+  useAccountSync();
   const locale = useLocale();
   const t = useTranslations("app");
   const heading = textStyle("subheading", locale);
