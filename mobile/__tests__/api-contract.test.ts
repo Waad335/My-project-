@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
-import { join, relative } from "path";
+import { join, relative, sep } from "path";
 import type { ApiClient, RequestOptions } from "@/api/client";
 import { createEndpoints } from "@/api/endpoints";
 
@@ -17,10 +17,12 @@ function routeFiles(dir: string): string[] {
   });
 }
 
+// The folders above each route.ts are the URL path. They're split with the
+// platform's separator ("\\" on Windows), so this works on every system.
 const routes = routeFiles(V1).map((file) => {
   const pattern = relative(V1, file)
-    .replace(/\/?route\.ts$/, "")
-    .split("/")
+    .split(sep)
+    .slice(0, -1)
     .map((segment) => (/^\[.+\]$/.test(segment) ? "[^/]+" : segment.replace(/[.*+?^${}()|\\]/g, "\\$&")))
     .join("/");
   return { file, matcher: new RegExp(`^/${pattern}$`), source: readFileSync(file, "utf8") };
