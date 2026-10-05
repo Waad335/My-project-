@@ -28,7 +28,20 @@ export const useWishlistStore = create<WishlistState>()(
       },
       remove: (productId) => set((state) => ({ items: state.items.filter((i) => i.productId !== productId) })),
     }),
-    { name: "dodana.wishlist", version: 1, storage: shoppingStorage, partialize: (state) => ({ items: state.items }) }
+    {
+      name: "dodana.wishlist",
+      version: 1,
+      storage: shoppingStorage,
+      partialize: (state) => ({ items: state.items }),
+      migrate: (persistedState, version) => {
+        if (version === 1) return persistedState as WishlistState;
+        if (version === 0 || version === -1) {
+          const state = persistedState as { items?: WishlistItem[] };
+          return { items: Array.isArray(state.items) ? state.items : [] } as WishlistState;
+        }
+        return { items: [] };
+      },
+    }
   )
 );
 

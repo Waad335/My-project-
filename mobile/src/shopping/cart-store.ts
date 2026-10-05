@@ -57,7 +57,20 @@ export const useCartStore = create<CartState>()(
         })),
       clear: () => set({ items: [] }),
     }),
-    { name: "dodana.cart", version: 1, storage: shoppingStorage, partialize: (state) => ({ items: state.items }) }
+    {
+      name: "dodana.cart",
+      version: 1,
+      storage: shoppingStorage,
+      partialize: (state) => ({ items: state.items }),
+      migrate: (persistedState, version) => {
+        if (version === 1) return persistedState as CartState;
+        if (version === 0 || version === -1) {
+          const state = persistedState as { items?: CartItem[] };
+          return { items: Array.isArray(state.items) ? state.items : [] } as CartState;
+        }
+        return { items: [] };
+      },
+    }
   )
 );
 
